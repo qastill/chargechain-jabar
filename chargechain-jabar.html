@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChargeChain Jabar — Fundraising SPKLU On-Chain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root{
+  --bg:#0A0E10;
+  --bg-2:#11171A;
+  --panel:#141B1F;
+  --ink:#E8F1F2;
+  --ink-dim:#8A9BA0;
+  --line:#1F2A2F;
+  --cyan:#00E0FF;
+  --ion:#7FFF9E;
+  --amber:#FFB84D;
+  --rose:#FF5E7A;
+  --shadow:0 20px 60px -20px rgba(0,224,255,.15);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body{
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,224,255,.08), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 90% 20%, rgba(127,255,158,.04), transparent 70%),
+    linear-gradient(var(--bg), var(--bg));
+  min-height:100vh;
+  overflow-x:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse at center, black 40%, transparent 90%);
+}
+.container{max-width:1400px;margin:0 auto;padding:0 32px;position:relative;z-index:1}
+h1,h2,h3,h4{font-family:'Fraunces',serif;font-weight:400;letter-spacing:-.02em;line-height:1.05}
+.mono{font-family:'JetBrains Mono',monospace}
+.num{font-variant-numeric:tabular-nums}
+a{color:var(--cyan);text-decoration:none}
+
+/* ─── NAV ─── */
+nav{
+  position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(12px);
+  background:rgba(10,14,16,.7);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;max-width:1400px;margin:0 auto}
+.logo{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-size:20px;font-weight:600}
+.logo-dot{width:10px;height:10px;background:var(--cyan);border-radius:50%;box-shadow:0 0 12px var(--cyan);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.nav-links{display:flex;gap:28px;font-size:12px;text-transform:uppercase;letter-spacing:.1em}
+.nav-links a{color:var(--ink-dim);transition:color .2s}
+.nav-links a:hover{color:var(--cyan)}
+.nav-badge{font-size:10px;padding:4px 10px;border:1px solid var(--ion);color:var(--ion);border-radius:2px;letter-spacing:.1em}
+
+/* ─── HERO ─── */
+.hero{padding:80px 0 60px;position:relative}
+.hero-tag{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:24px}
+.hero-tag::before{content:"";width:24px;height:1px;background:var(--cyan)}
+.hero h1{font-size:clamp(48px,7vw,96px);font-weight:300;margin-bottom:28px}
+.hero h1 em{font-style:italic;color:var(--cyan);font-weight:400}
+.hero h1 .strike{position:relative;display:inline-block}
+.hero h1 .strike::after{content:"";position:absolute;left:-4%;right:-4%;top:55%;height:3px;background:var(--rose);transform:rotate(-2deg)}
+.hero-sub{max-width:640px;font-size:15px;color:var(--ink-dim);line-height:1.75;margin-bottom:40px}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:48px}
+.stat{background:var(--bg);padding:24px 28px}
+.stat-label{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-dim);margin-bottom:10px}
+.stat-val{font-family:'Fraunces',serif;font-size:38px;font-weight:400;line-height:1}
+.stat-val.cyan{color:var(--cyan)}
+.stat-val.ion{color:var(--ion)}
+.stat-unit{font-size:12px;color:var(--ink-dim);margin-left:4px}
+
+/* ─── SECTIONS ─── */
+section{padding:100px 0;position:relative}
+.section-head{margin-bottom:56px;display:grid;grid-template-columns:1fr 2fr;gap:48px;align-items:end}
+.section-num{font-size:11px;letter-spacing:.2em;color:var(--cyan);text-transform:uppercase}
+.section-head h2{font-size:clamp(36px,5vw,64px);font-weight:300}
+.section-head h2 em{font-style:italic;color:var(--cyan)}
+.section-lead{font-size:14px;color:var(--ink-dim);line-height:1.7;max-width:480px}
+
+/* ─── KONSEP / FLOW ─── */
+.flow-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;position:relative}
+.flow-step{background:var(--panel);border:1px solid var(--line);padding:32px 24px;position:relative;transition:all .3s}
+.flow-step:hover{border-color:var(--cyan);transform:translateY(-4px)}
+.flow-step::before{content:"";position:absolute;top:0;left:0;width:40px;height:1px;background:var(--cyan)}
+.flow-idx{font-family:'Fraunces',serif;font-size:48px;color:var(--cyan);line-height:1;margin-bottom:20px;font-weight:300}
+.flow-step h4{font-size:18px;margin-bottom:12px}
+.flow-step p{font-size:12px;color:var(--ink-dim);line-height:1.7}
+.flow-arrow{position:absolute;top:50%;right:-18px;color:var(--cyan);font-size:20px;z-index:2;display:none}
+@media(min-width:900px){.flow-step:not(:last-child) .flow-arrow{display:block}}
+
+/* ─── BENEFITS ─── */
+.benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.benefit{background:var(--bg-2);padding:40px 32px;position:relative;min-height:260px;display:flex;flex-direction:column}
+.benefit-icon{width:44px;height:44px;border:1px solid var(--cyan);display:grid;place-items:center;margin-bottom:24px;color:var(--cyan);font-family:'Fraunces',serif;font-size:20px}
+.benefit h4{font-size:22px;margin-bottom:12px;font-weight:400}
+.benefit p{font-size:12px;color:var(--ink-dim);line-height:1.75;flex:1}
+.benefit-tag{margin-top:20px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ion)}
+
+/* ─── CALCULATOR ─── */
+.calc-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
+.calc-input,.calc-output{background:var(--bg-2);padding:48px}
+.calc-input h3{font-size:14px;text-transform:uppercase;letter-spacing:.1em;color:var(--cyan);margin-bottom:32px;font-family:'JetBrains Mono',monospace;font-weight:500}
+.calc-row{margin-bottom:28px}
+.calc-row label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-dim);margin-bottom:10px}
+.calc-row label .val{float:right;color:var(--cyan);font-weight:500}
+.calc-row input[type=range]{width:100%;-webkit-appearance:none;background:transparent;height:24px}
+.calc-row input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line)}
+.calc-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:var(--cyan);border-radius:50%;margin-top:-6px;box-shadow:0 0 10px var(--cyan);cursor:pointer}
+.calc-row input[type=range]::-moz-range-track{height:2px;background:var(--line)}
+.calc-row input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--cyan);border-radius:50%;border:none;box-shadow:0 0 10px var(--cyan);cursor:pointer}
+.calc-row select{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);padding:12px 14px;font-family:inherit;font-size:13px;cursor:pointer}
+.calc-row select:focus{outline:none;border-color:var(--cyan)}
+.calc-output h3{font-size:14px;text-transform:uppercase;letter-spacing:.1em;color:var(--ion);margin-bottom:32px;font-weight:500}
+.out-row{display:flex;justify-content:space-between;align-items:baseline;padding:18px 0;border-bottom:1px dashed var(--line)}
+.out-row:last-child{border-bottom:none}
+.out-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-dim)}
+.out-val{font-family:'Fraunces',serif;font-size:28px;font-weight:400;color:var(--ink)}
+.out-val.big{font-size:42px;color:var(--ion)}
+.out-val.cyan{color:var(--cyan)}
+.out-unit{font-size:11px;color:var(--ink-dim);margin-left:6px;font-family:'JetBrains Mono',monospace}
+
+/* ─── MAP ─── */
+.map-wrap{position:relative;border:1px solid var(--line);background:var(--panel)}
+#map{height:560px;background:var(--bg-2)}
+.map-legend{position:absolute;top:16px;left:16px;background:rgba(10,14,16,.92);backdrop-filter:blur(8px);border:1px solid var(--line);padding:16px 18px;z-index:500;font-size:11px}
+.map-legend h5{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--cyan);margin-bottom:10px;font-weight:500}
+.legend-item{display:flex;align-items:center;gap:10px;margin-bottom:6px;color:var(--ink-dim)}
+.legend-dot{width:10px;height:10px;border-radius:50%}
+.map-filter{display:flex;flex-wrap:wrap;gap:6px;padding:16px;background:var(--bg-2);border-bottom:1px solid var(--line)}
+.filter-btn{background:transparent;border:1px solid var(--line);color:var(--ink-dim);padding:6px 14px;font-family:inherit;font-size:10px;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;transition:all .2s}
+.filter-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.filter-btn.active{background:var(--cyan);color:var(--bg);border-color:var(--cyan)}
+
+/* Leaflet custom */
+.leaflet-container{background:#0c1316 !important;font-family:'JetBrains Mono',monospace !important}
+.leaflet-popup-content-wrapper{background:var(--panel);color:var(--ink);border:1px solid var(--cyan);border-radius:0;box-shadow:0 8px 24px rgba(0,224,255,.2)}
+.leaflet-popup-tip{background:var(--panel);border:1px solid var(--cyan)}
+.leaflet-popup-content{margin:14px 18px;font-size:12px}
+.leaflet-popup-content b{color:var(--cyan);font-size:13px;font-family:'Fraunces',serif;font-weight:400}
+.leaflet-popup-content .pop-row{margin-top:4px;color:var(--ink-dim)}
+.leaflet-popup-content .pop-row span{color:var(--ink)}
+.leaflet-control-attribution{background:rgba(10,14,16,.8) !important;color:var(--ink-dim) !important;font-size:9px !important}
+.leaflet-control-zoom a{background:var(--panel) !important;color:var(--ink) !important;border-color:var(--line) !important}
+
+/* ─── UP3 TABLE ─── */
+.up3-table{border:1px solid var(--line);background:var(--bg-2);overflow:hidden}
+.up3-row{display:grid;grid-template-columns:40px 1.6fr 80px 100px 1fr 100px;gap:16px;padding:18px 24px;border-bottom:1px solid var(--line);align-items:center;font-size:12px;transition:background .2s}
+.up3-row:last-child{border-bottom:none}
+.up3-row:hover{background:var(--panel)}
+.up3-head{background:var(--panel);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--cyan)}
+.up3-row .num-col{color:var(--ink-dim);font-size:11px}
+.up3-row .name-col{color:var(--ink);font-weight:500}
+.up3-row .stat-col{font-variant-numeric:tabular-nums}
+.up3-bar{height:4px;background:var(--line);position:relative;overflow:hidden}
+.up3-bar::after{content:"";position:absolute;top:0;left:0;height:100%;background:linear-gradient(90deg,var(--cyan),var(--ion));width:var(--w,0%)}
+.up3-potential{font-size:10px;padding:3px 8px;border-radius:2px;text-transform:uppercase;letter-spacing:.08em;text-align:center}
+.pot-high{background:rgba(127,255,158,.1);color:var(--ion);border:1px solid rgba(127,255,158,.3)}
+.pot-mid{background:rgba(255,184,77,.1);color:var(--amber);border:1px solid rgba(255,184,77,.3)}
+.pot-low{background:rgba(138,155,160,.1);color:var(--ink-dim);border:1px solid var(--line)}
+
+/* ─── PREDICTION ─── */
+.pred-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:32px;align-items:start}
+.chart-wrap{background:var(--bg-2);border:1px solid var(--line);padding:32px}
+.chart-wrap h4{font-size:14px;text-transform:uppercase;letter-spacing:.1em;color:var(--cyan);margin-bottom:24px;font-family:'JetBrains Mono',monospace;font-weight:500}
+#chart{width:100%;height:320px}
+.pred-meta{display:grid;gap:16px}
+.pred-card{background:var(--bg-2);border:1px solid var(--line);padding:28px 24px}
+.pred-card-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:8px}
+.pred-card-val{font-family:'Fraunces',serif;font-size:32px;color:var(--ink);line-height:1}
+.pred-card-val.cyan{color:var(--cyan)}
+.pred-card-val.ion{color:var(--ion)}
+.pred-card-sub{font-size:11px;color:var(--ink-dim);margin-top:8px}
+
+/* ─── CTA / FOOTER ─── */
+.cta{margin-top:40px;padding:48px;background:linear-gradient(135deg,var(--panel),var(--bg-2));border:1px solid var(--cyan);position:relative;overflow:hidden}
+.cta::before{content:"";position:absolute;top:-50%;right:-10%;width:400px;height:400px;background:radial-gradient(circle,rgba(0,224,255,.08),transparent 70%)}
+.cta h3{font-size:36px;font-weight:300;margin-bottom:12px;position:relative}
+.cta p{font-size:13px;color:var(--ink-dim);max-width:520px;margin-bottom:28px;position:relative;line-height:1.75}
+.btn{display:inline-block;background:var(--cyan);color:var(--bg);padding:14px 28px;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.15em;font-weight:500;border:none;cursor:pointer;transition:all .2s;position:relative}
+.btn:hover{background:var(--ion);box-shadow:0 0 20px rgba(127,255,158,.4)}
+.btn-ghost{background:transparent;color:var(--cyan);border:1px solid var(--cyan);margin-left:10px}
+.btn-ghost:hover{background:var(--cyan);color:var(--bg)}
+
+footer{border-top:1px solid var(--line);padding:48px 0 32px;margin-top:80px;color:var(--ink-dim);font-size:11px}
+footer .container{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:24px}
+footer .disclaimer{max-width:600px;line-height:1.7;font-size:10px}
+
+@media(max-width:980px){
+  .hero-stats{grid-template-columns:repeat(2,1fr)}
+  .section-head{grid-template-columns:1fr}
+  .flow-grid{grid-template-columns:repeat(2,1fr)}
+  .benefits{grid-template-columns:1fr}
+  .calc-wrap{grid-template-columns:1fr}
+  .pred-grid{grid-template-columns:1fr}
+  .up3-row{grid-template-columns:30px 1.4fr 60px 80px;gap:10px;font-size:11px}
+  .up3-row .stat-col:nth-of-type(4),.up3-row .stat-col:nth-of-type(5){display:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo"><div class="logo-dot"></div>ChargeChain<span style="color:var(--cyan)">.Jabar</span></div>
+    <div class="nav-links">
+      <a href="#konsep">Konsep</a>
+      <a href="#benefit">Benefit</a>
+      <a href="#kalkulator">Kalkulator</a>
+      <a href="#peta">Peta</a>
+      <a href="#prediksi">Prediksi</a>
+    </div>
+    <div class="nav-badge">● TESTNET v0.1</div>
+  </div>
+</nav>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-tag">WEST JAVA · 17 UP3 · 104 TITIK SPKLU AKTIF</div>
+    <h1>Danai SPKLU<br>dengan <em>smart contract.</em><br>Bagi hasil <em>on-chain,</em><br>tanpa <span class="strike">perantara.</span></h1>
+    <p class="hero-sub">ChargeChain Jabar adalah protokol fundraising berbasis smart contract untuk membangun dan mengekspansi Stasiun Pengisian Kendaraan Listrik Umum (SPKLU) di Jawa Barat. Investor retail dapat membeli token fraksional per stasiun, menerima bagi hasil otomatis dari setiap transaksi charging, dan memverifikasi penggunaan secara transparan di blockchain.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-label">Stasiun Aktif</div><div class="stat-val num" id="stat-total">104</div></div>
+      <div class="stat"><div class="stat-label">Total Kapasitas</div><div class="stat-val cyan num" id="stat-power">2.350<span class="stat-unit">kW</span></div></div>
+      <div class="stat"><div class="stat-label">Cakupan UP3</div><div class="stat-val num">17<span class="stat-unit">area</span></div></div>
+      <div class="stat"><div class="stat-label">Target Ekspansi</div><div class="stat-val ion num">+250<span class="stat-unit">titik</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ KONSEP ═══════════ -->
+<section id="konsep">
+  <div class="container">
+    <div class="section-head">
+      <div><div class="section-num">01 / KONSEP</div></div>
+      <div>
+        <h2>Empat langkah. <em>Satu kontrak.</em></h2>
+        <p class="section-lead" style="margin-top:16px">Protokol ChargeChain mengotomatisasi alur pendanaan, konstruksi, operasi, dan distribusi pendapatan SPKLU melalui satu smart contract yang dideploy per stasiun.</p>
+      </div>
+    </div>
+    <div class="flow-grid">
+      <div class="flow-step">
+        <div class="flow-idx">01</div>
+        <h4>Fundraise</h4>
+        <p>PLN dan partner membuka kampanye per stasiun. Investor membeli token fraksional (CHRG-LOC) dengan stablecoin. Dana terkunci di escrow hingga milestone konstruksi tercapai.</p>
+        <div class="flow-arrow">→</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-idx">02</div>
+        <h4>Deploy</h4>
+        <p>Oracle memverifikasi tahapan: pondasi, shelter, charger unit, integrasi ke PLN Mobile. Dana cair bertahap ke kontraktor sesuai progress on-chain.</p>
+        <div class="flow-arrow">→</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-idx">03</div>
+        <h4>Operate</h4>
+        <p>Setiap sesi charging tercatat langsung dari meter EMSYST/meteran PLN ke oracle. Revenue per kWh masuk otomatis ke contract wallet stasiun.</p>
+        <div class="flow-arrow">→</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-idx">04</div>
+        <h4>Distribute</h4>
+        <p>Smart contract membagi pendapatan: PLN (operator), investor token holder (bagi hasil pro-rata), dan treasury protokol. Klaim tiap 30 hari.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ BENEFIT ═══════════ -->
+<section id="benefit" style="background:var(--bg-2)">
+  <div class="container">
+    <div class="section-head">
+      <div><div class="section-num">02 / BENEFIT</div></div>
+      <div>
+        <h2>Enam alasan <em>kenapa on-chain.</em></h2>
+      </div>
+    </div>
+    <div class="benefits">
+      <div class="benefit">
+        <div class="benefit-icon">§</div>
+        <h4>Likuiditas Retail</h4>
+        <p>Membuka kelas aset infrastruktur energi kepada investor retail mulai dari Rp 100.000. Sebelumnya hanya accessible ke korporasi besar dengan ticket size miliaran.</p>
+        <div class="benefit-tag">↘ TICKET SIZE</div>
+      </div>
+      <div class="benefit">
+        <div class="benefit-icon">◈</div>
+        <h4>Transparansi Penuh</h4>
+        <p>Setiap kWh yang terjual, setiap rupiah yang dibagi, tercatat permanen on-chain. Investor bisa audit wallet stasiun kapan saja tanpa minta laporan.</p>
+        <div class="benefit-tag">↗ TRUST</div>
+      </div>
+      <div class="benefit">
+        <div class="benefit-icon">⇌</div>
+        <h4>Bagi Hasil Otomatis</h4>
+        <p>Tanpa menunggu rapat pemegang saham atau kliring bank. Smart contract mengeksekusi distribusi pendapatan setiap siklus secara deterministik.</p>
+        <div class="benefit-tag">↘ LATENCY</div>
+      </div>
+      <div class="benefit">
+        <div class="benefit-icon">⬢</div>
+        <h4>Ekspansi Cepat</h4>
+        <p>Dengan crowdfunding, PLN dapat memperluas jaringan SPKLU tanpa membebani CAPEX internal. Target 250 titik baru tercapai dalam 24 bulan.</p>
+        <div class="benefit-tag">↗ VELOCITY</div>
+      </div>
+      <div class="benefit">
+        <div class="benefit-icon">◉</div>
+        <h4>Data Real-Time</h4>
+        <p>Oracle feed dari meter charger menyediakan telemetri utilisasi, peak demand, dan revenue per titik. Investor dan PLN dapat optimalkan lokasi next-deployment.</p>
+        <div class="benefit-tag">↗ ANALYTICS</div>
+      </div>
+      <div class="benefit">
+        <div class="benefit-icon">⊕</div>
+        <h4>Dampak EV Adoption</h4>
+        <p>Semakin padat sebaran SPKLU, semakin cepat adopsi EV. Investor bukan sekadar cari yield — mereka ikut mempercepat transisi energi Indonesia.</p>
+        <div class="benefit-tag">↗ IMPACT</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ KALKULATOR ═══════════ -->
+<section id="kalkulator">
+  <div class="container">
+    <div class="section-head">
+      <div><div class="section-num">03 / KALKULATOR</div></div>
+      <div>
+        <h2>Hitung <em>yield</em> Anda.</h2>
+        <p class="section-lead" style="margin-top:16px">Simulasi ROI berdasarkan kapasitas charger, utilisasi harian, tarif PLN eksisting, dan besar investasi. Model menggunakan tarif SPKLU Rp 2.466/kWh dan revenue share investor 60%.</p>
+      </div>
+    </div>
+    <div class="calc-wrap">
+      <div class="calc-input">
+        <h3>▸ INPUT PARAMETER</h3>
+        <div class="calc-row">
+          <label>Tipe Charger <span class="val" id="v-charger">AC 22 kW</span></label>
+          <select id="charger-type">
+            <option value="7">AC Mini 7 kW — Rp 120 jt</option>
+            <option value="22" selected>AC Max 22 kW — Rp 180 jt</option>
+            <option value="25">DC City 25 kW — Rp 550 jt</option>
+            <option value="50">DC City 50 kW — Rp 850 jt</option>
+            <option value="120">DC Ultra 120 kW — Rp 1,8 M</option>
+          </select>
+        </div>
+        <div class="calc-row">
+          <label>Investasi Anda <span class="val" id="v-invest">Rp 5.000.000</span></label>
+          <input type="range" id="invest" min="100000" max="100000000" step="100000" value="5000000">
+        </div>
+        <div class="calc-row">
+          <label>Utilisasi Harian <span class="val" id="v-util">4 jam/hari</span></label>
+          <input type="range" id="util" min="1" max="16" step="0.5" value="4">
+        </div>
+        <div class="calc-row">
+          <label>Load Factor <span class="val" id="v-load">70%</span></label>
+          <input type="range" id="load" min="30" max="95" step="5" value="70">
+        </div>
+        <div class="calc-row">
+          <label>Periode Investasi <span class="val" id="v-period">5 tahun</span></label>
+          <input type="range" id="period" min="1" max="10" step="1" value="5">
+        </div>
+      </div>
+      <div class="calc-output">
+        <h3>▸ PROYEKSI RETURN</h3>
+        <div class="out-row">
+          <span class="out-label">Kepemilikan Stasiun</span>
+          <span class="out-val cyan num" id="o-share">2,78<span class="out-unit">%</span></span>
+        </div>
+        <div class="out-row">
+          <span class="out-label">kWh terjual / hari</span>
+          <span class="out-val num" id="o-kwh">61,6<span class="out-unit">kWh</span></span>
+        </div>
+        <div class="out-row">
+          <span class="out-label">Revenue Stasiun / bulan</span>
+          <span class="out-val num" id="o-rev">Rp 4,6<span class="out-unit">jt</span></span>
+        </div>
+        <div class="out-row">
+          <span class="out-label">Pendapatan Anda / bulan</span>
+          <span class="out-val big num" id="o-yours">Rp 77<span class="out-unit">rb</span></span>
+        </div>
+        <div class="out-row">
+          <span class="out-label">Total return <span id="o-per">5 thn</span></span>
+          <span class="out-val num" id="o-total">Rp 4,6<span class="out-unit">jt</span></span>
+        </div>
+        <div class="out-row">
+          <span class="out-label">IRR estimasi</span>
+          <span class="out-val cyan num" id="o-irr">18,4<span class="out-unit">% p.a.</span></span>
+        </div>
+        <div class="out-row">
+          <span class="out-label">Break-even Point</span>
+          <span class="out-val num" id="o-bep">5,4<span class="out-unit">tahun</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PETA ═══════════ -->
+<section id="peta" style="background:var(--bg-2)">
+  <div class="container">
+    <div class="section-head">
+      <div><div class="section-num">04 / SEBARAN</div></div>
+      <div>
+        <h2>104 titik <em>eksisting</em> & <em>potensi ekspansi.</em></h2>
+        <p class="section-lead" style="margin-top:16px">Peta menampilkan semua SPKLU aktif se-Jawa Barat dari data lapangan. Filter per UP3 untuk melihat zona potensial. Warna titik menunjukkan kapasitas daya charger.</p>
+      </div>
+    </div>
+    <div class="map-wrap">
+      <div class="map-filter" id="map-filter"></div>
+      <div style="position:relative">
+        <div id="map"></div>
+        <div class="map-legend">
+          <h5>▸ KAPASITAS CHARGER</h5>
+          <div class="legend-item"><div class="legend-dot" style="background:#7FFF9E"></div>50+ kW (Fast DC)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#00E0FF"></div>22 kW (AC Max)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#FFB84D"></div>7 kW (AC Mini)</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:64px">
+      <h3 style="font-size:22px;margin-bottom:24px;font-weight:400">▸ Peringkat Potensi Ekspansi per UP3</h3>
+      <div class="up3-table" id="up3-table"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PREDIKSI ═══════════ -->
+<section id="prediksi">
+  <div class="container">
+    <div class="section-head">
+      <div><div class="section-num">05 / PREDIKSI</div></div>
+      <div>
+        <h2>Proyeksi <em>penjualan</em> 60 bulan.</h2>
+        <p class="section-lead" style="margin-top:16px">Model growth berbasis kurva adopsi EV Gaikindo + target sebaran SPKLU Jabar. Asumsi: pertumbuhan registrasi EV 42% YoY, utilisasi meningkat dari 4 jam/hari menjadi 9 jam/hari pada tahun ke-5.</p>
+      </div>
+    </div>
+    <div class="pred-grid">
+      <div class="chart-wrap">
+        <h4>▸ Revenue & Utilisasi Proyeksi Jaringan</h4>
+        <svg id="chart" viewBox="0 0 800 320" preserveAspectRatio="none"></svg>
+      </div>
+      <div class="pred-meta">
+        <div class="pred-card">
+          <div class="pred-card-label">Revenue Tahun 1 (network)</div>
+          <div class="pred-card-val cyan">Rp 12,3 M</div>
+          <div class="pred-card-sub">104 titik × 4 jam/hari × 70% load</div>
+        </div>
+        <div class="pred-card">
+          <div class="pred-card-label">Revenue Tahun 5 (network)</div>
+          <div class="pred-card-val ion">Rp 148 M</div>
+          <div class="pred-card-sub">354 titik × 9 jam/hari × 80% load</div>
+        </div>
+        <div class="pred-card">
+          <div class="pred-card-label">CAGR 5 Tahun</div>
+          <div class="pred-card-val">64,5%</div>
+          <div class="pred-card-sub">Sejalan kurva adopsi EV Indonesia</div>
+        </div>
+        <div class="pred-card">
+          <div class="pred-card-label">Total kWh terjual (5 thn)</div>
+          <div class="pred-card-val">178 GWh</div>
+          <div class="pred-card-sub">≈ 36,5 juta km perjalanan EV</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta">
+      <h3>Siap menjadi token holder <em style="font-style:italic;color:var(--cyan)">pertama?</em></h3>
+      <p>ChargeChain Jabar memasuki fase testnet Q2 2026. Daftar whitelist untuk mendapatkan allocation priority pada mainnet launch dan akses early dashboard.</p>
+      <button class="btn">▸ JOIN WHITELIST</button>
+      <button class="btn btn-ghost">▸ READ WHITEPAPER</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div>
+      <div class="logo" style="margin-bottom:12px"><div class="logo-dot"></div>ChargeChain<span style="color:var(--cyan)">.Jabar</span></div>
+      <div>Protokol fundraising SPKLU berbasis smart contract</div>
+      <div style="margin-top:8px">West Java · Indonesia · 2026</div>
+    </div>
+    <div class="disclaimer">
+      <b style="color:var(--amber)">DISCLAIMER:</b> Konsep ini adalah prototype untuk tujuan demonstrasi teknis. Data SPKLU bersumber dari dataset operasional PLN Jabar. Angka ROI, IRR, dan proyeksi penjualan adalah estimasi berdasarkan asumsi publik dan tarif SPKLU eksisting (Rp 2.466/kWh). Bukan merupakan penawaran investasi atau sekuritas. Implementasi nyata memerlukan kajian regulasi OJK, Bappebti, dan restu PLN (Persero).
+    </div>
+  </div>
+</footer>
+
+<script>
+const STATIONS = [{"no":1,"up3":"UP3 Bandung","nama":"Kantor PLN UP3 Bandung","charger":"DELTA DC CITY CHARGER 50KW","merek":"DELTA","konektor":3,"type_plug":"CCS2; CHADEMO; AC TYPE-2","alamat":"Jl. Soekarno Hatta No.436, Ciseureuh, Kec. Regol, Kota Bandung, Jawa Barat 40255","lat":-6.948829208330302,"lng":107.61179674882165,"power":50},{"no":2,"up3":"UP3 Bandung","nama":"Kantor PLN ULP Cijawura","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Margacinta, Margasari, Kec. Buahbatu, Kota Bandung, Jawa Barat 40287","lat":-6.954014411714834,"lng":107.64057560097348,"power":22},{"no":3,"up3":"UP3 Bandung","nama":"Kantor PLN ULP Kopo","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Holis No.312, Caringin, Kec. Bandung Kulon, Kota Bandung, Jawa Barat 40212","lat":-6.93386903292086,"lng":107.57143069850696,"power":22},{"no":4,"up3":"UP3 Bandung","nama":"Kantor PLN ULP Ujungberung","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. A.H. Nasution No.65, Cigending, Kec. Ujung Berung, Kota Bandung, Jawa Barat 40611","lat":-6.913309984947491,"lng":107.69490859666871,"power":22},{"no":5,"up3":"UP3 Bandung","nama":"Kantor PLN ULP Bandung Timur","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jalan Penghulu Haji Jl. Phh. Mustofa No.45, Neglasari, Cibeunying Kaler, Bandung City, West Java 40124","lat":-6.898928976954648,"lng":107.64111461349178,"power":22},{"no":6,"up3":"UP3 Bandung","nama":"Kantor PLN ULP Bandung Barat","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. LMU.Nurtanio No.117, Dungus Cariang, Kec. Andir, Kota Bandung, Jawa Barat 40174","lat":-6.908600137787037,"lng":107.57901035055932,"power":22},{"no":7,"up3":"UP3 Bandung","nama":"Kantor PLN UID Jawa Barat","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Asia Afrika No.63, Braga, Kec. Sumur Bandung, Kota Bandung, Jawa Barat 40111","lat":-6.920962,"lng":107.608129,"power":22},{"no":8,"up3":"UP3 Bandung","nama":"Kantor PLN UP2D Jawa Barat","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Dr. Ir. Sukarno No.03, Braga, Kec. Sumur Bandung, Kota Bandung, Jawa Barat 40111","lat":-6.919962041169282,"lng":107.60900989629516,"power":22},{"no":9,"up3":"UP3 Bekasi","nama":"Kantor PLN UP3 Bekasi","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Pln Up3 Bekasi, Jl. Cut Mutia No.44, RT.006/RW.007, Margahayu, Kec. Bekasi Tim., Kota Bks, Jawa Barat 17113","lat":-6.2528476,"lng":107.0104015,"power":22},{"no":10,"up3":"UP3 Bekasi","nama":"Kantor PLN UP3 Bekasi","charger":"PHIHONG DC WALL MOUNT 30KW","merek":"PHIHONG","konektor":2,"type_plug":"CCS2 & CHADEMO","alamat":"Pln Up3 Bekasi, Jl. Cut Mutia No.44, RT.006/RW.007, Margahayu, Kec. Bekasi Tim., Kota Bks, Jawa Barat 17113","lat":-6.2528476,"lng":107.0104015,"power":0},{"no":12,"up3":"UP3 Bekasi","nama":"Kantor PLN ULP Bantar Gebang","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"PLN ULP Bantargebang Ruko Namira, Jl. Pengasinan no 72-73, RT.002/RW.001, Pengasinan, Kec. Rawalumbu, Kota Bks, Jawa Barat 17115","lat":-6.266005,"lng":107.008409,"power":22},{"no":13,"up3":"UP3 Bekasi","nama":"Kantor PLN ULP Medan Satria","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"JL. SULTAN AGUNG NO 535 PONDOK UNGU BEKASI 17132","lat":-6.19819,"lng":106.97464,"power":22},{"no":14,"up3":"UP3 Bekasi","nama":"Kantor PLN ULP Mustika Jaya","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"JL. RAYA SETU - BANTAR GEBANG KM 06  17158 MUSTIKAJAYA - BEKASI","lat":-6.320262,"lng":107.033516,"power":22},{"no":15,"up3":"UP3 Bogor","nama":"Istana Presiden Bogor","charger":"DELTA DC CITY CHARGER 50KW","merek":"DELTA","konektor":3,"type_plug":"CCS2; CHADEMO; AC TYPE-2","alamat":"Jl. Ir H Juanda No. 1 Bogor","lat":-6.598157,"lng":106.794629,"power":50},{"no":16,"up3":"UP3 Bogor","nama":"Kantor PLN ULP Bogor Kota","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Kapten Muslihat No.2, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122\n","lat":-6.596175,"lng":106.790009,"power":22},{"no":17,"up3":"UP3 Bogor","nama":"Kantor PLN ULP Bogor Timur","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jalan Raya Pajajaran No. 233, Bantarjati, Bogor Utara, RT.03/RW.05, Bantarjati, Kec. Bogor Utara, Kota Bogor, Jawa Barat 16153\n","lat":-6.57211,"lng":106.808573,"power":22},{"no":18,"up3":"UP3 Bogor","nama":"Kantor PLN ULP Bogor Barat","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Kemang, Kec. Kemang, Kabupaten Bogor, Jawa Barat 16310\n","lat":-6.515805,"lng":106.756985,"power":22},{"no":19,"up3":"UP3 Bogor","nama":"Kantor PLN ULP Leuwiliang","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jalan Raya No.KM 17, Girimulya, Kec. Cibungbulang, Kabupaten Bogor, Jawa Barat 16630","lat":-6.564198,"lng":106.677962,"power":22},{"no":20,"up3":"UP3 Bogor","nama":"Kantor PLN ULP Jasinga","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Cigudeg No.24, Bunar, Kec. Cigudeg, Kabupaten Bogor, Jawa Barat 16660","lat":-6.520282,"lng":106.498591,"power":22},{"no":21,"up3":"UP3 Bogor","nama":"Kantor PLN ULP Cipayung","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Puncak - Cianjur, Cipayung Datar, Kec. Megamendung, Kabupaten Bogor, Jawa Barat 16770","lat":-6.650524,"lng":106.89581,"power":22},{"no":22,"up3":"UP3 Cianjur","nama":"Kantor PLN UP3 Cianjur","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Dr. Muwardi No.165, Bojongherang, Kec. Cianjur, Kabupaten Cianjur, Jawa Barat 43216","lat":-6.813450174624562,"lng":107.13706988132515,"power":22},{"no":23,"up3":"UP3 Cianjur","nama":"Kantor PLN Posko Cimacan","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Loji Cimacan, Cimacan, Kec. Cipanas, Kabupaten Cianjur, Jawa Barat 43253","lat":-6.7128083937359255,"lng":107.0226648,"power":22},{"no":24,"up3":"UP3 Cianjur","nama":"Kantor PLN ULP Cipanas","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Cipanas No.29, Cipanas, Kec. Cipanas, Kabupaten Cianjur, Jawa Barat 43253","lat":-6.734727954958938,"lng":107.04168197826456,"power":22},{"no":25,"up3":"UP3 Cianjur","nama":"Kantor Pemda Cianjur","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Pamoyanan, Kec. Cianjur, Kabupaten Cianjur, Jawa Barat 43211","lat":-6.797175640678069,"lng":107.13541351075203,"power":22},{"no":26,"up3":"UP3 Cianjur","nama":"Alun-alun Sindangbarang","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Saganten, Kec. Sindangbarang, Kabupaten Cianjur, Jawa Barat 43272","lat":-7.451419395039605,"lng":107.1348782543499,"power":22},{"no":27,"up3":"UP3 Cianjur","nama":"Kantor PLN Posko Ciranjang","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Bandung No.123, Ciranjang, Kec. Ciranjang, Kabupaten Cianjur, Jawa Barat 43282","lat":-6.8137038,"lng":107.251689,"power":22},{"no":28,"up3":"UP3 Cikarang","nama":"Kantor PLN UP3 Cikarang","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Ruko El Premio No 8-11 Delta Mas, Sukamahi, Kec. Cikarang Pusat, Kabupaten Bekasi, Jawa Barat 17530","lat":-6.365536,"lng":107.179561,"power":22},{"no":29,"up3":"UP3 Cikarang","nama":"Kantor PLN ULP Tambun","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Komplek Ruko De' Green, Jl. Raya Mangun Jaya No.1, Mangunjaya, Tambun Selatan, Bekasi Regency, West Java 17510","lat":-6.246886834588244,"lng":107.06313828672216,"power":22},{"no":30,"up3":"UP3 Cikarang","nama":"Kantor PLN ULP Cibitung","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Fatahillah No.6, Kalijaya, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17530","lat":-6.266739208565406,"lng":107.13072822158298,"power":22},{"no":31,"up3":"UP3 Cikarang","nama":"Kantor PLN ULP Cikarang Kota","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Kemang Raya Ruko Trivium Square Lippo Cikarang No. 29, Sukaresmi, Cikarang, Kabupaten Bekasi, Jawa Barat 17530","lat":-6.3289618,"lng":107.1266485,"power":22},{"no":32,"up3":"UP3 Cikarang","nama":"Kantor PLN ULP Lemahabang","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Ki Hajar Dewantara, Simpangan, Kec. Cikarang Utara, Kabupaten Bekasi, Jawa Barat 17530","lat":-6.283439996864208,"lng":107.16838934041449,"power":22},{"no":33,"up3":"UP3 Cimahi","nama":"Kantor PLN UP3 Cimahi","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Jend. H. Amir Machmud No.675, Padasuka, Kec. Cimahi Tengah, Kota Cimahi, Jawa Barat 40526","lat":-6.8708025731577544,"lng":107.53644584395566,"power":22},{"no":34,"up3":"UP3 Cimahi","nama":"Kantor PLN ULP Cimahi Selatan","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Leuwigajah, Cigugur Tengah, Kec. Cimahi Tengah, Kota Cimahi, Jawa Barat 40522","lat":-6.898579791525836,"lng":107.55414192467892,"power":22},{"no":35,"up3":"UP3 Cimahi","nama":"Kantor PLN ULP Cililin","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"JL. Karang Tanjung, No. 1, Cililin Jawa Barat 40562","lat":-6.947899949299024,"lng":107.46704022864692,"power":22},{"no":36,"up3":"UP3 Cimahi","nama":"Kantor PLN ULP Prima Cibabat","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Jend. H. Amir Machmud No.511, Karangmekar,  Kec. Cimahi Tengah, Kota Cimahi, Jawa Barat 40523","lat":-6.875729621390629,"lng":107.54484584918988,"power":22},{"no":37,"up3":"UP3 Cimahi","nama":"Kantor PLN ULP Padalarang","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Purwakarta, Kertamulya, Kec. Padalarang, Kabupaten Bandung Barat, Jawa Barat 40553","lat":-6.838732741909448,"lng":107.48757144268691,"power":22},{"no":38,"up3":"UP3 Cimahi","nama":"Kantor PLN ULP Lembang","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Cijeruk, Lembang, Kec. Lembang, Kabupaten Bandung Barat, Jawa Barat 40391","lat":-6.81832736208948,"lng":107.62200454540059,"power":22},{"no":39,"up3":"UP3 Cimahi","nama":"Kantor PLN ULP Rajamandala","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Rajamandala No.45, Mandalawangi, Kec. Cipatat, Kabupaten Bandung Barat, Jawa Barat 40554","lat":-6.833161478864988,"lng":107.3468149381111,"power":22},{"no":40,"up3":"UP3 Cirebon","nama":"Kantor PLN UP3 Cirebon","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Tuparev No.71, Sutawinangun, Kec. Kedawung, Kabupaten Cirebon, Jawa Barat 45153","lat":-6.711003,"lng":108.540272,"power":22},{"no":41,"up3":"UP3 Cirebon","nama":"Kantor PLN ULP Cirebon Kota","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Yos Sudarso No 16 Lemahwungkuk Kota Cirebon Jawa Barat","lat":-6.7212184,"lng":108.5721242,"power":22},{"no":42,"up3":"UP3 Cirebon","nama":"Kantor PLN ULP Cilimus","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Bojong No.97, Bojong, Kec. Cilimus, Kabupaten Kuningan, Jawa Barat 45556","lat":-6.877373,"lng":108.496024,"power":22},{"no":43,"up3":"UP3 Cirebon","nama":"Kantor PLN ULP Sumber","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. R.Dewi Sartika No.130, Sumber, Kec. Sumber, Kabupaten Cirebon, Jawa Barat 45611","lat":-6.75921,"lng":108.480438,"power":22},{"no":44,"up3":"UP3 Cirebon","nama":"Kantor PLN ULP Ciledug","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Merdaka Timur, Ciledug Tengah, Kec. Ciledug, Kabupaten Cirebon, Jawa Barat 45188","lat":-6.907566,"lng":108.749116,"power":22},{"no":45,"up3":"UP3 Cirebon","nama":"Kantor PLN ULP Kuningan","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Aruji Kartawinata No.50, Kuningan, Kec. Kuningan, Kabupaten Kuningan, Jawa Barat 45511","lat":-6.97758,"lng":108.484629,"power":22},{"no":46,"up3":"UP3 Depok","nama":"Kantor PLN UP3 Depok","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Boulevard Grand Depok City No.1, Tirtajaya, Kec. Sukmajaya, Kota Depok, Jawa Barat 16412","lat":-6.418477010252877,"lng":106.82686516687448,"power":22},{"no":47,"up3":"UP3 Depok","nama":"Kantor PLN ULP Depok Kota","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Sentosa Raya No.4, RT.11/RW.7, Mekar Jaya, Kec. Sukmajaya, Kota Depok, Jawa Barat 16411","lat":-6.3957949242268315,"lng":106.83679904612603,"power":22},{"no":48,"up3":"UP3 Depok","nama":"Kantor PLN ULP Cibinong","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Mayor Oking Jaya Atmaja No.KM.2, Ciriung, Kec. Cibinong, Kabupaten Bogor, Jawa Barat 16918","lat":-6.475946927413161,"lng":106.8642141519878,"power":22},{"no":49,"up3":"UP3 Depok","nama":"Kantor PLN ULP Sawangan","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Bojong Gede No.65, Bojong Baru, Kecamatan Bojonggede, Kabupaten Bogor, Jawa Barat 16920","lat":-6.412219671918044,"lng":106.7348817329302,"power":22},{"no":50,"up3":"UP3 Depok","nama":"Kantor PLN ULP Cimanggis","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Bogor No.18, RT.7/RW.5, Cisalak Ps., Kec. Cimanggis, Kota Depok, Jawa Barat 16416","lat":-6.375549233212231,"lng":106.86387870596248,"power":22},{"no":51,"up3":"UP3 Depok","nama":"Kantor PLN ULP Bojonggede","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Jkt - Bogor, Duren Mekar, Kec. Bojongsari, Kota Depok, Jawa Barat 16517","lat":-6.478113201254901,"lng":106.80372917453137,"power":22},{"no":52,"up3":"UP3 Garut","nama":"Kantor Pemda Garut","charger":"PHIHONG AC 22KW","merek":"PHIHONG","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Kiansantang No.2, Regol, Kec. Garut Kota, Kabupaten Garut, Jawa Barat 44118","lat":-7.216470635387316,"lng":107.9015220355818,"power":22},{"no":53,"up3":"UP3 Garut","nama":"Kantor PLN ULP Garut Kota","charger":"PHIHONG AC 22KW","merek":"PHIHONG","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Otista No.140A, Sukagalih, Kec. Tarogong Kidul, Kabupaten Garut, Jawa Barat 44151, Indonesia.","lat":-7.194623012811486,"lng":107.88634259325453,"power":22},{"no":54,"up3":"UP3 Garut","nama":"Kantor PLN ULP Leles","charger":"PHIHONG AC 22KW","merek":"PHIHONG","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Leles No.64, Leles, Kec. Leles, Kabupaten Garut, Jawa Barat 44152, Indonesia, Garut Kota, Garut","lat":-7.099922168683822,"lng":107.89850326441818,"power":22},{"no":55,"up3":"UP3 Garut","nama":"Kantor PLN ULP Cibatu","charger":"PHIHONG AC 22KW","merek":"PHIHONG","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Sutan Syahrir, Cibatu, Kec. Cibatu, Kabupaten Garut, Jawa Barat 44185","lat":-7.100129929105509,"lng":107.98189790859995,"power":22},{"no":56,"up3":"UP3 Garut","nama":"Kantor PLN ULP Cikajang","charger":"PHIHONG AC 22KW","merek":"PHIHONG","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Cidatar No.46, Cidatar, Kec. Cisurupan, Kabupaten Garut, Jawa Barat 44163","lat":-7.326480375221526,"lng":107.79435192209088,"power":22},{"no":57,"up3":"UP3 Garut","nama":"Kantor PLN ULP Pameungpeuk","charger":"PHIHONG AC 22KW","merek":"PHIHONG","konektor":1,"type_plug":"AC TYPE-2","alamat":"Mancagahar, Kec. Pameungpeuk, Kabupaten Garut, Jawa Barat 44175","lat":-7.646095258728441,"lng":107.7085754158653,"power":22},{"no":58,"up3":"UP3 Gunung Putri","nama":"Kantor PLN UP3 Gunung Putri","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Cileungsi - Jonggol No.KM, RW.1, Cileungsi Kidul, Kec. Cileungsi, Kabupaten Bogor, Jawa Barat 16820\n","lat":-6.407380891739246,"lng":106.97257895158478,"power":22},{"no":59,"up3":"UP3 Gunung Putri","nama":"Kantor PLN ULP Cileungsi","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Cileungsi - Jonggol No.KM, RW.1, Cileungsi Kidul, Kec. Cileungsi, Kabupaten Bogor, Jawa Barat 16820\n","lat":-6.407380891739246,"lng":106.97257895158478,"power":22},{"no":60,"up3":"UP3 Gunung Putri","nama":"Kantor PLN ULP Citeureup","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jalan Raya Cagak, Gn. Putri, Kec. Gn. Putri, Kabupaten Bogor, Jawa Barat 41281\n","lat":-6.458986186381156,"lng":106.89676384143958,"power":22},{"no":61,"up3":"UP3 Gunung Putri","nama":"Kantor PLN ULP Jonggol","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jalan Letkol Murlin No 123, Kampung Menan Desa Jonggol, Sukamaju, Kec. Jonggol, Kabupaten Bogor, Jawa Barat 16830\n","lat":-6.461929478545214,"lng":107.05922326692578,"power":22},{"no":62,"up3":"UP3 Indramayu","nama":"Kantor PLN UP3 Indramayu","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Letnan Jenderal S. Parman No.5, Margadadi, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45212","lat":-6.3256919,"lng":108.3220873,"power":22},{"no":63,"up3":"UP3 Indramayu","nama":"Kantor PLN ULP Indramayu Kota","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Letnan Jenderal S. Parman No.5, Margadadi, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45212","lat":-6.3256919,"lng":108.3220873,"power":22},{"no":64,"up3":"UP3 Indramayu","nama":"Kantor PLN ULP Jatibarang","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Letnan Joni No.27, Jatibarang Baru, Kec. Jatibarang, Kabupaten Indramayu, Jawa Barat 45273","lat":-6.4759881,"lng":108.303677,"power":22},{"no":65,"up3":"UP3 Indramayu","nama":"Kantor PLN ULP Haurgeulis","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"JL Jend. Sudirman, Desa Cipancuh, Kec. Haurgeulis, Kabupaten Indramayu, Jawa Barat 45264","lat":-6.4393054,"lng":107.9461854,"power":22},{"no":66,"up3":"UP3 Indramayu","nama":"Kantor PLN ULP Cikedung","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Terisi No.36, Rajasinga, Kec. Terisi, Kabupaten Indramayu, Jawa Barat 45262","lat":-6.4827054,"lng":108.1551697,"power":22},{"no":67,"up3":"UP3 Karawang","nama":"Kantor PLN UP3 Karawang","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Kertabumi No 36, Kel. Karawang Kulon, Kec. Karawang Barat, Kab. Karawang, Jawa Barat 41311","lat":-6.305559,"lng":107.292548,"power":22},{"no":68,"up3":"UP3 Karawang","nama":"Kantor PLN ULP Karawang Kota","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Kertabumi No 16, Kel. Karawang Kulon, Kec. Karawang Barat, Kab. Karawang, Jawa Barat 41311","lat":-6.307691544555089,"lng":107.29274545765593,"power":22},{"no":69,"up3":"UP3 Karawang","nama":"Kantor PLN ULP Kosambi","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Kosambi No. 22 Kec. Klari Kab. Karawang, Jawa Barat 41371","lat":-6.371418179819638,"lng":107.37885456851822,"power":22},{"no":70,"up3":"UP3 Karawang","nama":"Kantor PLN ULP Cikampek","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Ir. Haji Juanda No.29, Cikampek Tim., Kec. Cikampek, Karawang, Jawa Barat 41373","lat":-6.411953,"lng":107.464399,"power":22},{"no":71,"up3":"UP3 Karawang","nama":"Kantor PLN ULP Rengasdengklok","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Rengasdengklok No 16, Desa Rengasdengklok Selatan, Kec.Rengasdengklok, Kab.Karawang","lat":-6.164477,"lng":107.29794,"power":22},{"no":72,"up3":"UP3 Karawang","nama":"Perum Grand Taruma","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Arteri, Jl. Tarumanegara Kav. 8, Jl. Akses Tol Karawang Bar. No.I, Sukamakmur, Telukjambe Timur, Karawang, Jawa Barat 41361","lat":-6.305757,"lng":107.278373,"power":22},{"no":73,"up3":"UP3 Majalaya","nama":"Kantor PLN UP3 Majalaya","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Jaksa Naranata No.1, Baleendah, Kec. Baleendah, Kabupaten Bandung, Jawa Barat 40258","lat":-7.006073881462528,"lng":107.62552964411145,"power":22},{"no":74,"up3":"UP3 Majalaya","nama":"Kantor PLN ULP Majalaya Kota","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Pamagersari, Tangulun, Kec. Ibun, Kabupaten Bandung, Jawa Barat 40384","lat":-7.051372118680324,"lng":107.7610947365603,"power":22},{"no":75,"up3":"UP3 Majalaya","nama":"Gedung Budaya Sabilulungan","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Al-Fathu No.104, Pamekaran, Kec. Soreang, Kabupaten Bandung, Jawa Barat 40912","lat":-7.020754090662233,"lng":107.52960882358785,"power":22},{"no":76,"up3":"UP3 Majalaya","nama":"Kantor PLN Posko Nagreg","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Nasional III, Citaman, Kec. Nagreg, Kabupaten Bandung, Jawa Barat 40215","lat":-7.016861770929803,"lng":107.88225599981983,"power":22},{"no":77,"up3":"UP3 Majalaya","nama":"Kantor PLN ULP Banjaran","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Banjaran No.Km.16, Batukarut, Kec. Arjasari, Kabupaten Bandung, Jawa Barat 40377","lat":-7.0354170180143205,"lng":107.59331629752009,"power":22},{"no":78,"up3":"UP3 Majalaya","nama":"Kantor PLN Posko Ciwidey","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Bhayangkara, Margamulya, Kec. Pasirjambu, Kabupaten Bandung, Jawa Barat 40972","lat":-7.104393091107289,"lng":107.4659254344286,"power":22},{"no":79,"up3":"UP3 Majalaya","nama":"Kantor PLN Posko Pangalengan","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Pangalengan, Pangalengan, Kec. Pangalengan, Kabupaten Bandung, Jawa Barat 40378","lat":-7.176270067686117,"lng":107.57232993444183,"power":22},{"no":80,"up3":"UP3 Purwakarta","nama":"Kantor PLN ULP Purwakarta Kota","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Singawinata No 50, Nagri Tengah, Kec. Purwakarta, Kabupaten Purwakarta, Jawa Barat 41114","lat":-6.554661091545455,"lng":107.44569812027649,"power":22},{"no":81,"up3":"UP3 Purwakarta","nama":"Kantor PLN ULP Pagaden","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Kamarung, Kamarung, Kec. Pagaden, Kabupaten Subang, Jawa Barat 41252","lat":-6.460969800302958,"lng":107.81076538253306,"power":22},{"no":82,"up3":"UP3 Purwakarta","nama":"Kantor PLN ULP Plered","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jalur Cikampek - Padalarang No.16, Cianting, Kec. Sukatani, Kabupaten Purwakarta, Jawa Barat 41167","lat":-6.638197072186215,"lng":107.40671875215641,"power":22},{"no":83,"up3":"UP3 Purwakarta","nama":"Kantor PLN ULP Subang","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jalan D.I. Panjaitan No. 88, Karanganyar, Subang, Karanganyar, Kec. Subang, Kabupaten Subang, Jawa Barat 41211","lat":-6.562480989806487,"lng":107.76830803251443,"power":22},{"no":84,"up3":"UP3 Purwakarta","nama":"Kantor PLN ULP Pamanukan","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jalan Raya No.85, Rancasari, Kec. Pamanukan, Kabupaten Subang, Jawa Barat 41254","lat":-6.298483594448618,"lng":107.82082610893536,"power":22},{"no":85,"up3":"UP3 Sukabumi","nama":"Kantor PLN UP3 Sukabumi","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"JL BHAYANGKARA NO 220. SELABATU KOTA SUKABUMI 43114","lat":-6.913304132602275,"lng":106.93245806256711,"power":22},{"no":86,"up3":"UP3 Sukabumi","nama":"Kantor PLN ULP Sukabumi Kota","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. RE Martadinata No. 41, Cikole, Kota Sukabumi  43113","lat":-6.920337963904435,"lng":106.93211841992121,"power":22},{"no":87,"up3":"UP3 Sukabumi","nama":"Kantor PLN ULP Sukaraja","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Cimahpar No. 200, Pasir Halang Kab. Sukabumi 43192","lat":-6.917551716553932,"lng":106.9651656717993,"power":22},{"no":88,"up3":"UP3 Sukabumi","nama":"Kantor PLN ULP Cibadak","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Karangtengah NO.427 Kab. Sukabumi","lat":-6.89628047818295,"lng":106.81930462208958,"power":22},{"no":89,"up3":"UP3 Sukabumi","nama":"Kantor PLN ULP Cikembar","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Cikembar RT.001/ RW. 004 Kab. Sukabumi 43161","lat":-6.9510967504284,"lng":106.76939612023878,"power":22},{"no":90,"up3":"UP3 Sukabumi","nama":"Kantor PLN ULP Pelabuhan Ratu","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Bayangkara, RT.001 RW.017, Citepus Kab. Sukabumi 43164","lat":-6.98684394613022,"lng":106.55562222363388,"power":22},{"no":91,"up3":"UP3 Sukabumi","nama":"Kantor PLN ULP Cicurug","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Siliwangi, Nyangkowek Kab. Sukabumi","lat":-6.799632144743054,"lng":106.77541186994384,"power":22},{"no":92,"up3":"UP3 Sumedang","nama":"Kantor PLN UP3 Sumedang","charger":"PROTEKSINDO AC 22KW ","merek":"PROTEKSINDO","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Prabu Gajah Agung, Situ, Kec. Sumedang Utara, Kabupaten Sumedang, Jawa Barat 45621","lat":-6.837653,"lng":107.916667,"power":22},{"no":93,"up3":"UP3 Sumedang","nama":"Kantor PLN UP3 Sumedang","charger":"PROTEKSINDO AC 22KW ","merek":"PROTEKSINDO","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Prabu Gajah Agung, Situ, Kec. Sumedang Utara, Kabupaten Sumedang, Jawa Barat 45621","lat":-6.837653,"lng":107.916667,"power":22},{"no":94,"up3":"UP3 Sumedang","nama":"Kantor PLN ULP Tanjungsari","charger":"PROTEKSINDO AC 22KW ","merek":"PROTEKSINDO","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Tanjungsari No.KM. 28, Gudang, Kec. Tanjungsari, Kabupaten Sumedang, Jawa Barat 45362","lat":-6.896216,"lng":107.807805,"power":22},{"no":95,"up3":"UP3 Sumedang","nama":"Kantor PLN ULP Majalengka","charger":"PROTEKSINDO AC 22KW ","merek":"PROTEKSINDO","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Kh. Abdul Halim, Majalengka Kulon, Kec. Majalengka, Kabupaten Majalengka, Jawa Barat 45418","lat":-6.830216,"lng":108.206068,"power":22},{"no":96,"up3":"UP3 Sumedang","nama":"Kantor PLN ULP Jatiwangi","charger":"PROTEKSINDO AC 22KW ","merek":"PROTEKSINDO","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Cibolerang No.6, Loji, Kec. Jatiwangi, Kabupaten Majalengka, Jawa Barat 45454","lat":-6.726879,"lng":108.271818,"power":22},{"no":97,"up3":"UP3 Tasikmalaya","nama":"Kantor PLN ULP Banjar","charger":"DELTA DC CITY CHARGER 50KW","merek":"DELTA","konektor":3,"type_plug":"CCS2; CHADEMO; AC TYPE-2","alamat":"Jl. Kapten Jamhur No.97, Mekarsari, Kec. Banjar, Kota Banjar, Jawa Barat 46321","lat":-7.371549257156172,"lng":108.5361248069533,"power":50},{"no":98,"up3":"UP3 Tasikmalaya","nama":"Kantor PLN UP3 Tasikmalaya","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Ahmad Yani No.180-154, Sukamanah, Kec. Cipedes, Kab. Tasikmalaya, Jawa Barat 46131","lat":-7.316002439704479,"lng":108.230774579063,"power":22},{"no":99,"up3":"UP3 Tasikmalaya","nama":"Kantor PLN ULP Tasimalaya Kota","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Rajapolah, No. 12 A, Rajapolah, Manggungjaya, Tasikmalaya, Jawa Barat, 46155 ","lat":-7.327411288213577,"lng":108.2226055200514,"power":22},{"no":100,"up3":"UP3 Tasikmalaya","nama":"Kantor PLN ULP Rajapolah","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Rajapolah, No. 12 A, Rajapolah, Manggungjaya, Tasikmalaya, Jawa Barat, 46155","lat":-7.227123708203736,"lng":108.19000175337683,"power":22},{"no":101,"up3":"UP3 Tasikmalaya","nama":"Kantor PLN ULP Ciamis","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Jend. Sudirman No.42, Ciamis, Kec. Ciamis, Kabupaten Ciamis, Jawa Barat 46211","lat":-7.326076091486055,"lng":108.34841674758593,"power":22},{"no":102,"up3":"UP3 Tasikmalaya","nama":"Kantor PLN ULP Singaparna","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jalan Raya Cikeleng, Singaparna, Kec. Singaparna, Kabupaten Tasikmalaya, Jawa Barat 46411","lat":-7.346031782423939,"lng":108.1095447586874,"power":22},{"no":103,"up3":"UP3 Tasikmalaya","nama":"Kantor PLN ULP Karangnunggal","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"JL. Raya Karangnunggal, Ranca Bakung, Karangnunggal, Tasikmalaya Regency, West Java 46186","lat":-7.632004266411841,"lng":108.13275652708798,"power":22},{"no":104,"up3":"UP3 Tasikmalaya","nama":"Kantor PLN ULP Pangandaran","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Banjar - Pangandaran, Babakan, Pangandaran, Kab. Pangandaran, Babakan, Pangandaran, Pangandaran Regency, West Java 46396","lat":-7.684045,"lng":108.657817,"power":22},{"no":92,"up3":"UP3 Bogor","nama":"Balai Kota Bogor","charger":"PROTEKSINDO AC 22KW ","merek":"PROTEKSINDO","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Ir. H. Juanda No.10, RT.01/RW.01, Paledang, Kecamatan Bogor Tengah, Kota Bogor","lat":-6.59499,"lng":106.794047,"power":22}];
+
+/* ═══════════ STAT INTRO ANIM ═══════════ */
+(function(){
+  const tot = STATIONS.length;
+  const pwr = STATIONS.reduce((a,s)=>a+s.power,0);
+  document.getElementById('stat-total').textContent = tot;
+  document.getElementById('stat-power').innerHTML = pwr.toLocaleString('id-ID') + '<span class="stat-unit">kW</span>';
+})();
+
+/* ═══════════ KALKULATOR ═══════════ */
+const COST = {7:120e6, 22:180e6, 25:550e6, 50:850e6, 120:1800e6};
+const LABELS = {7:'AC Mini 7 kW', 22:'AC Max 22 kW', 25:'DC City 25 kW', 50:'DC City 50 kW', 120:'DC Ultra 120 kW'};
+const TARIFF = 2466; // Rp per kWh (tarif SPKLU PLN)
+const INVESTOR_SHARE = 0.60; // 60% revenue ke investor, 40% ke PLN+treasury+opex
+
+function fmtRp(n){
+  if(n >= 1e9) return 'Rp '+(n/1e9).toFixed(2).replace('.',',')+' M';
+  if(n >= 1e6) return 'Rp '+(n/1e6).toFixed(1).replace('.',',')+' jt';
+  if(n >= 1e3) return 'Rp '+(n/1e3).toFixed(0)+' rb';
+  return 'Rp '+Math.round(n);
+}
+function recalc(){
+  const p = parseFloat(document.getElementById('charger-type').value);
+  const invest = parseFloat(document.getElementById('invest').value);
+  const util = parseFloat(document.getElementById('util').value);
+  const load = parseFloat(document.getElementById('load').value)/100;
+  const period = parseInt(document.getElementById('period').value);
+
+  document.getElementById('v-charger').textContent = LABELS[p];
+  document.getElementById('v-invest').textContent = fmtRp(invest);
+  document.getElementById('v-util').textContent = util + ' jam/hari';
+  document.getElementById('v-load').textContent = Math.round(load*100)+'%';
+  document.getElementById('v-period').textContent = period + ' tahun';
+
+  const cost = COST[p];
+  const share = Math.min(invest/cost, 1);
+  const kwhDay = p * util * load;
+  const revDay = kwhDay * TARIFF;
+  const revMonth = revDay * 30;
+  const yoursMonth = revMonth * share * INVESTOR_SHARE;
+  const yoursTotal = yoursMonth * 12 * period;
+  // IRR approximation: total return / invest / period * 100
+  const irr = invest > 0 ? ((yoursTotal / invest) / period * 100) : 0;
+  const yoursYear = yoursMonth * 12;
+  const bep = yoursYear > 0 ? (invest / yoursYear) : 99;
+
+  document.getElementById('o-share').innerHTML = (share*100).toFixed(2).replace('.',',') + '<span class="out-unit">%</span>';
+  document.getElementById('o-kwh').innerHTML = kwhDay.toFixed(1).replace('.',',') + '<span class="out-unit">kWh</span>';
+  document.getElementById('o-rev').innerHTML = fmtRp(revMonth).replace('Rp ','Rp ') + '';
+  document.getElementById('o-yours').innerHTML = fmtRp(yoursMonth);
+  document.getElementById('o-total').innerHTML = fmtRp(yoursTotal);
+  document.getElementById('o-per').textContent = period + ' thn';
+  document.getElementById('o-irr').innerHTML = irr.toFixed(1).replace('.',',') + '<span class="out-unit">% p.a.</span>';
+  document.getElementById('o-bep').innerHTML = bep.toFixed(1).replace('.',',') + '<span class="out-unit">tahun</span>';
+}
+['charger-type','invest','util','load','period'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',recalc);
+});
+recalc();
+
+/* ═══════════ MAP ═══════════ */
+const map = L.map('map',{zoomControl:true,scrollWheelZoom:false}).setView([-6.9,107.6],9);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{
+  attribution:'© OpenStreetMap · CARTO · Data: PLN Jabar',
+  subdomains:'abcd',maxZoom:19
+}).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{
+  subdomains:'abcd',maxZoom:19,opacity:.7
+}).addTo(map);
+
+function colorFor(power){
+  if(power >= 50) return '#7FFF9E';
+  if(power >= 22) return '#00E0FF';
+  if(power >= 7) return '#FFB84D';
+  return '#8A9BA0';
+}
+
+let markers = [];
+function renderMarkers(filterUP3){
+  markers.forEach(m=>map.removeLayer(m));
+  markers = [];
+  const list = filterUP3 && filterUP3 !== 'ALL' ? STATIONS.filter(s=>s.up3===filterUP3) : STATIONS;
+  list.forEach(s=>{
+    const col = colorFor(s.power);
+    const r = s.power >= 50 ? 9 : (s.power >= 22 ? 6 : 5);
+    const m = L.circleMarker([s.lat,s.lng],{
+      radius:r, color:col, weight:2, fillColor:col, fillOpacity:.35
+    }).addTo(map);
+    m.bindPopup(
+      '<b>'+s.nama+'</b>'+
+      '<div class="pop-row">UP3: <span>'+s.up3+'</span></div>'+
+      '<div class="pop-row">Charger: <span>'+(s.charger || '-')+'</span></div>'+
+      '<div class="pop-row">Kapasitas: <span>'+s.power+' kW</span></div>'+
+      '<div class="pop-row">Konektor: <span>'+s.konektor+'× '+(s.type_plug || '-')+'</span></div>'
+    );
+    markers.push(m);
+  });
+  if(list.length){
+    const grp = L.featureGroup(markers);
+    map.fitBounds(grp.getBounds().pad(.1));
+  }
+}
+
+// Filter buttons
+const up3List = Array.from(new Set(STATIONS.map(s=>s.up3))).sort();
+const filterBar = document.getElementById('map-filter');
+function mkBtn(label, val, active){
+  const b = document.createElement('button');
+  b.className = 'filter-btn' + (active?' active':'');
+  b.textContent = label;
+  b.dataset.val = val;
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    renderMarkers(val);
+  });
+  filterBar.appendChild(b);
+}
+mkBtn('ALL ('+STATIONS.length+')','ALL',true);
+up3List.forEach(u=>{
+  const c = STATIONS.filter(s=>s.up3===u).length;
+  mkBtn(u.replace('UP3 ','')+' ('+c+')', u, false);
+});
+renderMarkers('ALL');
+
+/* ═══════════ UP3 POTENSI TABLE ═══════════ */
+const up3Agg = {};
+STATIONS.forEach(s=>{
+  if(!up3Agg[s.up3]) up3Agg[s.up3] = {count:0, power:0, dc:0};
+  up3Agg[s.up3].count++;
+  up3Agg[s.up3].power += s.power;
+  if(s.power >= 50) up3Agg[s.up3].dc++;
+});
+
+// Skor potensi ekspansi: semakin sedikit kapasitas DC dan semakin ramai (ukur density proxy via power rendah) = potensi tinggi
+// Formula: potensi = (1 - dc_ratio) × (1 - power_per_count/100) × count_factor
+const up3Rows = Object.entries(up3Agg).map(([name,v])=>{
+  const avgPwr = v.power / v.count;
+  const dcRatio = v.dc / v.count;
+  // Demand proxy: kota besar = lebih tinggi. Kita gunakan count sebagai proxy kebutuhan + kebalikan dc_ratio
+  const potensi = Math.round((1 - dcRatio) * 50 + (1 - avgPwr/60) * 30 + (v.count/8)*20);
+  return {name, count:v.count, power:v.power, avgPwr, dc:v.dc, potensi:Math.max(10,Math.min(100,potensi))};
+}).sort((a,b)=>b.potensi-a.potensi);
+
+const tbl = document.getElementById('up3-table');
+tbl.innerHTML = '<div class="up3-row up3-head"><div>#</div><div>UP3</div><div class="stat-col">TITIK</div><div class="stat-col">kW TOTAL</div><div>POTENSI EKSPANSI</div><div>SKOR</div></div>';
+up3Rows.forEach((r,i)=>{
+  let cls = 'pot-low', lbl = 'LOW';
+  if(r.potensi >= 70){cls='pot-high';lbl='HIGH';}
+  else if(r.potensi >= 50){cls='pot-mid';lbl='MID';}
+  tbl.innerHTML += '<div class="up3-row">'+
+    '<div class="num-col num">'+String(i+1).padStart(2,'0')+'</div>'+
+    '<div class="name-col">'+r.name+'</div>'+
+    '<div class="stat-col num">'+r.count+'</div>'+
+    '<div class="stat-col num">'+r.power+'</div>'+
+    '<div class="up3-bar" style="--w:'+r.potensi+'%"></div>'+
+    '<div class="up3-potential '+cls+'">'+lbl+' '+r.potensi+'</div>'+
+  '</div>';
+});
+
+/* ═══════════ PREDICTION CHART (SVG) ═══════════ */
+(function(){
+  const svg = document.getElementById('chart');
+  const W = 800, H = 320, P = {t:20,r:20,b:40,l:60};
+  const months = 60;
+  // Model: network revenue per month (Rp)
+  // year 1: 104 stations, util 4h, load .70
+  // growth: stations linear to 354 in 5y, util linear to 9h, load to .80
+  const data = [];
+  for(let m=0;m<months;m++){
+    const frac = m/(months-1);
+    const stations = 104 + Math.round(frac * 250);
+    const util = 4 + frac * 5;
+    const load = 0.70 + frac * 0.10;
+    const avgKW = 25; // mix AC/DC
+    const revMonth = stations * avgKW * util * load * 2466 * 30;
+    data.push({m,rev:revMonth,stations});
+  }
+  const maxRev = Math.max(...data.map(d=>d.rev));
+  const xw = W - P.l - P.r, yh = H - P.t - P.b;
+  const x = i => P.l + (i/(months-1)) * xw;
+  const y = v => P.t + (1 - v/maxRev) * yh;
+
+  // grid
+  let g = '';
+  for(let i=0;i<=5;i++){
+    const yy = P.t + (i/5)*yh;
+    const val = maxRev * (1 - i/5);
+    g += '<line x1="'+P.l+'" x2="'+(W-P.r)+'" y1="'+yy+'" y2="'+yy+'" stroke="#1F2A2F" stroke-dasharray="2 4"/>';
+    g += '<text x="'+(P.l-10)+'" y="'+(yy+4)+'" fill="#8A9BA0" font-family="JetBrains Mono" font-size="10" text-anchor="end">'+(val/1e9).toFixed(1)+'M</text>';
+  }
+  // x labels
+  for(let yr=0;yr<=5;yr++){
+    const xx = x(yr*12 === 60 ? 59 : yr*12);
+    g += '<line x1="'+xx+'" x2="'+xx+'" y1="'+P.t+'" y2="'+(H-P.b)+'" stroke="#1F2A2F" stroke-dasharray="2 4"/>';
+    g += '<text x="'+xx+'" y="'+(H-P.b+20)+'" fill="#8A9BA0" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Y'+yr+'</text>';
+  }
+
+  // area path
+  let path = 'M '+x(0)+' '+y(data[0].rev);
+  for(let i=1;i<data.length;i++) path += ' L '+x(i)+' '+y(data[i].rev);
+  const area = path + ' L '+x(months-1)+' '+(H-P.b)+' L '+x(0)+' '+(H-P.b)+' Z';
+
+  svg.innerHTML =
+    '<defs><linearGradient id="grd" x1="0" x2="0" y1="0" y2="1">'+
+      '<stop offset="0%" stop-color="#00E0FF" stop-opacity=".4"/>'+
+      '<stop offset="100%" stop-color="#00E0FF" stop-opacity="0"/>'+
+    '</linearGradient></defs>'+
+    g +
+    '<path d="'+area+'" fill="url(#grd)"/>'+
+    '<path d="'+path+'" fill="none" stroke="#00E0FF" stroke-width="2"/>'+
+    // year 1 marker
+    '<circle cx="'+x(11)+'" cy="'+y(data[11].rev)+'" r="4" fill="#00E0FF"/>'+
+    '<text x="'+(x(11)+8)+'" y="'+(y(data[11].rev)-6)+'" fill="#00E0FF" font-family="JetBrains Mono" font-size="10">Rp '+(data[11].rev/1e9).toFixed(1).replace('.',',')+' M/bln</text>'+
+    // year 5 marker
+    '<circle cx="'+x(59)+'" cy="'+y(data[59].rev)+'" r="5" fill="#7FFF9E"/>'+
+    '<text x="'+(x(59)-10)+'" y="'+(y(data[59].rev)-10)+'" fill="#7FFF9E" font-family="JetBrains Mono" font-size="10" text-anchor="end">Rp '+(data[59].rev/1e9).toFixed(1).replace('.',',')+' M/bln</text>';
+})();
+</script>
+</body>
+</html>
