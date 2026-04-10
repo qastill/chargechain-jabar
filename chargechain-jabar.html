@@ -3,716 +3,1234 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ChargeChain Jabar — Fundraising SPKLU On-Chain</title>
+<title>ChargeChain Jabar — Platform Token SPKLU</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 :root{
-  --bg:#0A0E10;
-  --bg-2:#11171A;
-  --panel:#141B1F;
-  --ink:#E8F1F2;
-  --ink-dim:#8A9BA0;
-  --line:#1F2A2F;
-  --cyan:#00E0FF;
-  --ion:#7FFF9E;
-  --amber:#FFB84D;
-  --rose:#FF5E7A;
-  --shadow:0 20px 60px -20px rgba(0,224,255,.15);
+  --bg:#070B0E;--bg2:#0D1117;--bg3:#161B22;--bg4:#1C2333;
+  --border:#21262D;--border2:#30363D;
+  --text:#E6EDF3;--text2:#8B949E;--text3:#484F58;
+  --cyan:#00D4FF;--green:#3FB950;--amber:#D29922;--red:#F85149;--purple:#A371F7;
+  --cyan-dim:rgba(0,212,255,.12);--green-dim:rgba(63,185,80,.12);--amber-dim:rgba(210,153,34,.12);--red-dim:rgba(248,81,73,.12);--purple-dim:rgba(163,113,247,.12);
+  --radius:8px;--radius-lg:12px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--bg);color:var(--ink);font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
-body{
-  background-image:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,224,255,.08), transparent 70%),
-    radial-gradient(ellipse 60% 40% at 90% 20%, rgba(127,255,158,.04), transparent 70%),
-    linear-gradient(var(--bg), var(--bg));
-  min-height:100vh;
-  overflow-x:hidden;
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* LAYOUT: full viewport, no scroll */
+.app{display:grid;grid-template-columns:56px 1fr;grid-template-rows:48px 1fr;height:100vh;width:100vw}
+.topbar{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:var(--bg2);border-bottom:1px solid var(--border);z-index:100}
+.sidebar{grid-row:2;display:flex;flex-direction:column;align-items:center;padding:8px 0;gap:4px;background:var(--bg2);border-right:1px solid var(--border)}
+.main{grid-row:2;overflow:hidden;position:relative}
+
+/* TOPBAR */
+.logo{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px}
+.logo-icon{width:8px;height:8px;background:var(--cyan);border-radius:50%;box-shadow:0 0 8px var(--cyan);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.logo span{color:var(--cyan)}
+.top-stats{display:flex;gap:20px;font-size:11px;color:var(--text2)}
+.top-stats b{color:var(--text);font-weight:600}
+.top-stats .up{color:var(--green)}
+.top-stats .tag{font-size:9px;padding:2px 8px;border:1px solid var(--cyan);color:var(--cyan);border-radius:10px;letter-spacing:.05em;text-transform:uppercase;font-weight:500}
+.wallet-btn{display:flex;align-items:center;gap:6px;padding:6px 14px;background:var(--cyan-dim);border:1px solid rgba(0,212,255,.3);color:var(--cyan);border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s}
+.wallet-btn:hover{background:var(--cyan);color:var(--bg)}
+.wallet-bal{font-size:11px;color:var(--text2);margin-right:8px}
+.wallet-bal b{color:var(--green)}
+
+/* SIDEBAR */
+.nav-btn{width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius);color:var(--text3);cursor:pointer;transition:all .15s;border:none;background:transparent;font-size:16px;position:relative}
+.nav-btn:hover{background:var(--bg3);color:var(--text2)}
+.nav-btn.active{background:var(--cyan-dim);color:var(--cyan)}
+.nav-btn.active::before{content:'';position:absolute;left:0;top:25%;bottom:25%;width:2px;background:var(--cyan);border-radius:0 2px 2px 0}
+.nav-tooltip{display:none;position:absolute;left:48px;background:var(--bg4);color:var(--text);padding:4px 10px;border-radius:4px;font-size:10px;white-space:nowrap;z-index:999;pointer-events:none;border:1px solid var(--border2)}
+.nav-btn:hover .nav-tooltip{display:block}
+
+/* PANELS */
+.panel{display:none;height:100%;overflow:hidden}
+.panel.active{display:flex}
+
+/* ========== TAB 1: DASHBOARD ========== */
+.dash{width:100%;height:100%;display:grid;grid-template-columns:1fr 380px;grid-template-rows:1fr}
+.dash-map{position:relative;overflow:hidden}
+#map{width:100%;height:100%;background:var(--bg)}
+.map-overlay-stats{position:absolute;top:12px;left:12px;display:flex;gap:6px;z-index:500}
+.mo-card{background:rgba(13,17,23,.92);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;min-width:100px}
+.mo-card .label{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);margin-bottom:2px}
+.mo-card .value{font-size:18px;font-weight:700}
+.mo-card .value.c{color:var(--cyan)}.mo-card .value.g{color:var(--green)}.mo-card .value.a{color:var(--amber)}
+.map-legend-box{position:absolute;bottom:12px;left:12px;background:rgba(13,17,23,.92);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;z-index:500;display:flex;gap:12px;font-size:10px;color:var(--text2)}
+.ml-item{display:flex;align-items:center;gap:5px}
+.ml-dot{width:8px;height:8px;border-radius:50%}
+
+/* Right sidebar detail panel */
+.dash-detail{background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.dd-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.dd-header h3{font-size:13px;font-weight:600}
+.dd-tabs{display:flex;padding:0 16px;border-bottom:1px solid var(--border);gap:0}
+.dd-tab{padding:10px 14px;font-size:11px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;font-weight:500}
+.dd-tab:hover{color:var(--text)}
+.dd-tab.active{color:var(--cyan);border-color:var(--cyan)}
+.dd-body{flex:1;overflow-y:auto;padding:14px 16px}
+.dd-body::-webkit-scrollbar{width:4px}
+.dd-body::-webkit-scrollbar-track{background:transparent}
+.dd-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* Station card in detail */
+.station-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px;cursor:pointer;transition:all .15s}
+.station-card:hover{border-color:var(--cyan);transform:translateY(-1px)}
+.station-card.selected{border-color:var(--cyan);box-shadow:0 0 12px rgba(0,212,255,.15)}
+.sc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.sc-name{font-size:12px;font-weight:600;max-width:200px}
+.sc-power{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px}
+.sc-power.dc{background:var(--green-dim);color:var(--green)}
+.sc-power.ac{background:var(--cyan-dim);color:var(--cyan)}
+.sc-power.mini{background:var(--amber-dim);color:var(--amber)}
+.sc-up3{font-size:10px;color:var(--text2);margin-bottom:10px}
+.sc-metrics{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.sc-metric{background:var(--bg2);border-radius:6px;padding:8px}
+.sc-metric .ml{font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
+.sc-metric .mv{font-size:14px;font-weight:700;margin-top:2px}
+.sc-metric .mv.c{color:var(--cyan)}.sc-metric .mv.g{color:var(--green)}.sc-metric .mv.a{color:var(--amber)}
+.sc-actions{display:flex;gap:6px;margin-top:10px}
+.sc-btn{flex:1;padding:8px;text-align:center;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;border:none}
+.sc-btn.primary{background:var(--cyan);color:var(--bg)}
+.sc-btn.primary:hover{box-shadow:0 0 12px rgba(0,212,255,.4)}
+.sc-btn.secondary{background:var(--bg);border:1px solid var(--border);color:var(--text2)}
+.sc-btn.secondary:hover{border-color:var(--cyan);color:var(--cyan)}
+
+/* Investment detail modal */
+.invest-detail{display:none}
+.invest-detail.show{display:block}
+.id-back{font-size:11px;color:var(--cyan);cursor:pointer;margin-bottom:12px;display:flex;align-items:center;gap:4px}
+.id-back:hover{text-decoration:underline}
+.id-title{font-size:16px;font-weight:700;margin-bottom:4px}
+.id-subtitle{font-size:11px;color:var(--text2);margin-bottom:16px}
+.id-schema{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+.id-schema-title{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--cyan);margin-bottom:10px;font-weight:600}
+.id-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+.id-row:last-child{border-bottom:none}
+.id-row .k{font-size:11px;color:var(--text2)}
+.id-row .v{font-size:13px;font-weight:700}
+.id-row .v.c{color:var(--cyan)}.id-row .v.g{color:var(--green)}.id-row .v.a{color:var(--amber)}.id-row .v.r{color:var(--red)}
+
+/* Visual flow diagram */
+.flow-visual{display:flex;align-items:center;gap:4px;margin:14px 0;padding:10px;background:var(--bg);border-radius:var(--radius)}
+.fv-step{flex:1;text-align:center;padding:6px 4px;border-radius:6px;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.fv-step.s1{background:var(--cyan-dim);color:var(--cyan)}
+.fv-step.s2{background:var(--purple-dim);color:var(--purple)}
+.fv-step.s3{background:var(--green-dim);color:var(--green)}
+.fv-step.s4{background:var(--amber-dim);color:var(--amber)}
+.fv-arrow{color:var(--text3);font-size:10px}
+
+/* Invest slider */
+.invest-slider{margin:14px 0}
+.invest-slider label{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:6px}
+.invest-slider label b{color:var(--cyan);font-weight:600}
+input[type=range]{width:100%;-webkit-appearance:none;background:transparent;height:20px}
+input[type=range]::-webkit-slider-runnable-track{height:4px;background:var(--border);border-radius:2px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;background:var(--cyan);border-radius:50%;margin-top:-6px;cursor:pointer;box-shadow:0 0 6px rgba(0,212,255,.5)}
+input[type=range]::-moz-range-track{height:4px;background:var(--border);border-radius:2px}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;background:var(--cyan);border-radius:50%;border:none;cursor:pointer}
+
+/* Progress bar */
+.progress-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin:6px 0}
+.progress-fill{height:100%;border-radius:3px;transition:width .3s}
+
+/* ========== TAB 2: MARKETPLACE ========== */
+.market{width:100%;height:100%;display:grid;grid-template-columns:1fr 340px;grid-template-rows:auto 1fr}
+.market-header{grid-column:1/-1;padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.market-header h3{font-size:14px;font-weight:600}
+.market-filters{display:flex;gap:6px}
+.mf-btn{padding:5px 12px;border-radius:14px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text2);transition:all .15s}
+.mf-btn:hover{border-color:var(--text2)}
+.mf-btn.active{background:var(--cyan-dim);border-color:var(--cyan);color:var(--cyan)}
+
+.market-list{overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:6px}
+.market-list::-webkit-scrollbar{width:4px}
+.market-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+.token-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 80px;align-items:center;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);font-size:11px;cursor:pointer;transition:all .15s;gap:8px}
+.token-row:hover{border-color:var(--cyan);background:var(--bg3)}
+.token-row.header{background:transparent;border:none;color:var(--text3);font-size:9px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;cursor:default}
+.token-row.header:hover{background:transparent;border:none}
+.tr-name{font-weight:600;font-size:12px}
+.tr-name small{display:block;color:var(--text2);font-weight:400;font-size:10px;margin-top:1px}
+.tr-price{font-weight:700}
+.tr-change{font-weight:600;font-size:11px}
+.tr-change.up{color:var(--green)}
+.tr-change.down{color:var(--red)}
+.tr-vol{color:var(--text2)}
+.tr-action{text-align:center}
+.tr-btn{padding:5px 12px;border-radius:6px;font-size:10px;font-weight:600;border:none;cursor:pointer;transition:all .15s}
+.tr-btn.buy{background:var(--green-dim);color:var(--green)}
+.tr-btn.buy:hover{background:var(--green);color:var(--bg)}
+
+/* Trading Panel */
+.trade-panel{background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.tp-header{padding:14px 16px;border-bottom:1px solid var(--border)}
+.tp-header h4{font-size:13px;font-weight:600;margin-bottom:2px}
+.tp-header small{color:var(--text2);font-size:10px}
+.tp-tabs{display:flex;border-bottom:1px solid var(--border)}
+.tp-tab{flex:1;padding:10px;text-align:center;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;border-bottom:2px solid transparent}
+.tp-tab.buy-tab{color:var(--green)}
+.tp-tab.sell-tab{color:var(--red)}
+.tp-tab.active{border-bottom-color:currentColor;background:var(--bg3)}
+.tp-body{flex:1;overflow-y:auto;padding:16px}
+.tp-field{margin-bottom:14px}
+.tp-field label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--text2);margin-bottom:6px;font-weight:600}
+.tp-input{width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:inherit;font-size:13px;font-weight:600}
+.tp-input:focus{outline:none;border-color:var(--cyan)}
+.tp-summary{background:var(--bg);border-radius:var(--radius);padding:12px;margin:14px 0}
+.tp-summary-row{display:flex;justify-content:space-between;padding:4px 0;font-size:11px}
+.tp-summary-row .k{color:var(--text2)}
+.tp-summary-row .v{font-weight:600}
+.tp-exec{width:100%;padding:12px;border:none;border-radius:var(--radius);font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.04em}
+.tp-exec.buy{background:var(--green);color:#fff}
+.tp-exec.buy:hover{box-shadow:0 0 16px rgba(63,185,80,.4)}
+.tp-exec.sell{background:var(--red);color:#fff}
+.tp-exec.sell:hover{box-shadow:0 0 16px rgba(248,81,73,.4)}
+
+/* Order book mini */
+.orderbook{margin-top:14px}
+.ob-title{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);margin-bottom:8px;font-weight:600}
+.ob-row{display:grid;grid-template-columns:1fr 1fr 60px;font-size:10px;padding:3px 0;position:relative}
+.ob-row.ask .price{color:var(--red)}
+.ob-row.bid .price{color:var(--green)}
+.ob-row .amt{text-align:right;color:var(--text2)}
+.ob-row .bar{position:absolute;right:0;top:0;bottom:0;opacity:.08;border-radius:2px}
+.ob-row.ask .bar{background:var(--red)}
+.ob-row.bid .bar{background:var(--green)}
+.ob-spread{text-align:center;padding:6px;font-size:10px;color:var(--text3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:4px 0}
+
+/* ========== TAB 3: PLN POOL ========== */
+.pln-pool{width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr;overflow:hidden}
+.pp-header{grid-column:1/-1;padding:14px 20px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.pp-left{padding:20px;overflow-y:auto}
+.pp-left::-webkit-scrollbar{width:4px}
+.pp-left::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.pp-right{padding:20px;border-left:1px solid var(--border);overflow-y:auto;background:var(--bg2)}
+.pp-right::-webkit-scrollbar{width:4px}
+.pp-right::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+.pool-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:14px}
+.pool-card h4{font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.pool-card h4 .badge{font-size:9px;padding:2px 8px;border-radius:10px;font-weight:600;text-transform:uppercase}
+.badge-stable{background:var(--green-dim);color:var(--green)}
+.badge-growth{background:var(--cyan-dim);color:var(--cyan)}
+.badge-premium{background:var(--purple-dim);color:var(--purple)}
+
+.pool-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.ps-item{background:var(--bg);border-radius:var(--radius);padding:10px}
+.ps-item .ps-label{font-size:9px;text-transform:uppercase;letter-spacing:.04em;color:var(--text2);margin-bottom:2px}
+.ps-item .ps-val{font-size:16px;font-weight:700}
+
+/* Donut chart */
+.donut-wrap{display:flex;align-items:center;gap:16px;margin:14px 0}
+.donut{width:100px;height:100px;position:relative}
+.donut svg{transform:rotate(-90deg)}
+.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:16px;font-weight:700}
+.donut-center small{font-size:9px;color:var(--text2);font-weight:400}
+.donut-legend{display:flex;flex-direction:column;gap:6px;font-size:11px}
+.dl-item{display:flex;align-items:center;gap:6px}
+.dl-dot{width:8px;height:8px;border-radius:2px}
+
+/* Pool buy section */
+.pool-buy{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:14px}
+.pool-buy h4{font-size:13px;font-weight:600;margin-bottom:14px}
+
+/* ========== TAB 4: SMART CONTRACT ========== */
+.sc-page{width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr;overflow:hidden}
+.sc-header{grid-column:1/-1;padding:14px 20px;background:var(--bg2);border-bottom:1px solid var(--border)}
+.sc-header h3{font-size:14px;font-weight:600}
+.sc-left{padding:20px;overflow-y:auto}
+.sc-left::-webkit-scrollbar{width:4px}
+.sc-left::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.sc-right{padding:20px;border-left:1px solid var(--border);overflow-y:auto;background:var(--bg2)}
+.sc-right::-webkit-scrollbar{width:4px}
+.sc-right::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* Contract flow */
+.contract-flow{margin-bottom:20px}
+.cf-step{display:flex;gap:12px;margin-bottom:0;position:relative}
+.cf-line{width:2px;background:var(--border);position:absolute;left:15px;top:32px;bottom:-2px}
+.cf-dot{width:32px;height:32px;min-width:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;z-index:1}
+.cf-content{flex:1;padding-bottom:20px}
+.cf-content h5{font-size:12px;font-weight:600;margin-bottom:2px}
+.cf-content p{font-size:10px;color:var(--text2);line-height:1.5}
+.cf-amounts{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
+.cf-amt{font-size:10px;padding:3px 8px;border-radius:4px;font-weight:600}
+
+/* Code block */
+.code-block{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px;font-family:'Courier New',monospace;font-size:10px;line-height:1.7;color:var(--text2);overflow-x:auto;margin-bottom:14px;white-space:pre}
+.code-block .kw{color:var(--cyan)}
+.code-block .fn{color:var(--purple)}
+.code-block .str{color:var(--green)}
+.code-block .num{color:var(--amber)}
+.code-block .cm{color:var(--text3)}
+
+/* Simulation */
+.sim-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:14px}
+.sim-box h5{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--cyan);margin-bottom:10px}
+.sim-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:11px}
+.sim-row:last-child{border:none}
+.sim-row .k{color:var(--text2)}
+.sim-row .v{font-weight:600}
+
+/* Leaflet overrides */
+.leaflet-container{background:var(--bg)!important;font-family:'Inter',sans-serif!important}
+.leaflet-popup-content-wrapper{background:var(--bg3);color:var(--text);border:1px solid var(--cyan);border-radius:var(--radius)!important;box-shadow:0 8px 24px rgba(0,212,255,.2)}
+.leaflet-popup-tip{background:var(--bg3);border:1px solid var(--cyan)}
+.leaflet-popup-content{margin:12px 14px;font-size:11px}
+.leaflet-popup-content b{color:var(--cyan);font-size:12px;font-weight:600}
+.leaflet-popup-content .pop-row{margin-top:3px;color:var(--text2)}
+.leaflet-popup-content .pop-row span{color:var(--text)}
+.leaflet-control-attribution{background:rgba(7,11,14,.8)!important;color:var(--text3)!important;font-size:8px!important}
+.leaflet-control-zoom a{background:var(--bg3)!important;color:var(--text)!important;border-color:var(--border)!important}
+
+/* Modal overlay */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);width:440px;max-height:80vh;overflow-y:auto;padding:24px}
+.modal h3{font-size:16px;font-weight:700;margin-bottom:4px}
+.modal .close-btn{position:absolute;top:16px;right:16px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;border:none;background:var(--bg3);color:var(--text2);cursor:pointer;font-size:14px}
+.modal .close-btn:hover{color:var(--text);background:var(--bg4)}
+
+/* Notification toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--bg3);border:1px solid var(--green);border-radius:var(--radius);padding:12px 18px;z-index:2000;display:none;align-items:center;gap:8px;font-size:12px;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.toast.show{display:flex}
+.toast .ico{font-size:16px}
+
+/* Responsive */
+@media(max-width:1200px){
+  .dash{grid-template-columns:1fr 320px}
+  .market{grid-template-columns:1fr 300px}
 }
-body::before{
-  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
-  background-image:
-    linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
-  background-size:60px 60px;
-  mask-image:radial-gradient(ellipse at center, black 40%, transparent 90%);
-}
-.container{max-width:1400px;margin:0 auto;padding:0 32px;position:relative;z-index:1}
-h1,h2,h3,h4{font-family:'Fraunces',serif;font-weight:400;letter-spacing:-.02em;line-height:1.05}
-.mono{font-family:'JetBrains Mono',monospace}
-.num{font-variant-numeric:tabular-nums}
-a{color:var(--cyan);text-decoration:none}
-
-/* ─── NAV ─── */
-nav{
-  position:sticky;top:0;z-index:100;
-  backdrop-filter:blur(12px);
-  background:rgba(10,14,16,.7);
-  border-bottom:1px solid var(--line);
-}
-.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;max-width:1400px;margin:0 auto}
-.logo{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-size:20px;font-weight:600}
-.logo-dot{width:10px;height:10px;background:var(--cyan);border-radius:50%;box-shadow:0 0 12px var(--cyan);animation:pulse 2s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-.nav-links{display:flex;gap:28px;font-size:12px;text-transform:uppercase;letter-spacing:.1em}
-.nav-links a{color:var(--ink-dim);transition:color .2s}
-.nav-links a:hover{color:var(--cyan)}
-.nav-badge{font-size:10px;padding:4px 10px;border:1px solid var(--ion);color:var(--ion);border-radius:2px;letter-spacing:.1em}
-
-/* ─── HERO ─── */
-.hero{padding:80px 0 60px;position:relative}
-.hero-tag{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:24px}
-.hero-tag::before{content:"";width:24px;height:1px;background:var(--cyan)}
-.hero h1{font-size:clamp(48px,7vw,96px);font-weight:300;margin-bottom:28px}
-.hero h1 em{font-style:italic;color:var(--cyan);font-weight:400}
-.hero h1 .strike{position:relative;display:inline-block}
-.hero h1 .strike::after{content:"";position:absolute;left:-4%;right:-4%;top:55%;height:3px;background:var(--rose);transform:rotate(-2deg)}
-.hero-sub{max-width:640px;font-size:15px;color:var(--ink-dim);line-height:1.75;margin-bottom:40px}
-.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:48px}
-.stat{background:var(--bg);padding:24px 28px}
-.stat-label{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-dim);margin-bottom:10px}
-.stat-val{font-family:'Fraunces',serif;font-size:38px;font-weight:400;line-height:1}
-.stat-val.cyan{color:var(--cyan)}
-.stat-val.ion{color:var(--ion)}
-.stat-unit{font-size:12px;color:var(--ink-dim);margin-left:4px}
-
-/* ─── SECTIONS ─── */
-section{padding:100px 0;position:relative}
-.section-head{margin-bottom:56px;display:grid;grid-template-columns:1fr 2fr;gap:48px;align-items:end}
-.section-num{font-size:11px;letter-spacing:.2em;color:var(--cyan);text-transform:uppercase}
-.section-head h2{font-size:clamp(36px,5vw,64px);font-weight:300}
-.section-head h2 em{font-style:italic;color:var(--cyan)}
-.section-lead{font-size:14px;color:var(--ink-dim);line-height:1.7;max-width:480px}
-
-/* ─── KONSEP / FLOW ─── */
-.flow-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;position:relative}
-.flow-step{background:var(--panel);border:1px solid var(--line);padding:32px 24px;position:relative;transition:all .3s}
-.flow-step:hover{border-color:var(--cyan);transform:translateY(-4px)}
-.flow-step::before{content:"";position:absolute;top:0;left:0;width:40px;height:1px;background:var(--cyan)}
-.flow-idx{font-family:'Fraunces',serif;font-size:48px;color:var(--cyan);line-height:1;margin-bottom:20px;font-weight:300}
-.flow-step h4{font-size:18px;margin-bottom:12px}
-.flow-step p{font-size:12px;color:var(--ink-dim);line-height:1.7}
-.flow-arrow{position:absolute;top:50%;right:-18px;color:var(--cyan);font-size:20px;z-index:2;display:none}
-@media(min-width:900px){.flow-step:not(:last-child) .flow-arrow{display:block}}
-
-/* ─── BENEFITS ─── */
-.benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
-.benefit{background:var(--bg-2);padding:40px 32px;position:relative;min-height:260px;display:flex;flex-direction:column}
-.benefit-icon{width:44px;height:44px;border:1px solid var(--cyan);display:grid;place-items:center;margin-bottom:24px;color:var(--cyan);font-family:'Fraunces',serif;font-size:20px}
-.benefit h4{font-size:22px;margin-bottom:12px;font-weight:400}
-.benefit p{font-size:12px;color:var(--ink-dim);line-height:1.75;flex:1}
-.benefit-tag{margin-top:20px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ion)}
-
-/* ─── CALCULATOR ─── */
-.calc-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
-.calc-input,.calc-output{background:var(--bg-2);padding:48px}
-.calc-input h3{font-size:14px;text-transform:uppercase;letter-spacing:.1em;color:var(--cyan);margin-bottom:32px;font-family:'JetBrains Mono',monospace;font-weight:500}
-.calc-row{margin-bottom:28px}
-.calc-row label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-dim);margin-bottom:10px}
-.calc-row label .val{float:right;color:var(--cyan);font-weight:500}
-.calc-row input[type=range]{width:100%;-webkit-appearance:none;background:transparent;height:24px}
-.calc-row input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line)}
-.calc-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:var(--cyan);border-radius:50%;margin-top:-6px;box-shadow:0 0 10px var(--cyan);cursor:pointer}
-.calc-row input[type=range]::-moz-range-track{height:2px;background:var(--line)}
-.calc-row input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--cyan);border-radius:50%;border:none;box-shadow:0 0 10px var(--cyan);cursor:pointer}
-.calc-row select{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);padding:12px 14px;font-family:inherit;font-size:13px;cursor:pointer}
-.calc-row select:focus{outline:none;border-color:var(--cyan)}
-.calc-output h3{font-size:14px;text-transform:uppercase;letter-spacing:.1em;color:var(--ion);margin-bottom:32px;font-weight:500}
-.out-row{display:flex;justify-content:space-between;align-items:baseline;padding:18px 0;border-bottom:1px dashed var(--line)}
-.out-row:last-child{border-bottom:none}
-.out-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-dim)}
-.out-val{font-family:'Fraunces',serif;font-size:28px;font-weight:400;color:var(--ink)}
-.out-val.big{font-size:42px;color:var(--ion)}
-.out-val.cyan{color:var(--cyan)}
-.out-unit{font-size:11px;color:var(--ink-dim);margin-left:6px;font-family:'JetBrains Mono',monospace}
-
-/* ─── MAP ─── */
-.map-wrap{position:relative;border:1px solid var(--line);background:var(--panel)}
-#map{height:560px;background:var(--bg-2)}
-.map-legend{position:absolute;top:16px;left:16px;background:rgba(10,14,16,.92);backdrop-filter:blur(8px);border:1px solid var(--line);padding:16px 18px;z-index:500;font-size:11px}
-.map-legend h5{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--cyan);margin-bottom:10px;font-weight:500}
-.legend-item{display:flex;align-items:center;gap:10px;margin-bottom:6px;color:var(--ink-dim)}
-.legend-dot{width:10px;height:10px;border-radius:50%}
-.map-filter{display:flex;flex-wrap:wrap;gap:6px;padding:16px;background:var(--bg-2);border-bottom:1px solid var(--line)}
-.filter-btn{background:transparent;border:1px solid var(--line);color:var(--ink-dim);padding:6px 14px;font-family:inherit;font-size:10px;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;transition:all .2s}
-.filter-btn:hover{border-color:var(--cyan);color:var(--cyan)}
-.filter-btn.active{background:var(--cyan);color:var(--bg);border-color:var(--cyan)}
-
-/* Leaflet custom */
-.leaflet-container{background:#0c1316 !important;font-family:'JetBrains Mono',monospace !important}
-.leaflet-popup-content-wrapper{background:var(--panel);color:var(--ink);border:1px solid var(--cyan);border-radius:0;box-shadow:0 8px 24px rgba(0,224,255,.2)}
-.leaflet-popup-tip{background:var(--panel);border:1px solid var(--cyan)}
-.leaflet-popup-content{margin:14px 18px;font-size:12px}
-.leaflet-popup-content b{color:var(--cyan);font-size:13px;font-family:'Fraunces',serif;font-weight:400}
-.leaflet-popup-content .pop-row{margin-top:4px;color:var(--ink-dim)}
-.leaflet-popup-content .pop-row span{color:var(--ink)}
-.leaflet-control-attribution{background:rgba(10,14,16,.8) !important;color:var(--ink-dim) !important;font-size:9px !important}
-.leaflet-control-zoom a{background:var(--panel) !important;color:var(--ink) !important;border-color:var(--line) !important}
-
-/* ─── UP3 TABLE ─── */
-.up3-table{border:1px solid var(--line);background:var(--bg-2);overflow:hidden}
-.up3-row{display:grid;grid-template-columns:40px 1.6fr 80px 100px 1fr 100px;gap:16px;padding:18px 24px;border-bottom:1px solid var(--line);align-items:center;font-size:12px;transition:background .2s}
-.up3-row:last-child{border-bottom:none}
-.up3-row:hover{background:var(--panel)}
-.up3-head{background:var(--panel);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--cyan)}
-.up3-row .num-col{color:var(--ink-dim);font-size:11px}
-.up3-row .name-col{color:var(--ink);font-weight:500}
-.up3-row .stat-col{font-variant-numeric:tabular-nums}
-.up3-bar{height:4px;background:var(--line);position:relative;overflow:hidden}
-.up3-bar::after{content:"";position:absolute;top:0;left:0;height:100%;background:linear-gradient(90deg,var(--cyan),var(--ion));width:var(--w,0%)}
-.up3-potential{font-size:10px;padding:3px 8px;border-radius:2px;text-transform:uppercase;letter-spacing:.08em;text-align:center}
-.pot-high{background:rgba(127,255,158,.1);color:var(--ion);border:1px solid rgba(127,255,158,.3)}
-.pot-mid{background:rgba(255,184,77,.1);color:var(--amber);border:1px solid rgba(255,184,77,.3)}
-.pot-low{background:rgba(138,155,160,.1);color:var(--ink-dim);border:1px solid var(--line)}
-
-/* ─── PREDICTION ─── */
-.pred-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:32px;align-items:start}
-.chart-wrap{background:var(--bg-2);border:1px solid var(--line);padding:32px}
-.chart-wrap h4{font-size:14px;text-transform:uppercase;letter-spacing:.1em;color:var(--cyan);margin-bottom:24px;font-family:'JetBrains Mono',monospace;font-weight:500}
-#chart{width:100%;height:320px}
-.pred-meta{display:grid;gap:16px}
-.pred-card{background:var(--bg-2);border:1px solid var(--line);padding:28px 24px}
-.pred-card-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:8px}
-.pred-card-val{font-family:'Fraunces',serif;font-size:32px;color:var(--ink);line-height:1}
-.pred-card-val.cyan{color:var(--cyan)}
-.pred-card-val.ion{color:var(--ion)}
-.pred-card-sub{font-size:11px;color:var(--ink-dim);margin-top:8px}
-
-/* ─── CTA / FOOTER ─── */
-.cta{margin-top:40px;padding:48px;background:linear-gradient(135deg,var(--panel),var(--bg-2));border:1px solid var(--cyan);position:relative;overflow:hidden}
-.cta::before{content:"";position:absolute;top:-50%;right:-10%;width:400px;height:400px;background:radial-gradient(circle,rgba(0,224,255,.08),transparent 70%)}
-.cta h3{font-size:36px;font-weight:300;margin-bottom:12px;position:relative}
-.cta p{font-size:13px;color:var(--ink-dim);max-width:520px;margin-bottom:28px;position:relative;line-height:1.75}
-.btn{display:inline-block;background:var(--cyan);color:var(--bg);padding:14px 28px;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.15em;font-weight:500;border:none;cursor:pointer;transition:all .2s;position:relative}
-.btn:hover{background:var(--ion);box-shadow:0 0 20px rgba(127,255,158,.4)}
-.btn-ghost{background:transparent;color:var(--cyan);border:1px solid var(--cyan);margin-left:10px}
-.btn-ghost:hover{background:var(--cyan);color:var(--bg)}
-
-footer{border-top:1px solid var(--line);padding:48px 0 32px;margin-top:80px;color:var(--ink-dim);font-size:11px}
-footer .container{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:24px}
-footer .disclaimer{max-width:600px;line-height:1.7;font-size:10px}
-
-@media(max-width:980px){
-  .hero-stats{grid-template-columns:repeat(2,1fr)}
-  .section-head{grid-template-columns:1fr}
-  .flow-grid{grid-template-columns:repeat(2,1fr)}
-  .benefits{grid-template-columns:1fr}
-  .calc-wrap{grid-template-columns:1fr}
-  .pred-grid{grid-template-columns:1fr}
-  .up3-row{grid-template-columns:30px 1.4fr 60px 80px;gap:10px;font-size:11px}
-  .up3-row .stat-col:nth-of-type(4),.up3-row .stat-col:nth-of-type(5){display:none}
+@media(max-width:900px){
+  .app{grid-template-columns:1fr;grid-template-rows:48px auto 1fr}
+  .sidebar{grid-row:2;flex-direction:row;justify-content:center;border-right:none;border-bottom:1px solid var(--border);padding:4px 0}
+  .dash{grid-template-columns:1fr;grid-template-rows:1fr 1fr}
+  .market{grid-template-columns:1fr}
+  .trade-panel{display:none}
+  .pln-pool,.sc-page{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
-
-<nav>
-  <div class="nav-inner">
-    <div class="logo"><div class="logo-dot"></div>ChargeChain<span style="color:var(--cyan)">.Jabar</span></div>
-    <div class="nav-links">
-      <a href="#konsep">Konsep</a>
-      <a href="#benefit">Benefit</a>
-      <a href="#kalkulator">Kalkulator</a>
-      <a href="#peta">Peta</a>
-      <a href="#prediksi">Prediksi</a>
+<div class="app">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="logo"><div class="logo-icon"></div>ChargeChain<span>.Jabar</span></div>
+    <div class="top-stats">
+      <div><b>104</b> Stasiun Aktif</div>
+      <div><b>2.350 kW</b> Kapasitas</div>
+      <div><b>17</b> UP3 Area</div>
+      <div class="up">+250 Target Ekspansi</div>
+      <div class="tag">Testnet v0.2</div>
     </div>
-    <div class="nav-badge">● TESTNET v0.1</div>
-  </div>
-</nav>
-
-<!-- ═══════════ HERO ═══════════ -->
-<section class="hero">
-  <div class="container">
-    <div class="hero-tag">WEST JAVA · 17 UP3 · 104 TITIK SPKLU AKTIF</div>
-    <h1>Danai SPKLU<br>dengan <em>smart contract.</em><br>Bagi hasil <em>on-chain,</em><br>tanpa <span class="strike">perantara.</span></h1>
-    <p class="hero-sub">ChargeChain Jabar adalah protokol fundraising berbasis smart contract untuk membangun dan mengekspansi Stasiun Pengisian Kendaraan Listrik Umum (SPKLU) di Jawa Barat. Investor retail dapat membeli token fraksional per stasiun, menerima bagi hasil otomatis dari setiap transaksi charging, dan memverifikasi penggunaan secara transparan di blockchain.</p>
-    <div class="hero-stats">
-      <div class="stat"><div class="stat-label">Stasiun Aktif</div><div class="stat-val num" id="stat-total">104</div></div>
-      <div class="stat"><div class="stat-label">Total Kapasitas</div><div class="stat-val cyan num" id="stat-power">2.350<span class="stat-unit">kW</span></div></div>
-      <div class="stat"><div class="stat-label">Cakupan UP3</div><div class="stat-val num">17<span class="stat-unit">area</span></div></div>
-      <div class="stat"><div class="stat-label">Target Ekspansi</div><div class="stat-val ion num">+250<span class="stat-unit">titik</span></div></div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="wallet-bal">Saldo: <b id="user-balance">25.000.000 IDR</b></div>
+      <button class="wallet-btn" onclick="connectWallet()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M16 12h.01"/></svg>
+        <span id="wallet-label">Connect Wallet</span>
+      </button>
     </div>
   </div>
-</section>
 
-<!-- ═══════════ KONSEP ═══════════ -->
-<section id="konsep">
-  <div class="container">
-    <div class="section-head">
-      <div><div class="section-num">01 / KONSEP</div></div>
-      <div>
-        <h2>Empat langkah. <em>Satu kontrak.</em></h2>
-        <p class="section-lead" style="margin-top:16px">Protokol ChargeChain mengotomatisasi alur pendanaan, konstruksi, operasi, dan distribusi pendapatan SPKLU melalui satu smart contract yang dideploy per stasiun.</p>
-      </div>
-    </div>
-    <div class="flow-grid">
-      <div class="flow-step">
-        <div class="flow-idx">01</div>
-        <h4>Fundraise</h4>
-        <p>PLN dan partner membuka kampanye per stasiun. Investor membeli token fraksional (CHRG-LOC) dengan stablecoin. Dana terkunci di escrow hingga milestone konstruksi tercapai.</p>
-        <div class="flow-arrow">→</div>
-      </div>
-      <div class="flow-step">
-        <div class="flow-idx">02</div>
-        <h4>Deploy</h4>
-        <p>Oracle memverifikasi tahapan: pondasi, shelter, charger unit, integrasi ke PLN Mobile. Dana cair bertahap ke kontraktor sesuai progress on-chain.</p>
-        <div class="flow-arrow">→</div>
-      </div>
-      <div class="flow-step">
-        <div class="flow-idx">03</div>
-        <h4>Operate</h4>
-        <p>Setiap sesi charging tercatat langsung dari meter EMSYST/meteran PLN ke oracle. Revenue per kWh masuk otomatis ke contract wallet stasiun.</p>
-        <div class="flow-arrow">→</div>
-      </div>
-      <div class="flow-step">
-        <div class="flow-idx">04</div>
-        <h4>Distribute</h4>
-        <p>Smart contract membagi pendapatan: PLN (operator), investor token holder (bagi hasil pro-rata), dan treasury protokol. Klaim tiap 30 hari.</p>
-      </div>
-    </div>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <button class="nav-btn active" onclick="switchTab('dashboard')" data-tab="dashboard">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      <div class="nav-tooltip">Dashboard</div>
+    </button>
+    <button class="nav-btn" onclick="switchTab('marketplace')" data-tab="marketplace">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+      <div class="nav-tooltip">Marketplace</div>
+    </button>
+    <button class="nav-btn" onclick="switchTab('plnpool')" data-tab="plnpool">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      <div class="nav-tooltip">PLN Pool</div>
+    </button>
+    <button class="nav-btn" onclick="switchTab('contract')" data-tab="contract">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      <div class="nav-tooltip">Smart Contract</div>
+    </button>
   </div>
-</section>
 
-<!-- ═══════════ BENEFIT ═══════════ -->
-<section id="benefit" style="background:var(--bg-2)">
-  <div class="container">
-    <div class="section-head">
-      <div><div class="section-num">02 / BENEFIT</div></div>
-      <div>
-        <h2>Enam alasan <em>kenapa on-chain.</em></h2>
-      </div>
-    </div>
-    <div class="benefits">
-      <div class="benefit">
-        <div class="benefit-icon">§</div>
-        <h4>Likuiditas Retail</h4>
-        <p>Membuka kelas aset infrastruktur energi kepada investor retail mulai dari Rp 100.000. Sebelumnya hanya accessible ke korporasi besar dengan ticket size miliaran.</p>
-        <div class="benefit-tag">↘ TICKET SIZE</div>
-      </div>
-      <div class="benefit">
-        <div class="benefit-icon">◈</div>
-        <h4>Transparansi Penuh</h4>
-        <p>Setiap kWh yang terjual, setiap rupiah yang dibagi, tercatat permanen on-chain. Investor bisa audit wallet stasiun kapan saja tanpa minta laporan.</p>
-        <div class="benefit-tag">↗ TRUST</div>
-      </div>
-      <div class="benefit">
-        <div class="benefit-icon">⇌</div>
-        <h4>Bagi Hasil Otomatis</h4>
-        <p>Tanpa menunggu rapat pemegang saham atau kliring bank. Smart contract mengeksekusi distribusi pendapatan setiap siklus secara deterministik.</p>
-        <div class="benefit-tag">↘ LATENCY</div>
-      </div>
-      <div class="benefit">
-        <div class="benefit-icon">⬢</div>
-        <h4>Ekspansi Cepat</h4>
-        <p>Dengan crowdfunding, PLN dapat memperluas jaringan SPKLU tanpa membebani CAPEX internal. Target 250 titik baru tercapai dalam 24 bulan.</p>
-        <div class="benefit-tag">↗ VELOCITY</div>
-      </div>
-      <div class="benefit">
-        <div class="benefit-icon">◉</div>
-        <h4>Data Real-Time</h4>
-        <p>Oracle feed dari meter charger menyediakan telemetri utilisasi, peak demand, dan revenue per titik. Investor dan PLN dapat optimalkan lokasi next-deployment.</p>
-        <div class="benefit-tag">↗ ANALYTICS</div>
-      </div>
-      <div class="benefit">
-        <div class="benefit-icon">⊕</div>
-        <h4>Dampak EV Adoption</h4>
-        <p>Semakin padat sebaran SPKLU, semakin cepat adopsi EV. Investor bukan sekadar cari yield — mereka ikut mempercepat transisi energi Indonesia.</p>
-        <div class="benefit-tag">↗ IMPACT</div>
-      </div>
-    </div>
-  </div>
-</section>
+  <!-- MAIN CONTENT -->
+  <div class="main">
+    <!-- ========== TAB 1: DASHBOARD ========== -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="dash">
+        <div class="dash-map">
+          <div id="map"></div>
+          <div class="map-overlay-stats">
+            <div class="mo-card"><div class="label">Total Stasiun</div><div class="value c">104</div></div>
+            <div class="mo-card"><div class="label">Total kW</div><div class="value g">2.350</div></div>
+            <div class="mo-card"><div class="label">Token Terjual</div><div class="value a">2.847</div></div>
+          </div>
+          <div class="map-legend-box">
+            <div class="ml-item"><div class="ml-dot" style="background:#3FB950"></div>50+ kW DC Fast</div>
+            <div class="ml-item"><div class="ml-dot" style="background:#00D4FF"></div>22 kW AC Max</div>
+            <div class="ml-item"><div class="ml-dot" style="background:#D29922"></div>7 kW AC Mini</div>
+          </div>
+        </div>
 
-<!-- ═══════════ KALKULATOR ═══════════ -->
-<section id="kalkulator">
-  <div class="container">
-    <div class="section-head">
-      <div><div class="section-num">03 / KALKULATOR</div></div>
-      <div>
-        <h2>Hitung <em>yield</em> Anda.</h2>
-        <p class="section-lead" style="margin-top:16px">Simulasi ROI berdasarkan kapasitas charger, utilisasi harian, tarif PLN eksisting, dan besar investasi. Model menggunakan tarif SPKLU Rp 2.466/kWh dan revenue share investor 60%.</p>
+        <div class="dash-detail">
+          <div class="dd-header">
+            <h3 id="dd-title">Lokasi SPKLU</h3>
+            <div style="font-size:10px;color:var(--text2)" id="dd-counter">104 lokasi</div>
+          </div>
+          <div class="dd-tabs">
+            <div class="dd-tab active" onclick="filterStations('all',this)">Semua</div>
+            <div class="dd-tab" onclick="filterStations('dc',this)">DC Fast</div>
+            <div class="dd-tab" onclick="filterStations('ac',this)">AC 22kW</div>
+            <div class="dd-tab" onclick="filterStations('mini',this)">AC Mini</div>
+          </div>
+          <div class="dd-body" id="dd-body">
+            <div id="station-list"></div>
+            <div class="invest-detail" id="invest-detail"></div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="calc-wrap">
-      <div class="calc-input">
-        <h3>▸ INPUT PARAMETER</h3>
-        <div class="calc-row">
-          <label>Tipe Charger <span class="val" id="v-charger">AC 22 kW</span></label>
-          <select id="charger-type">
-            <option value="7">AC Mini 7 kW — Rp 120 jt</option>
-            <option value="22" selected>AC Max 22 kW — Rp 180 jt</option>
-            <option value="25">DC City 25 kW — Rp 550 jt</option>
-            <option value="50">DC City 50 kW — Rp 850 jt</option>
-            <option value="120">DC Ultra 120 kW — Rp 1,8 M</option>
-          </select>
+
+    <!-- ========== TAB 2: MARKETPLACE ========== -->
+    <div class="panel" id="panel-marketplace">
+      <div class="market">
+        <div class="market-header">
+          <h3>Token Marketplace</h3>
+          <div class="market-filters">
+            <button class="mf-btn active" onclick="filterMarket('all',this)">Semua</button>
+            <button class="mf-btn" onclick="filterMarket('trending',this)">Trending</button>
+            <button class="mf-btn" onclick="filterMarket('dc',this)">DC Fast</button>
+            <button class="mf-btn" onclick="filterMarket('ac',this)">AC Only</button>
+          </div>
         </div>
-        <div class="calc-row">
-          <label>Investasi Anda <span class="val" id="v-invest">Rp 5.000.000</span></label>
-          <input type="range" id="invest" min="100000" max="100000000" step="100000" value="5000000">
-        </div>
-        <div class="calc-row">
-          <label>Utilisasi Harian <span class="val" id="v-util">4 jam/hari</span></label>
-          <input type="range" id="util" min="1" max="16" step="0.5" value="4">
-        </div>
-        <div class="calc-row">
-          <label>Load Factor <span class="val" id="v-load">70%</span></label>
-          <input type="range" id="load" min="30" max="95" step="5" value="70">
-        </div>
-        <div class="calc-row">
-          <label>Periode Investasi <span class="val" id="v-period">5 tahun</span></label>
-          <input type="range" id="period" min="1" max="10" step="1" value="5">
+        <div class="market-list" id="market-list"></div>
+        <div class="trade-panel">
+          <div class="tp-header">
+            <h4 id="tp-token-name">Pilih Token</h4>
+            <small id="tp-token-sub">Klik token di list untuk memulai trading</small>
+          </div>
+          <div class="tp-tabs">
+            <div class="tp-tab buy-tab active" onclick="switchTradeTab('buy',this)">Beli</div>
+            <div class="tp-tab sell-tab" onclick="switchTradeTab('sell',this)">Jual</div>
+          </div>
+          <div class="tp-body" id="tp-body">
+            <div class="tp-field">
+              <label>Jumlah Token</label>
+              <input type="number" class="tp-input" id="trade-amount" value="10" min="1" oninput="updateTradeSummary()">
+            </div>
+            <div class="tp-field">
+              <label>Harga per Token</label>
+              <input type="text" class="tp-input" id="trade-price" value="Rp 150.000" readonly>
+            </div>
+            <div class="tp-summary">
+              <div class="tp-summary-row"><span class="k">Subtotal</span><span class="v" id="ts-subtotal">Rp 1.500.000</span></div>
+              <div class="tp-summary-row"><span class="k">Fee (0.5%)</span><span class="v" id="ts-fee">Rp 7.500</span></div>
+              <div class="tp-summary-row" style="border-top:1px solid var(--border);padding-top:8px;margin-top:4px"><span class="k">Total</span><span class="v" style="color:var(--cyan)" id="ts-total">Rp 1.507.500</span></div>
+            </div>
+            <button class="tp-exec buy" id="tp-exec-btn" onclick="executeTrade()">Beli Token</button>
+
+            <div class="orderbook" id="orderbook">
+              <div class="ob-title">Order Book</div>
+              <div id="ob-content"></div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="calc-output">
-        <h3>▸ PROYEKSI RETURN</h3>
-        <div class="out-row">
-          <span class="out-label">Kepemilikan Stasiun</span>
-          <span class="out-val cyan num" id="o-share">2,78<span class="out-unit">%</span></span>
+    </div>
+
+    <!-- ========== TAB 3: PLN POOL ========== -->
+    <div class="panel" id="panel-plnpool">
+      <div class="pln-pool">
+        <div class="pp-header">
+          <h3 style="display:flex;align-items:center;gap:8px">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            PLN Managed Token Pool
+          </h3>
+          <div style="font-size:11px;color:var(--text2)">Token dikelola PLN - profit telah ditentukan bersama</div>
         </div>
-        <div class="out-row">
-          <span class="out-label">kWh terjual / hari</span>
-          <span class="out-val num" id="o-kwh">61,6<span class="out-unit">kWh</span></span>
+        <div class="pp-left" id="pp-left"></div>
+        <div class="pp-right" id="pp-right"></div>
+      </div>
+    </div>
+
+    <!-- ========== TAB 4: SMART CONTRACT ========== -->
+    <div class="panel" id="panel-contract">
+      <div class="sc-page">
+        <div class="sc-header">
+          <h3 style="display:flex;align-items:center;gap:8px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Smart Contract Simulation — Jawa Barat
+          </h3>
         </div>
-        <div class="out-row">
-          <span class="out-label">Revenue Stasiun / bulan</span>
-          <span class="out-val num" id="o-rev">Rp 4,6<span class="out-unit">jt</span></span>
-        </div>
-        <div class="out-row">
-          <span class="out-label">Pendapatan Anda / bulan</span>
-          <span class="out-val big num" id="o-yours">Rp 77<span class="out-unit">rb</span></span>
-        </div>
-        <div class="out-row">
-          <span class="out-label">Total return <span id="o-per">5 thn</span></span>
-          <span class="out-val num" id="o-total">Rp 4,6<span class="out-unit">jt</span></span>
-        </div>
-        <div class="out-row">
-          <span class="out-label">IRR estimasi</span>
-          <span class="out-val cyan num" id="o-irr">18,4<span class="out-unit">% p.a.</span></span>
-        </div>
-        <div class="out-row">
-          <span class="out-label">Break-even Point</span>
-          <span class="out-val num" id="o-bep">5,4<span class="out-unit">tahun</span></span>
-        </div>
+        <div class="sc-left" id="sc-left"></div>
+        <div class="sc-right" id="sc-right"></div>
       </div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- ═══════════ PETA ═══════════ -->
-<section id="peta" style="background:var(--bg-2)">
-  <div class="container">
-    <div class="section-head">
-      <div><div class="section-num">04 / SEBARAN</div></div>
-      <div>
-        <h2>104 titik <em>eksisting</em> & <em>potensi ekspansi.</em></h2>
-        <p class="section-lead" style="margin-top:16px">Peta menampilkan semua SPKLU aktif se-Jawa Barat dari data lapangan. Filter per UP3 untuk melihat zona potensial. Warna titik menunjukkan kapasitas daya charger.</p>
-      </div>
-    </div>
-    <div class="map-wrap">
-      <div class="map-filter" id="map-filter"></div>
-      <div style="position:relative">
-        <div id="map"></div>
-        <div class="map-legend">
-          <h5>▸ KAPASITAS CHARGER</h5>
-          <div class="legend-item"><div class="legend-dot" style="background:#7FFF9E"></div>50+ kW (Fast DC)</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#00E0FF"></div>22 kW (AC Max)</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#FFB84D"></div>7 kW (AC Mini)</div>
-        </div>
-      </div>
-    </div>
+<!-- TOAST -->
+<div class="toast" id="toast"><span class="ico"></span><span id="toast-msg"></span></div>
 
-    <div style="margin-top:64px">
-      <h3 style="font-size:22px;margin-bottom:24px;font-weight:400">▸ Peringkat Potensi Ekspansi per UP3</h3>
-      <div class="up3-table" id="up3-table"></div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════ PREDIKSI ═══════════ -->
-<section id="prediksi">
-  <div class="container">
-    <div class="section-head">
-      <div><div class="section-num">05 / PREDIKSI</div></div>
-      <div>
-        <h2>Proyeksi <em>penjualan</em> 60 bulan.</h2>
-        <p class="section-lead" style="margin-top:16px">Model growth berbasis kurva adopsi EV Gaikindo + target sebaran SPKLU Jabar. Asumsi: pertumbuhan registrasi EV 42% YoY, utilisasi meningkat dari 4 jam/hari menjadi 9 jam/hari pada tahun ke-5.</p>
-      </div>
-    </div>
-    <div class="pred-grid">
-      <div class="chart-wrap">
-        <h4>▸ Revenue & Utilisasi Proyeksi Jaringan</h4>
-        <svg id="chart" viewBox="0 0 800 320" preserveAspectRatio="none"></svg>
-      </div>
-      <div class="pred-meta">
-        <div class="pred-card">
-          <div class="pred-card-label">Revenue Tahun 1 (network)</div>
-          <div class="pred-card-val cyan">Rp 12,3 M</div>
-          <div class="pred-card-sub">104 titik × 4 jam/hari × 70% load</div>
-        </div>
-        <div class="pred-card">
-          <div class="pred-card-label">Revenue Tahun 5 (network)</div>
-          <div class="pred-card-val ion">Rp 148 M</div>
-          <div class="pred-card-sub">354 titik × 9 jam/hari × 80% load</div>
-        </div>
-        <div class="pred-card">
-          <div class="pred-card-label">CAGR 5 Tahun</div>
-          <div class="pred-card-val">64,5%</div>
-          <div class="pred-card-sub">Sejalan kurva adopsi EV Indonesia</div>
-        </div>
-        <div class="pred-card">
-          <div class="pred-card-label">Total kWh terjual (5 thn)</div>
-          <div class="pred-card-val">178 GWh</div>
-          <div class="pred-card-sub">≈ 36,5 juta km perjalanan EV</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="cta">
-      <h3>Siap menjadi token holder <em style="font-style:italic;color:var(--cyan)">pertama?</em></h3>
-      <p>ChargeChain Jabar memasuki fase testnet Q2 2026. Daftar whitelist untuk mendapatkan allocation priority pada mainnet launch dan akses early dashboard.</p>
-      <button class="btn">▸ JOIN WHITELIST</button>
-      <button class="btn btn-ghost">▸ READ WHITEPAPER</button>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="container">
-    <div>
-      <div class="logo" style="margin-bottom:12px"><div class="logo-dot"></div>ChargeChain<span style="color:var(--cyan)">.Jabar</span></div>
-      <div>Protokol fundraising SPKLU berbasis smart contract</div>
-      <div style="margin-top:8px">West Java · Indonesia · 2026</div>
-    </div>
-    <div class="disclaimer">
-      <b style="color:var(--amber)">DISCLAIMER:</b> Konsep ini adalah prototype untuk tujuan demonstrasi teknis. Data SPKLU bersumber dari dataset operasional PLN Jabar. Angka ROI, IRR, dan proyeksi penjualan adalah estimasi berdasarkan asumsi publik dan tarif SPKLU eksisting (Rp 2.466/kWh). Bukan merupakan penawaran investasi atau sekuritas. Implementasi nyata memerlukan kajian regulasi OJK, Bappebti, dan restu PLN (Persero).
-    </div>
-  </div>
-</footer>
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal-content" style="position:relative"></div>
+</div>
 
 <script>
+
 const STATIONS = [{"no":1,"up3":"UP3 Bandung","nama":"Kantor PLN UP3 Bandung","charger":"DELTA DC CITY CHARGER 50KW","merek":"DELTA","konektor":3,"type_plug":"CCS2; CHADEMO; AC TYPE-2","alamat":"Jl. Soekarno Hatta No.436, Ciseureuh, Kec. Regol, Kota Bandung, Jawa Barat 40255","lat":-6.948829208330302,"lng":107.61179674882165,"power":50},{"no":2,"up3":"UP3 Bandung","nama":"Kantor PLN ULP Cijawura","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Margacinta, Margasari, Kec. Buahbatu, Kota Bandung, Jawa Barat 40287","lat":-6.954014411714834,"lng":107.64057560097348,"power":22},{"no":3,"up3":"UP3 Bandung","nama":"Kantor PLN ULP Kopo","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Holis No.312, Caringin, Kec. Bandung Kulon, Kota Bandung, Jawa Barat 40212","lat":-6.93386903292086,"lng":107.57143069850696,"power":22},{"no":4,"up3":"UP3 Bandung","nama":"Kantor PLN ULP Ujungberung","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. A.H. Nasution No.65, Cigending, Kec. Ujung Berung, Kota Bandung, Jawa Barat 40611","lat":-6.913309984947491,"lng":107.69490859666871,"power":22},{"no":5,"up3":"UP3 Bandung","nama":"Kantor PLN ULP Bandung Timur","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jalan Penghulu Haji Jl. Phh. Mustofa No.45, Neglasari, Cibeunying Kaler, Bandung City, West Java 40124","lat":-6.898928976954648,"lng":107.64111461349178,"power":22},{"no":6,"up3":"UP3 Bandung","nama":"Kantor PLN ULP Bandung Barat","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. LMU.Nurtanio No.117, Dungus Cariang, Kec. Andir, Kota Bandung, Jawa Barat 40174","lat":-6.908600137787037,"lng":107.57901035055932,"power":22},{"no":7,"up3":"UP3 Bandung","nama":"Kantor PLN UID Jawa Barat","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Asia Afrika No.63, Braga, Kec. Sumur Bandung, Kota Bandung, Jawa Barat 40111","lat":-6.920962,"lng":107.608129,"power":22},{"no":8,"up3":"UP3 Bandung","nama":"Kantor PLN UP2D Jawa Barat","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Dr. Ir. Sukarno No.03, Braga, Kec. Sumur Bandung, Kota Bandung, Jawa Barat 40111","lat":-6.919962041169282,"lng":107.60900989629516,"power":22},{"no":9,"up3":"UP3 Bekasi","nama":"Kantor PLN UP3 Bekasi","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Pln Up3 Bekasi, Jl. Cut Mutia No.44, RT.006/RW.007, Margahayu, Kec. Bekasi Tim., Kota Bks, Jawa Barat 17113","lat":-6.2528476,"lng":107.0104015,"power":22},{"no":10,"up3":"UP3 Bekasi","nama":"Kantor PLN UP3 Bekasi","charger":"PHIHONG DC WALL MOUNT 30KW","merek":"PHIHONG","konektor":2,"type_plug":"CCS2 & CHADEMO","alamat":"Pln Up3 Bekasi, Jl. Cut Mutia No.44, RT.006/RW.007, Margahayu, Kec. Bekasi Tim., Kota Bks, Jawa Barat 17113","lat":-6.2528476,"lng":107.0104015,"power":0},{"no":12,"up3":"UP3 Bekasi","nama":"Kantor PLN ULP Bantar Gebang","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"PLN ULP Bantargebang Ruko Namira, Jl. Pengasinan no 72-73, RT.002/RW.001, Pengasinan, Kec. Rawalumbu, Kota Bks, Jawa Barat 17115","lat":-6.266005,"lng":107.008409,"power":22},{"no":13,"up3":"UP3 Bekasi","nama":"Kantor PLN ULP Medan Satria","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"JL. SULTAN AGUNG NO 535 PONDOK UNGU BEKASI 17132","lat":-6.19819,"lng":106.97464,"power":22},{"no":14,"up3":"UP3 Bekasi","nama":"Kantor PLN ULP Mustika Jaya","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"JL. RAYA SETU - BANTAR GEBANG KM 06  17158 MUSTIKAJAYA - BEKASI","lat":-6.320262,"lng":107.033516,"power":22},{"no":15,"up3":"UP3 Bogor","nama":"Istana Presiden Bogor","charger":"DELTA DC CITY CHARGER 50KW","merek":"DELTA","konektor":3,"type_plug":"CCS2; CHADEMO; AC TYPE-2","alamat":"Jl. Ir H Juanda No. 1 Bogor","lat":-6.598157,"lng":106.794629,"power":50},{"no":16,"up3":"UP3 Bogor","nama":"Kantor PLN ULP Bogor Kota","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Kapten Muslihat No.2, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122\n","lat":-6.596175,"lng":106.790009,"power":22},{"no":17,"up3":"UP3 Bogor","nama":"Kantor PLN ULP Bogor Timur","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jalan Raya Pajajaran No. 233, Bantarjati, Bogor Utara, RT.03/RW.05, Bantarjati, Kec. Bogor Utara, Kota Bogor, Jawa Barat 16153\n","lat":-6.57211,"lng":106.808573,"power":22},{"no":18,"up3":"UP3 Bogor","nama":"Kantor PLN ULP Bogor Barat","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Kemang, Kec. Kemang, Kabupaten Bogor, Jawa Barat 16310\n","lat":-6.515805,"lng":106.756985,"power":22},{"no":19,"up3":"UP3 Bogor","nama":"Kantor PLN ULP Leuwiliang","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jalan Raya No.KM 17, Girimulya, Kec. Cibungbulang, Kabupaten Bogor, Jawa Barat 16630","lat":-6.564198,"lng":106.677962,"power":22},{"no":20,"up3":"UP3 Bogor","nama":"Kantor PLN ULP Jasinga","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Cigudeg No.24, Bunar, Kec. Cigudeg, Kabupaten Bogor, Jawa Barat 16660","lat":-6.520282,"lng":106.498591,"power":22},{"no":21,"up3":"UP3 Bogor","nama":"Kantor PLN ULP Cipayung","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Puncak - Cianjur, Cipayung Datar, Kec. Megamendung, Kabupaten Bogor, Jawa Barat 16770","lat":-6.650524,"lng":106.89581,"power":22},{"no":22,"up3":"UP3 Cianjur","nama":"Kantor PLN UP3 Cianjur","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Dr. Muwardi No.165, Bojongherang, Kec. Cianjur, Kabupaten Cianjur, Jawa Barat 43216","lat":-6.813450174624562,"lng":107.13706988132515,"power":22},{"no":23,"up3":"UP3 Cianjur","nama":"Kantor PLN Posko Cimacan","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Loji Cimacan, Cimacan, Kec. Cipanas, Kabupaten Cianjur, Jawa Barat 43253","lat":-6.7128083937359255,"lng":107.0226648,"power":22},{"no":24,"up3":"UP3 Cianjur","nama":"Kantor PLN ULP Cipanas","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Cipanas No.29, Cipanas, Kec. Cipanas, Kabupaten Cianjur, Jawa Barat 43253","lat":-6.734727954958938,"lng":107.04168197826456,"power":22},{"no":25,"up3":"UP3 Cianjur","nama":"Kantor Pemda Cianjur","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Pamoyanan, Kec. Cianjur, Kabupaten Cianjur, Jawa Barat 43211","lat":-6.797175640678069,"lng":107.13541351075203,"power":22},{"no":26,"up3":"UP3 Cianjur","nama":"Alun-alun Sindangbarang","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Saganten, Kec. Sindangbarang, Kabupaten Cianjur, Jawa Barat 43272","lat":-7.451419395039605,"lng":107.1348782543499,"power":22},{"no":27,"up3":"UP3 Cianjur","nama":"Kantor PLN Posko Ciranjang","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Bandung No.123, Ciranjang, Kec. Ciranjang, Kabupaten Cianjur, Jawa Barat 43282","lat":-6.8137038,"lng":107.251689,"power":22},{"no":28,"up3":"UP3 Cikarang","nama":"Kantor PLN UP3 Cikarang","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Ruko El Premio No 8-11 Delta Mas, Sukamahi, Kec. Cikarang Pusat, Kabupaten Bekasi, Jawa Barat 17530","lat":-6.365536,"lng":107.179561,"power":22},{"no":29,"up3":"UP3 Cikarang","nama":"Kantor PLN ULP Tambun","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Komplek Ruko De' Green, Jl. Raya Mangun Jaya No.1, Mangunjaya, Tambun Selatan, Bekasi Regency, West Java 17510","lat":-6.246886834588244,"lng":107.06313828672216,"power":22},{"no":30,"up3":"UP3 Cikarang","nama":"Kantor PLN ULP Cibitung","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Fatahillah No.6, Kalijaya, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17530","lat":-6.266739208565406,"lng":107.13072822158298,"power":22},{"no":31,"up3":"UP3 Cikarang","nama":"Kantor PLN ULP Cikarang Kota","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Kemang Raya Ruko Trivium Square Lippo Cikarang No. 29, Sukaresmi, Cikarang, Kabupaten Bekasi, Jawa Barat 17530","lat":-6.3289618,"lng":107.1266485,"power":22},{"no":32,"up3":"UP3 Cikarang","nama":"Kantor PLN ULP Lemahabang","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Ki Hajar Dewantara, Simpangan, Kec. Cikarang Utara, Kabupaten Bekasi, Jawa Barat 17530","lat":-6.283439996864208,"lng":107.16838934041449,"power":22},{"no":33,"up3":"UP3 Cimahi","nama":"Kantor PLN UP3 Cimahi","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Jend. H. Amir Machmud No.675, Padasuka, Kec. Cimahi Tengah, Kota Cimahi, Jawa Barat 40526","lat":-6.8708025731577544,"lng":107.53644584395566,"power":22},{"no":34,"up3":"UP3 Cimahi","nama":"Kantor PLN ULP Cimahi Selatan","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Leuwigajah, Cigugur Tengah, Kec. Cimahi Tengah, Kota Cimahi, Jawa Barat 40522","lat":-6.898579791525836,"lng":107.55414192467892,"power":22},{"no":35,"up3":"UP3 Cimahi","nama":"Kantor PLN ULP Cililin","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"JL. Karang Tanjung, No. 1, Cililin Jawa Barat 40562","lat":-6.947899949299024,"lng":107.46704022864692,"power":22},{"no":36,"up3":"UP3 Cimahi","nama":"Kantor PLN ULP Prima Cibabat","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Jend. H. Amir Machmud No.511, Karangmekar,  Kec. Cimahi Tengah, Kota Cimahi, Jawa Barat 40523","lat":-6.875729621390629,"lng":107.54484584918988,"power":22},{"no":37,"up3":"UP3 Cimahi","nama":"Kantor PLN ULP Padalarang","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Purwakarta, Kertamulya, Kec. Padalarang, Kabupaten Bandung Barat, Jawa Barat 40553","lat":-6.838732741909448,"lng":107.48757144268691,"power":22},{"no":38,"up3":"UP3 Cimahi","nama":"Kantor PLN ULP Lembang","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Cijeruk, Lembang, Kec. Lembang, Kabupaten Bandung Barat, Jawa Barat 40391","lat":-6.81832736208948,"lng":107.62200454540059,"power":22},{"no":39,"up3":"UP3 Cimahi","nama":"Kantor PLN ULP Rajamandala","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Rajamandala No.45, Mandalawangi, Kec. Cipatat, Kabupaten Bandung Barat, Jawa Barat 40554","lat":-6.833161478864988,"lng":107.3468149381111,"power":22},{"no":40,"up3":"UP3 Cirebon","nama":"Kantor PLN UP3 Cirebon","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Tuparev No.71, Sutawinangun, Kec. Kedawung, Kabupaten Cirebon, Jawa Barat 45153","lat":-6.711003,"lng":108.540272,"power":22},{"no":41,"up3":"UP3 Cirebon","nama":"Kantor PLN ULP Cirebon Kota","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Yos Sudarso No 16 Lemahwungkuk Kota Cirebon Jawa Barat","lat":-6.7212184,"lng":108.5721242,"power":22},{"no":42,"up3":"UP3 Cirebon","nama":"Kantor PLN ULP Cilimus","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Bojong No.97, Bojong, Kec. Cilimus, Kabupaten Kuningan, Jawa Barat 45556","lat":-6.877373,"lng":108.496024,"power":22},{"no":43,"up3":"UP3 Cirebon","nama":"Kantor PLN ULP Sumber","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. R.Dewi Sartika No.130, Sumber, Kec. Sumber, Kabupaten Cirebon, Jawa Barat 45611","lat":-6.75921,"lng":108.480438,"power":22},{"no":44,"up3":"UP3 Cirebon","nama":"Kantor PLN ULP Ciledug","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Merdaka Timur, Ciledug Tengah, Kec. Ciledug, Kabupaten Cirebon, Jawa Barat 45188","lat":-6.907566,"lng":108.749116,"power":22},{"no":45,"up3":"UP3 Cirebon","nama":"Kantor PLN ULP Kuningan","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Aruji Kartawinata No.50, Kuningan, Kec. Kuningan, Kabupaten Kuningan, Jawa Barat 45511","lat":-6.97758,"lng":108.484629,"power":22},{"no":46,"up3":"UP3 Depok","nama":"Kantor PLN UP3 Depok","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Boulevard Grand Depok City No.1, Tirtajaya, Kec. Sukmajaya, Kota Depok, Jawa Barat 16412","lat":-6.418477010252877,"lng":106.82686516687448,"power":22},{"no":47,"up3":"UP3 Depok","nama":"Kantor PLN ULP Depok Kota","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Sentosa Raya No.4, RT.11/RW.7, Mekar Jaya, Kec. Sukmajaya, Kota Depok, Jawa Barat 16411","lat":-6.3957949242268315,"lng":106.83679904612603,"power":22},{"no":48,"up3":"UP3 Depok","nama":"Kantor PLN ULP Cibinong","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Mayor Oking Jaya Atmaja No.KM.2, Ciriung, Kec. Cibinong, Kabupaten Bogor, Jawa Barat 16918","lat":-6.475946927413161,"lng":106.8642141519878,"power":22},{"no":49,"up3":"UP3 Depok","nama":"Kantor PLN ULP Sawangan","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Bojong Gede No.65, Bojong Baru, Kecamatan Bojonggede, Kabupaten Bogor, Jawa Barat 16920","lat":-6.412219671918044,"lng":106.7348817329302,"power":22},{"no":50,"up3":"UP3 Depok","nama":"Kantor PLN ULP Cimanggis","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Bogor No.18, RT.7/RW.5, Cisalak Ps., Kec. Cimanggis, Kota Depok, Jawa Barat 16416","lat":-6.375549233212231,"lng":106.86387870596248,"power":22},{"no":51,"up3":"UP3 Depok","nama":"Kantor PLN ULP Bojonggede","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Jkt - Bogor, Duren Mekar, Kec. Bojongsari, Kota Depok, Jawa Barat 16517","lat":-6.478113201254901,"lng":106.80372917453137,"power":22},{"no":52,"up3":"UP3 Garut","nama":"Kantor Pemda Garut","charger":"PHIHONG AC 22KW","merek":"PHIHONG","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Kiansantang No.2, Regol, Kec. Garut Kota, Kabupaten Garut, Jawa Barat 44118","lat":-7.216470635387316,"lng":107.9015220355818,"power":22},{"no":53,"up3":"UP3 Garut","nama":"Kantor PLN ULP Garut Kota","charger":"PHIHONG AC 22KW","merek":"PHIHONG","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Otista No.140A, Sukagalih, Kec. Tarogong Kidul, Kabupaten Garut, Jawa Barat 44151, Indonesia.","lat":-7.194623012811486,"lng":107.88634259325453,"power":22},{"no":54,"up3":"UP3 Garut","nama":"Kantor PLN ULP Leles","charger":"PHIHONG AC 22KW","merek":"PHIHONG","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Leles No.64, Leles, Kec. Leles, Kabupaten Garut, Jawa Barat 44152, Indonesia, Garut Kota, Garut","lat":-7.099922168683822,"lng":107.89850326441818,"power":22},{"no":55,"up3":"UP3 Garut","nama":"Kantor PLN ULP Cibatu","charger":"PHIHONG AC 22KW","merek":"PHIHONG","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Sutan Syahrir, Cibatu, Kec. Cibatu, Kabupaten Garut, Jawa Barat 44185","lat":-7.100129929105509,"lng":107.98189790859995,"power":22},{"no":56,"up3":"UP3 Garut","nama":"Kantor PLN ULP Cikajang","charger":"PHIHONG AC 22KW","merek":"PHIHONG","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Cidatar No.46, Cidatar, Kec. Cisurupan, Kabupaten Garut, Jawa Barat 44163","lat":-7.326480375221526,"lng":107.79435192209088,"power":22},{"no":57,"up3":"UP3 Garut","nama":"Kantor PLN ULP Pameungpeuk","charger":"PHIHONG AC 22KW","merek":"PHIHONG","konektor":1,"type_plug":"AC TYPE-2","alamat":"Mancagahar, Kec. Pameungpeuk, Kabupaten Garut, Jawa Barat 44175","lat":-7.646095258728441,"lng":107.7085754158653,"power":22},{"no":58,"up3":"UP3 Gunung Putri","nama":"Kantor PLN UP3 Gunung Putri","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Cileungsi - Jonggol No.KM, RW.1, Cileungsi Kidul, Kec. Cileungsi, Kabupaten Bogor, Jawa Barat 16820\n","lat":-6.407380891739246,"lng":106.97257895158478,"power":22},{"no":59,"up3":"UP3 Gunung Putri","nama":"Kantor PLN ULP Cileungsi","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Cileungsi - Jonggol No.KM, RW.1, Cileungsi Kidul, Kec. Cileungsi, Kabupaten Bogor, Jawa Barat 16820\n","lat":-6.407380891739246,"lng":106.97257895158478,"power":22},{"no":60,"up3":"UP3 Gunung Putri","nama":"Kantor PLN ULP Citeureup","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jalan Raya Cagak, Gn. Putri, Kec. Gn. Putri, Kabupaten Bogor, Jawa Barat 41281\n","lat":-6.458986186381156,"lng":106.89676384143958,"power":22},{"no":61,"up3":"UP3 Gunung Putri","nama":"Kantor PLN ULP Jonggol","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jalan Letkol Murlin No 123, Kampung Menan Desa Jonggol, Sukamaju, Kec. Jonggol, Kabupaten Bogor, Jawa Barat 16830\n","lat":-6.461929478545214,"lng":107.05922326692578,"power":22},{"no":62,"up3":"UP3 Indramayu","nama":"Kantor PLN UP3 Indramayu","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Letnan Jenderal S. Parman No.5, Margadadi, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45212","lat":-6.3256919,"lng":108.3220873,"power":22},{"no":63,"up3":"UP3 Indramayu","nama":"Kantor PLN ULP Indramayu Kota","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Letnan Jenderal S. Parman No.5, Margadadi, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45212","lat":-6.3256919,"lng":108.3220873,"power":22},{"no":64,"up3":"UP3 Indramayu","nama":"Kantor PLN ULP Jatibarang","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Letnan Joni No.27, Jatibarang Baru, Kec. Jatibarang, Kabupaten Indramayu, Jawa Barat 45273","lat":-6.4759881,"lng":108.303677,"power":22},{"no":65,"up3":"UP3 Indramayu","nama":"Kantor PLN ULP Haurgeulis","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"JL Jend. Sudirman, Desa Cipancuh, Kec. Haurgeulis, Kabupaten Indramayu, Jawa Barat 45264","lat":-6.4393054,"lng":107.9461854,"power":22},{"no":66,"up3":"UP3 Indramayu","nama":"Kantor PLN ULP Cikedung","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Terisi No.36, Rajasinga, Kec. Terisi, Kabupaten Indramayu, Jawa Barat 45262","lat":-6.4827054,"lng":108.1551697,"power":22},{"no":67,"up3":"UP3 Karawang","nama":"Kantor PLN UP3 Karawang","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Kertabumi No 36, Kel. Karawang Kulon, Kec. Karawang Barat, Kab. Karawang, Jawa Barat 41311","lat":-6.305559,"lng":107.292548,"power":22},{"no":68,"up3":"UP3 Karawang","nama":"Kantor PLN ULP Karawang Kota","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Kertabumi No 16, Kel. Karawang Kulon, Kec. Karawang Barat, Kab. Karawang, Jawa Barat 41311","lat":-6.307691544555089,"lng":107.29274545765593,"power":22},{"no":69,"up3":"UP3 Karawang","nama":"Kantor PLN ULP Kosambi","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Kosambi No. 22 Kec. Klari Kab. Karawang, Jawa Barat 41371","lat":-6.371418179819638,"lng":107.37885456851822,"power":22},{"no":70,"up3":"UP3 Karawang","nama":"Kantor PLN ULP Cikampek","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Ir. Haji Juanda No.29, Cikampek Tim., Kec. Cikampek, Karawang, Jawa Barat 41373","lat":-6.411953,"lng":107.464399,"power":22},{"no":71,"up3":"UP3 Karawang","nama":"Kantor PLN ULP Rengasdengklok","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Rengasdengklok No 16, Desa Rengasdengklok Selatan, Kec.Rengasdengklok, Kab.Karawang","lat":-6.164477,"lng":107.29794,"power":22},{"no":72,"up3":"UP3 Karawang","nama":"Perum Grand Taruma","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Arteri, Jl. Tarumanegara Kav. 8, Jl. Akses Tol Karawang Bar. No.I, Sukamakmur, Telukjambe Timur, Karawang, Jawa Barat 41361","lat":-6.305757,"lng":107.278373,"power":22},{"no":73,"up3":"UP3 Majalaya","nama":"Kantor PLN UP3 Majalaya","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Jaksa Naranata No.1, Baleendah, Kec. Baleendah, Kabupaten Bandung, Jawa Barat 40258","lat":-7.006073881462528,"lng":107.62552964411145,"power":22},{"no":74,"up3":"UP3 Majalaya","nama":"Kantor PLN ULP Majalaya Kota","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Pamagersari, Tangulun, Kec. Ibun, Kabupaten Bandung, Jawa Barat 40384","lat":-7.051372118680324,"lng":107.7610947365603,"power":22},{"no":75,"up3":"UP3 Majalaya","nama":"Gedung Budaya Sabilulungan","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Al-Fathu No.104, Pamekaran, Kec. Soreang, Kabupaten Bandung, Jawa Barat 40912","lat":-7.020754090662233,"lng":107.52960882358785,"power":22},{"no":76,"up3":"UP3 Majalaya","nama":"Kantor PLN Posko Nagreg","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Nasional III, Citaman, Kec. Nagreg, Kabupaten Bandung, Jawa Barat 40215","lat":-7.016861770929803,"lng":107.88225599981983,"power":22},{"no":77,"up3":"UP3 Majalaya","nama":"Kantor PLN ULP Banjaran","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Banjaran No.Km.16, Batukarut, Kec. Arjasari, Kabupaten Bandung, Jawa Barat 40377","lat":-7.0354170180143205,"lng":107.59331629752009,"power":22},{"no":78,"up3":"UP3 Majalaya","nama":"Kantor PLN Posko Ciwidey","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Bhayangkara, Margamulya, Kec. Pasirjambu, Kabupaten Bandung, Jawa Barat 40972","lat":-7.104393091107289,"lng":107.4659254344286,"power":22},{"no":79,"up3":"UP3 Majalaya","nama":"Kantor PLN Posko Pangalengan","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Pangalengan, Pangalengan, Kec. Pangalengan, Kabupaten Bandung, Jawa Barat 40378","lat":-7.176270067686117,"lng":107.57232993444183,"power":22},{"no":80,"up3":"UP3 Purwakarta","nama":"Kantor PLN ULP Purwakarta Kota","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Singawinata No 50, Nagri Tengah, Kec. Purwakarta, Kabupaten Purwakarta, Jawa Barat 41114","lat":-6.554661091545455,"lng":107.44569812027649,"power":22},{"no":81,"up3":"UP3 Purwakarta","nama":"Kantor PLN ULP Pagaden","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Kamarung, Kamarung, Kec. Pagaden, Kabupaten Subang, Jawa Barat 41252","lat":-6.460969800302958,"lng":107.81076538253306,"power":22},{"no":82,"up3":"UP3 Purwakarta","nama":"Kantor PLN ULP Plered","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jalur Cikampek - Padalarang No.16, Cianting, Kec. Sukatani, Kabupaten Purwakarta, Jawa Barat 41167","lat":-6.638197072186215,"lng":107.40671875215641,"power":22},{"no":83,"up3":"UP3 Purwakarta","nama":"Kantor PLN ULP Subang","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jalan D.I. Panjaitan No. 88, Karanganyar, Subang, Karanganyar, Kec. Subang, Kabupaten Subang, Jawa Barat 41211","lat":-6.562480989806487,"lng":107.76830803251443,"power":22},{"no":84,"up3":"UP3 Purwakarta","nama":"Kantor PLN ULP Pamanukan","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jalan Raya No.85, Rancasari, Kec. Pamanukan, Kabupaten Subang, Jawa Barat 41254","lat":-6.298483594448618,"lng":107.82082610893536,"power":22},{"no":85,"up3":"UP3 Sukabumi","nama":"Kantor PLN UP3 Sukabumi","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"JL BHAYANGKARA NO 220. SELABATU KOTA SUKABUMI 43114","lat":-6.913304132602275,"lng":106.93245806256711,"power":22},{"no":86,"up3":"UP3 Sukabumi","nama":"Kantor PLN ULP Sukabumi Kota","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. RE Martadinata No. 41, Cikole, Kota Sukabumi  43113","lat":-6.920337963904435,"lng":106.93211841992121,"power":22},{"no":87,"up3":"UP3 Sukabumi","nama":"Kantor PLN ULP Sukaraja","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Cimahpar No. 200, Pasir Halang Kab. Sukabumi 43192","lat":-6.917551716553932,"lng":106.9651656717993,"power":22},{"no":88,"up3":"UP3 Sukabumi","nama":"Kantor PLN ULP Cibadak","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Karangtengah NO.427 Kab. Sukabumi","lat":-6.89628047818295,"lng":106.81930462208958,"power":22},{"no":89,"up3":"UP3 Sukabumi","nama":"Kantor PLN ULP Cikembar","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Cikembar RT.001/ RW. 004 Kab. Sukabumi 43161","lat":-6.9510967504284,"lng":106.76939612023878,"power":22},{"no":90,"up3":"UP3 Sukabumi","nama":"Kantor PLN ULP Pelabuhan Ratu","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Bayangkara, RT.001 RW.017, Citepus Kab. Sukabumi 43164","lat":-6.98684394613022,"lng":106.55562222363388,"power":22},{"no":91,"up3":"UP3 Sukabumi","nama":"Kantor PLN ULP Cicurug","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Siliwangi, Nyangkowek Kab. Sukabumi","lat":-6.799632144743054,"lng":106.77541186994384,"power":22},{"no":92,"up3":"UP3 Sumedang","nama":"Kantor PLN UP3 Sumedang","charger":"PROTEKSINDO AC 22KW ","merek":"PROTEKSINDO","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Prabu Gajah Agung, Situ, Kec. Sumedang Utara, Kabupaten Sumedang, Jawa Barat 45621","lat":-6.837653,"lng":107.916667,"power":22},{"no":93,"up3":"UP3 Sumedang","nama":"Kantor PLN UP3 Sumedang","charger":"PROTEKSINDO AC 22KW ","merek":"PROTEKSINDO","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Prabu Gajah Agung, Situ, Kec. Sumedang Utara, Kabupaten Sumedang, Jawa Barat 45621","lat":-6.837653,"lng":107.916667,"power":22},{"no":94,"up3":"UP3 Sumedang","nama":"Kantor PLN ULP Tanjungsari","charger":"PROTEKSINDO AC 22KW ","merek":"PROTEKSINDO","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Tanjungsari No.KM. 28, Gudang, Kec. Tanjungsari, Kabupaten Sumedang, Jawa Barat 45362","lat":-6.896216,"lng":107.807805,"power":22},{"no":95,"up3":"UP3 Sumedang","nama":"Kantor PLN ULP Majalengka","charger":"PROTEKSINDO AC 22KW ","merek":"PROTEKSINDO","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Kh. Abdul Halim, Majalengka Kulon, Kec. Majalengka, Kabupaten Majalengka, Jawa Barat 45418","lat":-6.830216,"lng":108.206068,"power":22},{"no":96,"up3":"UP3 Sumedang","nama":"Kantor PLN ULP Jatiwangi","charger":"PROTEKSINDO AC 22KW ","merek":"PROTEKSINDO","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Cibolerang No.6, Loji, Kec. Jatiwangi, Kabupaten Majalengka, Jawa Barat 45454","lat":-6.726879,"lng":108.271818,"power":22},{"no":97,"up3":"UP3 Tasikmalaya","nama":"Kantor PLN ULP Banjar","charger":"DELTA DC CITY CHARGER 50KW","merek":"DELTA","konektor":3,"type_plug":"CCS2; CHADEMO; AC TYPE-2","alamat":"Jl. Kapten Jamhur No.97, Mekarsari, Kec. Banjar, Kota Banjar, Jawa Barat 46321","lat":-7.371549257156172,"lng":108.5361248069533,"power":50},{"no":98,"up3":"UP3 Tasikmalaya","nama":"Kantor PLN UP3 Tasikmalaya","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Ahmad Yani No.180-154, Sukamanah, Kec. Cipedes, Kab. Tasikmalaya, Jawa Barat 46131","lat":-7.316002439704479,"lng":108.230774579063,"power":22},{"no":99,"up3":"UP3 Tasikmalaya","nama":"Kantor PLN ULP Tasimalaya Kota","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Rajapolah, No. 12 A, Rajapolah, Manggungjaya, Tasikmalaya, Jawa Barat, 46155 ","lat":-7.327411288213577,"lng":108.2226055200514,"power":22},{"no":100,"up3":"UP3 Tasikmalaya","nama":"Kantor PLN ULP Rajapolah","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Raya Rajapolah, No. 12 A, Rajapolah, Manggungjaya, Tasikmalaya, Jawa Barat, 46155","lat":-7.227123708203736,"lng":108.19000175337683,"power":22},{"no":101,"up3":"UP3 Tasikmalaya","nama":"Kantor PLN ULP Ciamis","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Jend. Sudirman No.42, Ciamis, Kec. Ciamis, Kabupaten Ciamis, Jawa Barat 46211","lat":-7.326076091486055,"lng":108.34841674758593,"power":22},{"no":102,"up3":"UP3 Tasikmalaya","nama":"Kantor PLN ULP Singaparna","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jalan Raya Cikeleng, Singaparna, Kec. Singaparna, Kabupaten Tasikmalaya, Jawa Barat 46411","lat":-7.346031782423939,"lng":108.1095447586874,"power":22},{"no":103,"up3":"UP3 Tasikmalaya","nama":"Kantor PLN ULP Karangnunggal","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"JL. Raya Karangnunggal, Ranca Bakung, Karangnunggal, Tasikmalaya Regency, West Java 46186","lat":-7.632004266411841,"lng":108.13275652708798,"power":22},{"no":104,"up3":"UP3 Tasikmalaya","nama":"Kantor PLN ULP Pangandaran","charger":"DELTA AC MAX 22KW","merek":"DELTA","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Banjar - Pangandaran, Babakan, Pangandaran, Kab. Pangandaran, Babakan, Pangandaran, Pangandaran Regency, West Java 46396","lat":-7.684045,"lng":108.657817,"power":22},{"no":92,"up3":"UP3 Bogor","nama":"Balai Kota Bogor","charger":"PROTEKSINDO AC 22KW ","merek":"PROTEKSINDO","konektor":1,"type_plug":"AC TYPE-2","alamat":"Jl. Ir. H. Juanda No.10, RT.01/RW.01, Paledang, Kecamatan Bogor Tengah, Kota Bogor","lat":-6.59499,"lng":106.794047,"power":22}];
 
-/* ═══════════ STAT INTRO ANIM ═══════════ */
-(function(){
-  const tot = STATIONS.length;
-  const pwr = STATIONS.reduce((a,s)=>a+s.power,0);
-  document.getElementById('stat-total').textContent = tot;
-  document.getElementById('stat-power').innerHTML = pwr.toLocaleString('id-ID') + '<span class="stat-unit">kW</span>';
-})();
+/* ═══════ CORE STATE ═══════ */
+let userBalance = 25000000;
+let walletConnected = false;
+let selectedStation = null;
+let selectedToken = null;
+let tradeMode = 'buy';
+let userTokens = {};
 
-/* ═══════════ KALKULATOR ═══════════ */
-const COST = {7:120e6, 22:180e6, 25:550e6, 50:850e6, 120:1800e6};
-const LABELS = {7:'AC Mini 7 kW', 22:'AC Max 22 kW', 25:'DC City 25 kW', 50:'DC City 50 kW', 120:'DC Ultra 120 kW'};
-const TARIFF = 2466; // Rp per kWh (tarif SPKLU PLN)
-const INVESTOR_SHARE = 0.60; // 60% revenue ke investor, 40% ke PLN+treasury+opex
+const COST={7:120e6,22:180e6,25:550e6,50:850e6,120:1800e6};
+const TARIFF=2466;
+const INVESTOR_SHARE=0.60;
 
-function fmtRp(n){
-  if(n >= 1e9) return 'Rp '+(n/1e9).toFixed(2).replace('.',',')+' M';
-  if(n >= 1e6) return 'Rp '+(n/1e6).toFixed(1).replace('.',',')+' jt';
-  if(n >= 1e3) return 'Rp '+(n/1e3).toFixed(0)+' rb';
-  return 'Rp '+Math.round(n);
-}
-function recalc(){
-  const p = parseFloat(document.getElementById('charger-type').value);
-  const invest = parseFloat(document.getElementById('invest').value);
-  const util = parseFloat(document.getElementById('util').value);
-  const load = parseFloat(document.getElementById('load').value)/100;
-  const period = parseInt(document.getElementById('period').value);
-
-  document.getElementById('v-charger').textContent = LABELS[p];
-  document.getElementById('v-invest').textContent = fmtRp(invest);
-  document.getElementById('v-util').textContent = util + ' jam/hari';
-  document.getElementById('v-load').textContent = Math.round(load*100)+'%';
-  document.getElementById('v-period').textContent = period + ' tahun';
-
-  const cost = COST[p];
-  const share = Math.min(invest/cost, 1);
-  const kwhDay = p * util * load;
-  const revDay = kwhDay * TARIFF;
-  const revMonth = revDay * 30;
-  const yoursMonth = revMonth * share * INVESTOR_SHARE;
-  const yoursTotal = yoursMonth * 12 * period;
-  // IRR approximation: total return / invest / period * 100
-  const irr = invest > 0 ? ((yoursTotal / invest) / period * 100) : 0;
-  const yoursYear = yoursMonth * 12;
-  const bep = yoursYear > 0 ? (invest / yoursYear) : 99;
-
-  document.getElementById('o-share').innerHTML = (share*100).toFixed(2).replace('.',',') + '<span class="out-unit">%</span>';
-  document.getElementById('o-kwh').innerHTML = kwhDay.toFixed(1).replace('.',',') + '<span class="out-unit">kWh</span>';
-  document.getElementById('o-rev').innerHTML = fmtRp(revMonth).replace('Rp ','Rp ') + '';
-  document.getElementById('o-yours').innerHTML = fmtRp(yoursMonth);
-  document.getElementById('o-total').innerHTML = fmtRp(yoursTotal);
-  document.getElementById('o-per').textContent = period + ' thn';
-  document.getElementById('o-irr').innerHTML = irr.toFixed(1).replace('.',',') + '<span class="out-unit">% p.a.</span>';
-  document.getElementById('o-bep').innerHTML = bep.toFixed(1).replace('.',',') + '<span class="out-unit">tahun</span>';
-}
-['charger-type','invest','util','load','period'].forEach(id=>{
-  document.getElementById(id).addEventListener('input',recalc);
-});
-recalc();
-
-/* ═══════════ MAP ═══════════ */
-const map = L.map('map',{zoomControl:true,scrollWheelZoom:false}).setView([-6.9,107.6],9);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{
-  attribution:'© OpenStreetMap · CARTO · Data: PLN Jabar',
-  subdomains:'abcd',maxZoom:19
-}).addTo(map);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{
-  subdomains:'abcd',maxZoom:19,opacity:.7
-}).addTo(map);
-
-function colorFor(power){
-  if(power >= 50) return '#7FFF9E';
-  if(power >= 22) return '#00E0FF';
-  if(power >= 7) return '#FFB84D';
-  return '#8A9BA0';
+function rp(n){return 'Rp '+n.toLocaleString('id-ID')}
+function rpShort(n){
+  if(n>=1e9)return'Rp '+(n/1e9).toFixed(1).replace('.',',')+' M';
+  if(n>=1e6)return'Rp '+(n/1e6).toFixed(1).replace('.',',')+' jt';
+  if(n>=1e3)return'Rp '+(n/1e3).toFixed(0)+' rb';
+  return'Rp '+n;
 }
 
-let markers = [];
-function renderMarkers(filterUP3){
-  markers.forEach(m=>map.removeLayer(m));
-  markers = [];
-  const list = filterUP3 && filterUP3 !== 'ALL' ? STATIONS.filter(s=>s.up3===filterUP3) : STATIONS;
+/* ═══════ NAVIGATION ═══════ */
+function switchTab(tab){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+  document.querySelector('[data-tab="'+tab+'"]').classList.add('active');
+  if(tab==='dashboard'&&window._map)window._map.invalidateSize();
+}
+
+/* ═══════ WALLET ═══════ */
+function connectWallet(){
+  walletConnected=!walletConnected;
+  document.getElementById('wallet-label').textContent=walletConnected?'0x7f3E...a9B2':'Connect Wallet';
+  showToast(walletConnected?'Wallet terhubung':'Wallet terputus');
+}
+function updateBalance(){
+  document.getElementById('user-balance').textContent=userBalance.toLocaleString('id-ID')+' IDR';
+}
+
+/* ═══════ TOAST ═══════ */
+function showToast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+/* ═══════ MODAL ═══════ */
+function openModal(html){
+  document.getElementById('modal-content').innerHTML=html;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+
+
+/* ═══════ GENERATE TOKEN DATA PER STATION ═══════ */
+function genTokenData(s){
+  const cost = COST[s.power]||180e6;
+  const tokenPrice = Math.round(cost/1000);
+  // Simulate traffic: DC stations get more traffic
+  const baseTraffic = s.power>=50?85:s.power>=22?60:35;
+  const traffic = baseTraffic + Math.round((Math.sin(s.lat*100+s.lng*50))*15);
+  const trafficNorm = Math.max(20,Math.min(100,traffic));
+  // Price multiplier based on traffic
+  const priceMult = 0.7 + (trafficNorm/100)*0.8;
+  const currentPrice = Math.round(tokenPrice * priceMult);
+  const change24h = ((Math.sin(s.no*7)*8)+(trafficNorm>70?3:-2));
+  const dailyKwh = s.power * (trafficNorm/100) * (s.power>=50?6:4) * 0.7;
+  const dailyRevenue = dailyKwh * TARIFF;
+  const monthlyRevenue = dailyRevenue * 30;
+  const totalTokens = 1000;
+  const soldTokens = Math.round(300 + trafficNorm*5);
+  return{
+    cost, tokenPrice:currentPrice, basePrice:tokenPrice, change24h:+change24h.toFixed(1),
+    traffic:trafficNorm, dailyKwh:Math.round(dailyKwh),
+    dailyRevenue:Math.round(dailyRevenue), monthlyRevenue:Math.round(monthlyRevenue),
+    totalTokens, soldTokens:Math.min(soldTokens,totalTokens),
+    symbol:'CHRG-'+String(s.no).padStart(3,'0'),
+    priceMult
+  };
+}
+
+/* ═══════ MAP INIT ═══════ */
+function initMap(){
+  const map = L.map('map',{zoomControl:true,scrollWheelZoom:true}).setView([-6.9,107.6],9);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{
+    attribution:'ChargeChain Jabar',subdomains:'abcd',maxZoom:19
+  }).addTo(map);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{
+    subdomains:'abcd',maxZoom:19,opacity:.6
+  }).addTo(map);
+  window._map=map;
+  window._markers=[];
+  renderMapMarkers('all');
+}
+
+function colorFor(p){return p>=50?'#3FB950':p>=22?'#00D4FF':'#D29922';}
+
+function renderMapMarkers(filter){
+  if(!window._map)return;
+  window._markers.forEach(m=>window._map.removeLayer(m));
+  window._markers=[];
+  let list=STATIONS;
+  if(filter==='dc')list=STATIONS.filter(s=>s.power>=50);
+  else if(filter==='ac')list=STATIONS.filter(s=>s.power>=22&&s.power<50);
+  else if(filter==='mini')list=STATIONS.filter(s=>s.power<22);
+
   list.forEach(s=>{
-    const col = colorFor(s.power);
-    const r = s.power >= 50 ? 9 : (s.power >= 22 ? 6 : 5);
-    const m = L.circleMarker([s.lat,s.lng],{
-      radius:r, color:col, weight:2, fillColor:col, fillOpacity:.35
-    }).addTo(map);
+    const col=colorFor(s.power);
+    const r=s.power>=50?8:s.power>=22?5:4;
+    const td=genTokenData(s);
+    const m=L.circleMarker([s.lat,s.lng],{
+      radius:r,color:col,weight:2,fillColor:col,fillOpacity:.4
+    }).addTo(window._map);
+    m.on('click',()=>showStationDetail(s));
     m.bindPopup(
       '<b>'+s.nama+'</b>'+
-      '<div class="pop-row">UP3: <span>'+s.up3+'</span></div>'+
-      '<div class="pop-row">Charger: <span>'+(s.charger || '-')+'</span></div>'+
-      '<div class="pop-row">Kapasitas: <span>'+s.power+' kW</span></div>'+
-      '<div class="pop-row">Konektor: <span>'+s.konektor+'× '+(s.type_plug || '-')+'</span></div>'
+      '<div class="pop-row">'+s.up3+' · <span>'+s.power+' kW</span></div>'+
+      '<div class="pop-row">Token: <span style="color:#00D4FF">'+rpShort(td.tokenPrice)+'/token</span></div>'+
+      '<div class="pop-row">Traffic: <span style="color:#3FB950">'+td.traffic+'%</span></div>'
     );
-    markers.push(m);
+    window._markers.push(m);
   });
-  if(list.length){
-    const grp = L.featureGroup(markers);
-    map.fitBounds(grp.getBounds().pad(.1));
-  }
+  document.getElementById('dd-counter').textContent=list.length+' lokasi';
 }
 
-// Filter buttons
-const up3List = Array.from(new Set(STATIONS.map(s=>s.up3))).sort();
-const filterBar = document.getElementById('map-filter');
-function mkBtn(label, val, active){
-  const b = document.createElement('button');
-  b.className = 'filter-btn' + (active?' active':'');
-  b.textContent = label;
-  b.dataset.val = val;
-  b.addEventListener('click',()=>{
-    document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');
-    renderMarkers(val);
+/* ═══════ STATION LIST ═══════ */
+function renderStationList(filter){
+  let list=STATIONS;
+  if(filter==='dc')list=STATIONS.filter(s=>s.power>=50);
+  else if(filter==='ac')list=STATIONS.filter(s=>s.power>=22&&s.power<50);
+  else if(filter==='mini')list=STATIONS.filter(s=>s.power<22);
+
+  const el=document.getElementById('station-list');
+  el.innerHTML='';
+  document.getElementById('station-list').style.display='block';
+  document.getElementById('invest-detail').style.display='none';
+  document.getElementById('invest-detail').classList.remove('show');
+
+  list.forEach(s=>{
+    const td=genTokenData(s);
+    const pwrClass=s.power>=50?'dc':s.power>=22?'ac':'mini';
+    const pct=Math.round(td.soldTokens/td.totalTokens*100);
+    el.innerHTML+=
+    '<div class="station-card" onclick="showStationDetail(STATIONS['+(s.no-1)+'])">'+
+      '<div class="sc-top">'+
+        '<div class="sc-name">'+s.nama+'</div>'+
+        '<div class="sc-power '+pwrClass+'">'+s.power+' kW</div>'+
+      '</div>'+
+      '<div class="sc-up3">'+s.up3+' · '+td.symbol+'</div>'+
+      '<div class="sc-metrics">'+
+        '<div class="sc-metric"><div class="ml">Harga Token</div><div class="mv c">'+rpShort(td.tokenPrice)+'</div></div>'+
+        '<div class="sc-metric"><div class="ml">Omzet/hari</div><div class="mv g">'+rpShort(td.dailyRevenue)+'</div></div>'+
+        '<div class="sc-metric"><div class="ml">Traffic</div><div class="mv a">'+td.traffic+'%</div></div>'+
+        '<div class="sc-metric"><div class="ml">24h</div><div class="mv '+(td.change24h>=0?'g':'r')+'">'+
+          (td.change24h>=0?'+':'')+td.change24h+'%</div></div>'+
+      '</div>'+
+      '<div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%;background:linear-gradient(90deg,var(--cyan),var(--green))"></div></div>'+
+      '<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text2)">'+
+        '<span>'+td.soldTokens+'/'+td.totalTokens+' token terjual</span><span>'+pct+'%</span></div>'+
+    '</div>';
   });
-  filterBar.appendChild(b);
 }
-mkBtn('ALL ('+STATIONS.length+')','ALL',true);
-up3List.forEach(u=>{
-  const c = STATIONS.filter(s=>s.up3===u).length;
-  mkBtn(u.replace('UP3 ','')+' ('+c+')', u, false);
-});
-renderMarkers('ALL');
 
-/* ═══════════ UP3 POTENSI TABLE ═══════════ */
-const up3Agg = {};
-STATIONS.forEach(s=>{
-  if(!up3Agg[s.up3]) up3Agg[s.up3] = {count:0, power:0, dc:0};
-  up3Agg[s.up3].count++;
-  up3Agg[s.up3].power += s.power;
-  if(s.power >= 50) up3Agg[s.up3].dc++;
-});
+function filterStations(filter,el){
+  document.querySelectorAll('.dd-tab').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+  renderStationList(filter);
+  renderMapMarkers(filter);
+}
 
-// Skor potensi ekspansi: semakin sedikit kapasitas DC dan semakin ramai (ukur density proxy via power rendah) = potensi tinggi
-// Formula: potensi = (1 - dc_ratio) × (1 - power_per_count/100) × count_factor
-const up3Rows = Object.entries(up3Agg).map(([name,v])=>{
-  const avgPwr = v.power / v.count;
-  const dcRatio = v.dc / v.count;
-  // Demand proxy: kota besar = lebih tinggi. Kita gunakan count sebagai proxy kebutuhan + kebalikan dc_ratio
-  const potensi = Math.round((1 - dcRatio) * 50 + (1 - avgPwr/60) * 30 + (v.count/8)*20);
-  return {name, count:v.count, power:v.power, avgPwr, dc:v.dc, potensi:Math.max(10,Math.min(100,potensi))};
-}).sort((a,b)=>b.potensi-a.potensi);
+/* ═══════ STATION DETAIL (Investment Schema) ═══════ */
+function showStationDetail(s){
+  selectedStation=s;
+  const td=genTokenData(s);
+  const cost=td.cost;
+  const el=document.getElementById('invest-detail');
+  document.getElementById('station-list').style.display='none';
+  el.style.display='block';
+  el.classList.add('show');
 
-const tbl = document.getElementById('up3-table');
-tbl.innerHTML = '<div class="up3-row up3-head"><div>#</div><div>UP3</div><div class="stat-col">TITIK</div><div class="stat-col">kW TOTAL</div><div>POTENSI EKSPANSI</div><div>SKOR</div></div>';
-up3Rows.forEach((r,i)=>{
-  let cls = 'pot-low', lbl = 'LOW';
-  if(r.potensi >= 70){cls='pot-high';lbl='HIGH';}
-  else if(r.potensi >= 50){cls='pot-mid';lbl='MID';}
-  tbl.innerHTML += '<div class="up3-row">'+
-    '<div class="num-col num">'+String(i+1).padStart(2,'0')+'</div>'+
-    '<div class="name-col">'+r.name+'</div>'+
-    '<div class="stat-col num">'+r.count+'</div>'+
-    '<div class="stat-col num">'+r.power+'</div>'+
-    '<div class="up3-bar" style="--w:'+r.potensi+'%"></div>'+
-    '<div class="up3-potential '+cls+'">'+lbl+' '+r.potensi+'</div>'+
-  '</div>';
-});
+  // Fly to station on map
+  if(window._map)window._map.flyTo([s.lat,s.lng],14,{duration:0.8});
 
-/* ═══════════ PREDICTION CHART (SVG) ═══════════ */
-(function(){
-  const svg = document.getElementById('chart');
-  const W = 800, H = 320, P = {t:20,r:20,b:40,l:60};
-  const months = 60;
-  // Model: network revenue per month (Rp)
-  // year 1: 104 stations, util 4h, load .70
-  // growth: stations linear to 354 in 5y, util linear to 9h, load to .80
-  const data = [];
-  for(let m=0;m<months;m++){
-    const frac = m/(months-1);
-    const stations = 104 + Math.round(frac * 250);
-    const util = 4 + frac * 5;
-    const load = 0.70 + frac * 0.10;
-    const avgKW = 25; // mix AC/DC
-    const revMonth = stations * avgKW * util * load * 2466 * 30;
-    data.push({m,rev:revMonth,stations});
+  el.innerHTML=
+    '<div class="id-back" onclick="backToList()">&#8592; Kembali ke list</div>'+
+    '<div class="id-title">'+s.nama+'</div>'+
+    '<div class="id-subtitle">'+s.up3+' · '+s.power+' kW · '+(s.charger||'Standard')+'</div>'+
+
+    '<div class="flow-visual">'+
+      '<div class="fv-step s1">Fundraise</div><div class="fv-arrow">&#9654;</div>'+
+      '<div class="fv-step s2">Deploy</div><div class="fv-arrow">&#9654;</div>'+
+      '<div class="fv-step s3">Operate</div><div class="fv-arrow">&#9654;</div>'+
+      '<div class="fv-step s4">Distribute</div>'+
+    '</div>'+
+
+    '<div class="id-schema">'+
+      '<div class="id-schema-title">Skema Investasi</div>'+
+      '<div class="id-row"><span class="k">Modal Bangun Stasiun</span><span class="v">'+rp(cost)+'</span></div>'+
+      '<div class="id-row"><span class="k">Harga per Token (1/1000)</span><span class="v c">'+rp(td.tokenPrice)+'</span></div>'+
+      '<div class="id-row"><span class="k">Token Tersedia</span><span class="v">'+(td.totalTokens-td.soldTokens)+' / '+td.totalTokens+'</span></div>'+
+      '<div class="id-row"><span class="k">Traffic Score</span><span class="v a">'+td.traffic+'%</span></div>'+
+    '</div>'+
+
+    '<div class="id-schema">'+
+      '<div class="id-schema-title">Prediksi Revenue</div>'+
+      '<div class="id-row"><span class="k">kWh Terjual / Hari</span><span class="v">'+td.dailyKwh+' kWh</span></div>'+
+      '<div class="id-row"><span class="k">Omzet Harian Stasiun</span><span class="v g">'+rp(td.dailyRevenue)+'</span></div>'+
+      '<div class="id-row"><span class="k">Revenue Bulanan</span><span class="v g">'+rpShort(td.monthlyRevenue)+'</span></div>'+
+      '<div class="id-row"><span class="k">Revenue Share Investor</span><span class="v c">60%</span></div>'+
+    '</div>'+
+
+    '<div class="invest-slider">'+
+      '<label>Jumlah Token <b id="sl-token-count">10</b></label>'+
+      '<input type="range" id="sl-tokens" min="1" max="'+(td.totalTokens-td.soldTokens)+'" value="10" oninput="updateInvestCalc()">'+
+    '</div>'+
+
+    '<div class="id-schema" id="invest-result">'+
+      '<div class="id-schema-title">Proyeksi Return Anda</div>'+
+      '<div class="id-row"><span class="k">Modal Anda</span><span class="v c" id="ir-modal">'+rp(td.tokenPrice*10)+'</span></div>'+
+      '<div class="id-row"><span class="k">Kepemilikan</span><span class="v" id="ir-share">1,0%</span></div>'+
+      '<div class="id-row"><span class="k">Pendapatan / Bulan</span><span class="v g" id="ir-monthly">'+rpShort(Math.round(td.monthlyRevenue*INVESTOR_SHARE*10/td.totalTokens))+'</span></div>'+
+      '<div class="id-row"><span class="k">Pendapatan / Tahun</span><span class="v g" id="ir-yearly">'+rpShort(Math.round(td.monthlyRevenue*12*INVESTOR_SHARE*10/td.totalTokens))+'</span></div>'+
+      '<div class="id-row"><span class="k">Est. ROI per Tahun</span><span class="v a" id="ir-roi">--</span></div>'+
+      '<div class="id-row"><span class="k">Token yg Didapat</span><span class="v c" id="ir-tokens">10 '+td.symbol+'</span></div>'+
+    '</div>'+
+
+    '<div class="sc-actions">'+
+      '<button class="sc-btn primary" onclick="buyStationToken()">Beli Token</button>'+
+      '<button class="sc-btn secondary" onclick="switchTab(\'marketplace\')">Lihat di Market</button>'+
+    '</div>';
+
+  updateInvestCalc();
+}
+
+function updateInvestCalc(){
+  if(!selectedStation)return;
+  const td=genTokenData(selectedStation);
+  const count=parseInt(document.getElementById('sl-tokens').value)||1;
+  document.getElementById('sl-token-count').textContent=count;
+  const modal=td.tokenPrice*count;
+  const share=(count/td.totalTokens*100);
+  const monthly=Math.round(td.monthlyRevenue*INVESTOR_SHARE*count/td.totalTokens);
+  const yearly=monthly*12;
+  const roi=((yearly/modal)*100);
+  document.getElementById('ir-modal').textContent=rp(modal);
+  document.getElementById('ir-share').textContent=share.toFixed(1).replace('.',',')+' %';
+  document.getElementById('ir-monthly').textContent=rpShort(monthly);
+  document.getElementById('ir-yearly').textContent=rpShort(yearly);
+  document.getElementById('ir-roi').textContent=roi.toFixed(1).replace('.',',')+'% p.a.';
+  document.getElementById('ir-tokens').textContent=count+' '+td.symbol;
+}
+
+function backToList(){
+  document.getElementById('station-list').style.display='block';
+  document.getElementById('invest-detail').style.display='none';
+  document.getElementById('invest-detail').classList.remove('show');
+  selectedStation=null;
+  if(window._map)window._map.flyTo([-6.9,107.6],9,{duration:0.5});
+}
+
+function buyStationToken(){
+  if(!selectedStation)return;
+  const td=genTokenData(selectedStation);
+  const count=parseInt(document.getElementById('sl-tokens').value)||1;
+  const total=td.tokenPrice*count;
+  if(total>userBalance){showToast('Saldo tidak cukup!');return;}
+  userBalance-=total;
+  updateBalance();
+  if(!userTokens[td.symbol])userTokens[td.symbol]=0;
+  userTokens[td.symbol]+=count;
+  showToast('Berhasil beli '+count+' '+td.symbol+'!');
+}
+
+/* ═══════ MARKETPLACE ═══════ */
+function renderMarketplace(filter){
+  const el=document.getElementById('market-list');
+  el.innerHTML='<div class="token-row header"><div>Token / Lokasi</div><div>Harga</div><div>24h</div><div>Volume</div><div></div></div>';
+
+  let list=[...STATIONS].sort((a,b)=>{
+    const ta=genTokenData(a),tb=genTokenData(b);
+    if(filter==='trending')return Math.abs(tb.change24h)-Math.abs(ta.change24h);
+    return tb.traffic-ta.traffic;
+  });
+  if(filter==='dc')list=list.filter(s=>s.power>=50);
+  else if(filter==='ac')list=list.filter(s=>s.power<50);
+
+  list.forEach(s=>{
+    const td=genTokenData(s);
+    const vol=Math.round(td.traffic*12+Math.random()*50);
+    el.innerHTML+=
+    '<div class="token-row" onclick="selectMarketToken(STATIONS['+(s.no-1)+'])">'+
+      '<div class="tr-name">'+td.symbol+'<small>'+s.nama.substring(0,28)+'</small></div>'+
+      '<div class="tr-price">'+rpShort(td.tokenPrice)+'</div>'+
+      '<div class="tr-change '+(td.change24h>=0?'up':'down')+'">'+(td.change24h>=0?'+':'')+td.change24h+'%</div>'+
+      '<div class="tr-vol">'+vol+' CHRG</div>'+
+      '<div class="tr-action"><button class="tr-btn buy">Beli</button></div>'+
+    '</div>';
+  });
+}
+
+function filterMarket(f,el){
+  document.querySelectorAll('.mf-btn').forEach(b=>b.classList.remove('active'));
+  if(el)el.classList.add('active');
+  renderMarketplace(f);
+}
+
+function selectMarketToken(s){
+  selectedToken=s;
+  const td=genTokenData(s);
+  document.getElementById('tp-token-name').textContent=td.symbol;
+  document.getElementById('tp-token-sub').textContent=s.nama+' · '+s.power+' kW';
+  document.getElementById('trade-price').value=rp(td.tokenPrice);
+  updateTradeSummary();
+  renderOrderBook(td);
+}
+
+function switchTradeTab(mode,el){
+  tradeMode=mode;
+  document.querySelectorAll('.tp-tab').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+  const btn=document.getElementById('tp-exec-btn');
+  btn.className='tp-exec '+mode;
+  btn.textContent=mode==='buy'?'Beli Token':'Jual Token';
+  updateTradeSummary();
+}
+
+function updateTradeSummary(){
+  if(!selectedToken)return;
+  const td=genTokenData(selectedToken);
+  const amt=parseInt(document.getElementById('trade-amount').value)||0;
+  const sub=td.tokenPrice*amt;
+  const fee=Math.round(sub*0.005);
+  document.getElementById('ts-subtotal').textContent=rp(sub);
+  document.getElementById('ts-fee').textContent=rp(fee);
+  document.getElementById('ts-total').textContent=rp(sub+fee);
+}
+
+function executeTrade(){
+  if(!selectedToken){showToast('Pilih token dulu!');return;}
+  const td=genTokenData(selectedToken);
+  const amt=parseInt(document.getElementById('trade-amount').value)||0;
+  const total=td.tokenPrice*amt+Math.round(td.tokenPrice*amt*0.005);
+  if(tradeMode==='buy'){
+    if(total>userBalance){showToast('Saldo tidak cukup!');return;}
+    userBalance-=total;
+    if(!userTokens[td.symbol])userTokens[td.symbol]=0;
+    userTokens[td.symbol]+=amt;
+    showToast('Berhasil beli '+amt+' '+td.symbol+'!');
+  }else{
+    const held=userTokens[td.symbol]||0;
+    if(amt>held){showToast('Token tidak cukup! Anda punya '+held);return;}
+    userTokens[td.symbol]-=amt;
+    userBalance+=td.tokenPrice*amt-Math.round(td.tokenPrice*amt*0.005);
+    showToast('Berhasil jual '+amt+' '+td.symbol+'!');
   }
-  const maxRev = Math.max(...data.map(d=>d.rev));
-  const xw = W - P.l - P.r, yh = H - P.t - P.b;
-  const x = i => P.l + (i/(months-1)) * xw;
-  const y = v => P.t + (1 - v/maxRev) * yh;
+  updateBalance();
+}
 
-  // grid
-  let g = '';
-  for(let i=0;i<=5;i++){
-    const yy = P.t + (i/5)*yh;
-    const val = maxRev * (1 - i/5);
-    g += '<line x1="'+P.l+'" x2="'+(W-P.r)+'" y1="'+yy+'" y2="'+yy+'" stroke="#1F2A2F" stroke-dasharray="2 4"/>';
-    g += '<text x="'+(P.l-10)+'" y="'+(yy+4)+'" fill="#8A9BA0" font-family="JetBrains Mono" font-size="10" text-anchor="end">'+(val/1e9).toFixed(1)+'M</text>';
+function renderOrderBook(td){
+  const el=document.getElementById('ob-content');
+  let html='';
+  // Generate fake order book
+  for(let i=4;i>=0;i--){
+    const p=td.tokenPrice+Math.round(td.tokenPrice*0.002*(i+1));
+    const a=Math.round(5+Math.random()*30);
+    const w=20+a*2;
+    html+='<div class="ob-row ask"><span class="price">'+rpShort(p)+'</span><span class="amt">'+a+'</span><div class="bar" style="width:'+w+'%"></div></div>';
   }
-  // x labels
-  for(let yr=0;yr<=5;yr++){
-    const xx = x(yr*12 === 60 ? 59 : yr*12);
-    g += '<line x1="'+xx+'" x2="'+xx+'" y1="'+P.t+'" y2="'+(H-P.b)+'" stroke="#1F2A2F" stroke-dasharray="2 4"/>';
-    g += '<text x="'+xx+'" y="'+(H-P.b+20)+'" fill="#8A9BA0" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Y'+yr+'</text>';
+  html+='<div class="ob-spread">Spread: '+rpShort(Math.round(td.tokenPrice*0.004))+'</div>';
+  for(let i=0;i<5;i++){
+    const p=td.tokenPrice-Math.round(td.tokenPrice*0.002*(i+1));
+    const a=Math.round(5+Math.random()*30);
+    const w=20+a*2;
+    html+='<div class="ob-row bid"><span class="price">'+rpShort(p)+'</span><span class="amt">'+a+'</span><div class="bar" style="width:'+w+'%"></div></div>';
   }
+  el.innerHTML=html;
+}
 
-  // area path
-  let path = 'M '+x(0)+' '+y(data[0].rev);
-  for(let i=1;i<data.length;i++) path += ' L '+x(i)+' '+y(data[i].rev);
-  const area = path + ' L '+x(months-1)+' '+(H-P.b)+' L '+x(0)+' '+(H-P.b)+' Z';
+/* ═══════ PLN MANAGED TOKEN POOL ═══════ */
+function renderPLNPool(){
+  const pools=[
+    {name:'CHRG-STABLE',label:'Stabil',badge:'stable',badgeClass:'badge-stable',
+     desc:'Token dikelola PLN dengan return tetap. Cocok untuk investor konservatif.',
+     apy:8.5,tvl:12500000000,holders:1247,minInvest:500000,lockDays:90,
+     plnShare:45,investorShare:45,treasuryShare:10,
+     profit_model:'Fixed 8.5% APY — PLN menjamin return minimum dari operasional 104 stasiun eksisting'},
+    {name:'CHRG-GROWTH',label:'Growth',badge:'growth',badgeClass:'badge-growth',
+     desc:'Token dengan return dinamis dari stasiun high-traffic. Potensi yield lebih tinggi.',
+     apy:14.2,tvl:8200000000,holders:832,minInvest:1000000,lockDays:180,
+     plnShare:35,investorShare:55,treasuryShare:10,
+     profit_model:'Variable 10-18% APY — Revenue share dari stasiun DC Fast di Bandung, Bekasi, Depok'},
+    {name:'CHRG-PREMIUM',label:'Premium',badge:'premium',badgeClass:'badge-premium',
+     desc:'Akses ke stasiun baru high-potential. Termasuk profit dari kenaikan harga token.',
+     apy:22.5,tvl:4800000000,holders:356,minInvest:5000000,lockDays:365,
+     plnShare:30,investorShare:60,treasuryShare:10,
+     profit_model:'Target 18-25% APY — Early access ke 250 titik ekspansi + capital gain dari traffic growth'}
+  ];
 
-  svg.innerHTML =
-    '<defs><linearGradient id="grd" x1="0" x2="0" y1="0" y2="1">'+
-      '<stop offset="0%" stop-color="#00E0FF" stop-opacity=".4"/>'+
-      '<stop offset="100%" stop-color="#00E0FF" stop-opacity="0"/>'+
-    '</linearGradient></defs>'+
-    g +
-    '<path d="'+area+'" fill="url(#grd)"/>'+
-    '<path d="'+path+'" fill="none" stroke="#00E0FF" stroke-width="2"/>'+
-    // year 1 marker
-    '<circle cx="'+x(11)+'" cy="'+y(data[11].rev)+'" r="4" fill="#00E0FF"/>'+
-    '<text x="'+(x(11)+8)+'" y="'+(y(data[11].rev)-6)+'" fill="#00E0FF" font-family="JetBrains Mono" font-size="10">Rp '+(data[11].rev/1e9).toFixed(1).replace('.',',')+' M/bln</text>'+
-    // year 5 marker
-    '<circle cx="'+x(59)+'" cy="'+y(data[59].rev)+'" r="5" fill="#7FFF9E"/>'+
-    '<text x="'+(x(59)-10)+'" y="'+(y(data[59].rev)-10)+'" fill="#7FFF9E" font-family="JetBrains Mono" font-size="10" text-anchor="end">Rp '+(data[59].rev/1e9).toFixed(1).replace('.',',')+' M/bln</text>';
-})();
+  const left=document.getElementById('pp-left');
+  left.innerHTML='';
+  pools.forEach((p,i)=>{
+    const donutSVG=makeDonut(p.plnShare,p.investorShare,p.treasuryShare);
+    left.innerHTML+=
+    '<div class="pool-card">'+
+      '<h4>'+p.name+' <span class="badge '+p.badgeClass+'">'+p.label+'</span></h4>'+
+      '<p style="font-size:11px;color:var(--text2);margin-bottom:14px">'+p.desc+'</p>'+
+      '<div class="pool-stats">'+
+        '<div class="ps-item"><div class="ps-label">APY</div><div class="ps-val" style="color:var(--green)">'+p.apy+'%</div></div>'+
+        '<div class="ps-item"><div class="ps-label">TVL</div><div class="ps-val">'+rpShort(p.tvl)+'</div></div>'+
+        '<div class="ps-item"><div class="ps-label">Holders</div><div class="ps-val">'+p.holders.toLocaleString()+'</div></div>'+
+      '</div>'+
+      '<div class="donut-wrap">'+
+        '<div class="donut">'+donutSVG+'<div class="donut-center">'+p.investorShare+'%<small>Investor</small></div></div>'+
+        '<div class="donut-legend">'+
+          '<div class="dl-item"><div class="dl-dot" style="background:var(--cyan)"></div>PLN Operasional '+p.plnShare+'%</div>'+
+          '<div class="dl-item"><div class="dl-dot" style="background:var(--green)"></div>Investor Return '+p.investorShare+'%</div>'+
+          '<div class="dl-item"><div class="dl-dot" style="background:var(--amber)"></div>Treasury '+p.treasuryShare+'%</div>'+
+        '</div>'+
+      '</div>'+
+      '<div style="font-size:10px;color:var(--text2);background:var(--bg);padding:10px;border-radius:6px;margin-bottom:12px">'+
+        '<span style="color:var(--cyan);font-weight:600">Model:</span> '+p.profit_model+
+      '</div>'+
+      '<div style="display:flex;gap:6px;font-size:10px;color:var(--text2);margin-bottom:12px">'+
+        '<span>Min. Investasi: <b style="color:var(--text)">'+rp(p.minInvest)+'</b></span>'+
+        '<span> · Lock: <b style="color:var(--text)">'+p.lockDays+' hari</b></span>'+
+      '</div>'+
+      '<button class="sc-btn primary" style="width:100%" onclick="buyPool('+i+')">Investasi '+p.name+'</button>'+
+    '</div>';
+  });
+
+  // Right side: user portfolio & profit simulation
+  const right=document.getElementById('pp-right');
+  right.innerHTML=
+    '<div class="pool-buy">'+
+      '<h4>Simulasi Profit PLN Pool</h4>'+
+      '<div class="tp-field">'+
+        '<label>Pilih Pool</label>'+
+        '<select class="tp-input" id="pp-pool-select" onchange="simPLNProfit()">'+
+          '<option value="0">CHRG-STABLE (APY 8.5%)</option>'+
+          '<option value="1">CHRG-GROWTH (APY 14.2%)</option>'+
+          '<option value="2" selected>CHRG-PREMIUM (APY 22.5%)</option>'+
+        '</select>'+
+      '</div>'+
+      '<div class="tp-field">'+
+        '<label>Jumlah Investasi</label>'+
+        '<input type="range" id="pp-invest-slider" min="500000" max="100000000" step="500000" value="10000000" oninput="simPLNProfit()">'+
+        '<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-top:4px">'+
+          '<span>Rp 500rb</span><span id="pp-invest-val" style="color:var(--cyan);font-weight:600">Rp 10.000.000</span><span>Rp 100jt</span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="tp-field">'+
+        '<label>Periode (Bulan)</label>'+
+        '<input type="range" id="pp-period-slider" min="3" max="60" step="3" value="12" oninput="simPLNProfit()">'+
+        '<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-top:4px">'+
+          '<span>3 bln</span><span id="pp-period-val" style="color:var(--cyan);font-weight:600">12 bulan</span><span>60 bln</span>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+
+    '<div class="sim-box" id="pp-sim-result">'+
+    '</div>'+
+
+    '<div class="sim-box">'+
+      '<h5>Network Stats Jawa Barat</h5>'+
+      '<div class="sim-row"><span class="k">Total Stasiun Aktif</span><span class="v">104</span></div>'+
+      '<div class="sim-row"><span class="k">Total Kapasitas</span><span class="v">2.350 kW</span></div>'+
+      '<div class="sim-row"><span class="k">Avg. Utilisasi Harian</span><span class="v" style="color:var(--green)">5.2 jam</span></div>'+
+      '<div class="sim-row"><span class="k">Revenue Jaringan / Bulan</span><span class="v" style="color:var(--cyan)">Rp 11.7 M</span></div>'+
+      '<div class="sim-row"><span class="k">Total Token Beredar</span><span class="v">104.000 CHRG</span></div>'+
+      '<div class="sim-row"><span class="k">UP3 Ter-aktif</span><span class="v" style="color:var(--amber)">UP3 Bandung</span></div>'+
+    '</div>'+
+
+    '<div class="sim-box">'+
+      '<h5>Keunggulan PLN Pool</h5>'+
+      '<div style="font-size:11px;color:var(--text2);line-height:1.7">'+
+        '<div style="margin-bottom:6px">&#9679; Return dijamin PLN dari revenue operasional</div>'+
+        '<div style="margin-bottom:6px">&#9679; Diversifikasi otomatis ke semua stasiun</div>'+
+        '<div style="margin-bottom:6px">&#9679; Smart contract audit oleh pihak ketiga</div>'+
+        '<div style="margin-bottom:6px">&#9679; Klaim profit setiap 30 hari</div>'+
+        '<div>&#9679; Token dapat dijual di marketplace kapanpun</div>'+
+      '</div>'+
+    '</div>';
+
+  simPLNProfit();
+}
+
+function makeDonut(pln,inv,trs){
+  const r=40,c=2*Math.PI*r;
+  const s1=pln/100*c, s2=inv/100*c, s3=trs/100*c;
+  const o1=0, o2=s1, o3=s1+s2;
+  return '<svg width="100" height="100" viewBox="0 0 100 100">'+
+    '<circle cx="50" cy="50" r="'+r+'" fill="none" stroke="var(--border)" stroke-width="12"/>'+
+    '<circle cx="50" cy="50" r="'+r+'" fill="none" stroke="var(--cyan)" stroke-width="12" stroke-dasharray="'+s1+' '+(c-s1)+'" stroke-dashoffset="0"/>'+
+    '<circle cx="50" cy="50" r="'+r+'" fill="none" stroke="var(--green)" stroke-width="12" stroke-dasharray="'+s2+' '+(c-s2)+'" stroke-dashoffset="-'+o2+'"/>'+
+    '<circle cx="50" cy="50" r="'+r+'" fill="none" stroke="var(--amber)" stroke-width="12" stroke-dasharray="'+s3+' '+(c-s3)+'" stroke-dashoffset="-'+o3+'"/>'+
+  '</svg>';
+}
+
+function simPLNProfit(){
+  const pools=[
+    {apy:8.5,name:'CHRG-STABLE'},
+    {apy:14.2,name:'CHRG-GROWTH'},
+    {apy:22.5,name:'CHRG-PREMIUM'}
+  ];
+  const idx=parseInt(document.getElementById('pp-pool-select').value);
+  const invest=parseInt(document.getElementById('pp-invest-slider').value);
+  const months=parseInt(document.getElementById('pp-period-slider').value);
+  document.getElementById('pp-invest-val').textContent=rp(invest);
+  document.getElementById('pp-period-val').textContent=months+' bulan';
+
+  const p=pools[idx];
+  const monthlyRate=p.apy/100/12;
+  const totalReturn=invest*Math.pow(1+monthlyRate,months)-invest;
+  const monthlyProfit=invest*monthlyRate;
+  const totalValue=invest+totalReturn;
+  const tokensGet=Math.round(invest/150000);
+
+  document.getElementById('pp-sim-result').innerHTML=
+    '<h5>Proyeksi Profit — '+p.name+'</h5>'+
+    '<div class="sim-row"><span class="k">Investasi</span><span class="v" style="color:var(--cyan)">'+rp(invest)+'</span></div>'+
+    '<div class="sim-row"><span class="k">APY</span><span class="v" style="color:var(--green)">'+p.apy+'%</span></div>'+
+    '<div class="sim-row"><span class="k">Profit / Bulan (est.)</span><span class="v" style="color:var(--green)">'+rp(Math.round(monthlyProfit))+'</span></div>'+
+    '<div class="sim-row"><span class="k">Total Profit ('+months+' bln)</span><span class="v" style="color:var(--green)">'+rp(Math.round(totalReturn))+'</span></div>'+
+    '<div class="sim-row"><span class="k">Nilai Akhir</span><span class="v" style="font-size:15px;color:var(--green)">'+rp(Math.round(totalValue))+'</span></div>'+
+    '<div class="sim-row"><span class="k">Token Didapat</span><span class="v">'+tokensGet+' '+p.name+'</span></div>'+
+    '<div style="margin-top:10px"><button class="sc-btn primary" style="width:100%" onclick="buyPool('+idx+')">Investasi Sekarang</button></div>';
+}
+
+function buyPool(idx){
+  const names=['CHRG-STABLE','CHRG-GROWTH','CHRG-PREMIUM'];
+  const invest=parseInt(document.getElementById('pp-invest-slider')?.value||5000000);
+  if(invest>userBalance){showToast('Saldo tidak cukup!');return;}
+  userBalance-=invest;
+  updateBalance();
+  if(!userTokens[names[idx]])userTokens[names[idx]]=0;
+  userTokens[names[idx]]+=Math.round(invest/150000);
+  showToast('Berhasil investasi '+rp(invest)+' di '+names[idx]+'!');
+}
+
+/* ═══════ SMART CONTRACT SIMULATION ═══════ */
+function renderSmartContract(){
+  const left=document.getElementById('sc-left');
+  left.innerHTML=
+    '<h4 style="font-size:14px;font-weight:600;margin-bottom:16px">Alur Smart Contract SPKLU</h4>'+
+
+    '<div class="contract-flow">'+
+      '<div class="cf-step">'+
+        '<div class="cf-line"></div>'+
+        '<div class="cf-dot" style="background:var(--cyan-dim);color:var(--cyan)">1</div>'+
+        '<div class="cf-content">'+
+          '<h5>Deploy Contract</h5>'+
+          '<p>PLN deploy contract per stasiun SPKLU. Parameter: kapasitas, lokasi, target funding, token supply.</p>'+
+          '<div class="cf-amounts">'+
+            '<span class="cf-amt" style="background:var(--cyan-dim);color:var(--cyan)">ERC-20 Token</span>'+
+            '<span class="cf-amt" style="background:var(--green-dim);color:var(--green)">Escrow Lock</span>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="cf-step">'+
+        '<div class="cf-line"></div>'+
+        '<div class="cf-dot" style="background:var(--purple-dim);color:var(--purple)">2</div>'+
+        '<div class="cf-content">'+
+          '<h5>Fundraising Phase</h5>'+
+          '<p>Investor beli token CHRG-LOC. Dana masuk escrow. Milestone-based release ke kontraktor.</p>'+
+          '<div class="cf-amounts">'+
+            '<span class="cf-amt" style="background:var(--amber-dim);color:var(--amber)">Min. Rp 100rb</span>'+
+            '<span class="cf-amt" style="background:var(--purple-dim);color:var(--purple)">30 hari period</span>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="cf-step">'+
+        '<div class="cf-line"></div>'+
+        '<div class="cf-dot" style="background:var(--green-dim);color:var(--green)">3</div>'+
+        '<div class="cf-content">'+
+          '<h5>Oracle Verification</h5>'+
+          '<p>Oracle verifikasi konstruksi: pondasi, shelter, charger unit, integrasi PLN Mobile. Dana cair bertahap.</p>'+
+          '<div class="cf-amounts">'+
+            '<span class="cf-amt" style="background:var(--green-dim);color:var(--green)">Chainlink Oracle</span>'+
+            '<span class="cf-amt" style="background:var(--cyan-dim);color:var(--cyan)">3 Milestones</span>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="cf-step">'+
+        '<div class="cf-line"></div>'+
+        '<div class="cf-dot" style="background:var(--amber-dim);color:var(--amber)">4</div>'+
+        '<div class="cf-content">'+
+          '<h5>Revenue Collection</h5>'+
+          '<p>Setiap sesi charging tercatat via meter oracle. Revenue otomatis masuk contract wallet.</p>'+
+          '<div class="cf-amounts">'+
+            '<span class="cf-amt" style="background:var(--amber-dim);color:var(--amber)">Rp 2.466/kWh</span>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="cf-step">'+
+        '<div class="cf-dot" style="background:var(--green-dim);color:var(--green)">5</div>'+
+        '<div class="cf-content">'+
+          '<h5>Auto Distribution</h5>'+
+          '<p>Smart contract distribusi revenue setiap 30 hari: PLN 40%, Investor 60% (pro-rata token).</p>'+
+          '<div class="cf-amounts">'+
+            '<span class="cf-amt" style="background:var(--green-dim);color:var(--green)">Auto Claim</span>'+
+            '<span class="cf-amt" style="background:var(--cyan-dim);color:var(--cyan)">30 Hari Siklus</span>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+
+    '<div class="code-block">'+
+      '<span class="cm">// ChargeChain SPKLU Smart Contract (Simplified)</span>\n'+
+      '<span class="kw">contract</span> <span class="fn">ChargeSPKLU</span> {\n\n'+
+      '  <span class="kw">struct</span> Station {\n'+
+      '    <span class="kw">string</span>  name;\n'+
+      '    <span class="kw">uint256</span> capacity;    <span class="cm">// kW</span>\n'+
+      '    <span class="kw">uint256</span> targetFund;  <span class="cm">// IDR</span>\n'+
+      '    <span class="kw">uint256</span> totalTokens; <span class="cm">// 1000</span>\n'+
+      '    <span class="kw">uint256</span> tokenPrice;\n'+
+      '    <span class="kw">uint8</span>   status;      <span class="cm">// 0=fund 1=build 2=live</span>\n'+
+      '  }\n\n'+
+      '  <span class="kw">mapping</span>(<span class="kw">address</span> => <span class="kw">uint256</span>) <span class="kw">public</span> balances;\n'+
+      '  <span class="kw">uint256</span> <span class="kw">constant</span> PLN_SHARE = <span class="num">40</span>;\n'+
+      '  <span class="kw">uint256</span> <span class="kw">constant</span> INVESTOR_SHARE = <span class="num">60</span>;\n\n'+
+      '  <span class="kw">function</span> <span class="fn">buyToken</span>(<span class="kw">uint256</span> amount)\n'+
+      '    <span class="kw">external payable</span> {\n'+
+      '    <span class="kw">require</span>(msg.value >= amount * tokenPrice);\n'+
+      '    balances[msg.sender] += amount;\n'+
+      '    totalSold += amount;\n'+
+      '    <span class="kw">emit</span> <span class="fn">TokenPurchased</span>(msg.sender, amount);\n'+
+      '  }\n\n'+
+      '  <span class="kw">function</span> <span class="fn">distributeRevenue</span>()\n'+
+      '    <span class="kw">external</span> onlyOracle {\n'+
+      '    <span class="kw">uint256</span> rev = address(<span class="kw">this</span>).balance;\n'+
+      '    <span class="kw">uint256</span> plnAmt = rev * PLN_SHARE / <span class="num">100</span>;\n'+
+      '    <span class="kw">uint256</span> invAmt = rev * INVESTOR_SHARE / <span class="num">100</span>;\n'+
+      '    pln.<span class="fn">transfer</span>(plnAmt);\n'+
+      '    <span class="cm">// pro-rata ke semua holder</span>\n'+
+      '    <span class="kw">for</span> (holder <span class="kw">in</span> holders) {\n'+
+      '      <span class="kw">uint256</span> share = invAmt * balances[holder]\n'+
+      '                      / totalSold;\n'+
+      '      holder.<span class="fn">transfer</span>(share);\n'+
+      '    }\n'+
+      '  }\n'+
+      '}\n'+
+    '</div>';
+
+  // RIGHT: Simulation
+  const right=document.getElementById('sc-right');
+  right.innerHTML=
+    '<h4 style="font-size:14px;font-weight:600;margin-bottom:16px">Simulasi Live Contract</h4>'+
+
+    '<div class="sim-box">'+
+      '<h5>Pilih Stasiun untuk Simulasi</h5>'+
+      '<select class="tp-input" id="sc-station-select" onchange="runContractSim()" style="margin-bottom:10px">'+
+        STATIONS.slice(0,20).map((s,i)=>
+          '<option value="'+i+'">'+s.nama+' ('+s.power+' kW)</option>'
+        ).join('')+
+      '</select>'+
+      '<div class="tp-field">'+
+        '<label>Jumlah Token Anda</label>'+
+        '<input type="range" class="tp-input" id="sc-tokens" min="1" max="100" value="25" oninput="runContractSim()" style="padding:0">'+
+        '<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-top:4px">'+
+          '<span>1 token</span><span id="sc-token-val" style="color:var(--cyan);font-weight:600">25 token</span><span>100 token</span>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+
+    '<div class="sim-box" id="sc-sim-output"></div>'+
+
+    '<div class="sim-box">'+
+      '<h5>Transaction Log (Simulated)</h5>'+
+      '<div id="sc-tx-log" style="font-family:monospace;font-size:10px;line-height:1.8;color:var(--text2)"></div>'+
+    '</div>'+
+
+    '<div class="sim-box">'+
+      '<h5>Skema Revenue Share</h5>'+
+      '<div style="display:flex;gap:6px;margin-bottom:10px">'+
+        '<div style="flex:2;background:var(--green);height:24px;border-radius:4px 0 0 4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#000">Investor 60%</div>'+
+        '<div style="flex:1.3;background:var(--cyan);height:24px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#000">PLN 35%</div>'+
+        '<div style="flex:.33;background:var(--amber);height:24px;border-radius:0 4px 4px 0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#000">5%</div>'+
+      '</div>'+
+      '<div style="font-size:10px;color:var(--text2);line-height:1.6">'+
+        'Revenue dari setiap kWh charging masuk ke contract wallet. Setiap 30 hari, smart contract otomatis mendistribusikan 60% ke investor (pro-rata), 35% ke PLN sebagai operator, dan 5% ke treasury protokol.'+
+      '</div>'+
+    '</div>';
+
+  runContractSim();
+}
+
+function runContractSim(){
+  const idx=parseInt(document.getElementById('sc-station-select').value);
+  const tokens=parseInt(document.getElementById('sc-tokens').value);
+  document.getElementById('sc-token-val').textContent=tokens+' token';
+  const s=STATIONS[idx];
+  const td=genTokenData(s);
+  const share=tokens/td.totalTokens;
+  const yourMonthly=Math.round(td.monthlyRevenue*INVESTOR_SHARE*share);
+  const yourDaily=Math.round(td.dailyRevenue*INVESTOR_SHARE*share);
+  const investCost=td.tokenPrice*tokens;
+  const bep=investCost/(yourMonthly||1);
+
+  document.getElementById('sc-sim-output').innerHTML=
+    '<h5>Hasil Simulasi — '+s.nama+'</h5>'+
+    '<div class="sim-row"><span class="k">Kapasitas</span><span class="v">'+s.power+' kW</span></div>'+
+    '<div class="sim-row"><span class="k">Token Anda</span><span class="v" style="color:var(--cyan)">'+tokens+' / '+td.totalTokens+'</span></div>'+
+    '<div class="sim-row"><span class="k">Kepemilikan</span><span class="v">'+(share*100).toFixed(1)+'%</span></div>'+
+    '<div class="sim-row"><span class="k">Modal Investasi</span><span class="v">'+rp(investCost)+'</span></div>'+
+    '<div class="sim-row"><span class="k">kWh/hari Stasiun</span><span class="v">'+td.dailyKwh+' kWh</span></div>'+
+    '<div class="sim-row"><span class="k">Omzet Harian Stasiun</span><span class="v">'+rp(td.dailyRevenue)+'</span></div>'+
+    '<div class="sim-row"><span class="k">Revenue Anda / Hari</span><span class="v" style="color:var(--green)">'+rp(yourDaily)+'</span></div>'+
+    '<div class="sim-row"><span class="k">Revenue Anda / Bulan</span><span class="v" style="color:var(--green);font-size:14px">'+rp(yourMonthly)+'</span></div>'+
+    '<div class="sim-row"><span class="k">Revenue Anda / Tahun</span><span class="v" style="color:var(--green)">'+rp(yourMonthly*12)+'</span></div>'+
+    '<div class="sim-row"><span class="k">Estimasi BEP</span><span class="v" style="color:var(--amber)">'+bep.toFixed(1)+' bulan</span></div>';
+
+  // TX log
+  const log=document.getElementById('sc-tx-log');
+  const now=new Date();
+  let txHtml='';
+  for(let i=0;i<6;i++){
+    const d=new Date(now-i*86400000*5);
+    const ds=d.toLocaleDateString('id-ID',{day:'2-digit',month:'short'});
+    const kWh=Math.round(td.dailyKwh*(0.8+Math.random()*0.4));
+    const rev=kWh*TARIFF;
+    const yourRev=Math.round(rev*INVESTOR_SHARE*share);
+    txHtml+='<div style="border-bottom:1px solid var(--border);padding:3px 0">'+
+      '<span style="color:var(--text3)">'+ds+'</span> '+
+      '<span style="color:var(--cyan)">distributeRevenue()</span> '+
+      '<span style="color:var(--green)">+'+rp(yourRev)+'</span> '+
+      '<span style="color:var(--text3)">['+kWh+' kWh]</span>'+
+    '</div>';
+  }
+  log.innerHTML=txHtml;
+}
+
+/* ═══════ INIT ═══════ */
+document.addEventListener('DOMContentLoaded',function(){
+  initMap();
+  renderStationList('all');
+  renderMarketplace('all');
+  renderPLNPool();
+  renderSmartContract();
+});
+
 </script>
 </body>
 </html>
