@@ -245,6 +245,48 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 .cmp-col.old li::before{content:'✕';position:absolute;left:0;color:var(--red)}
 .cmp-col.new li::before{content:'✓';position:absolute;left:0;color:var(--green)}
 
+/* FLOWCHART */
+.flowchart{display:flex;align-items:stretch;overflow-x:auto;padding:14px 2px 6px}
+.fc-node{flex:1 0 130px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:13px 11px;text-align:center;position:relative}
+.fc-node .fc-ico{font-size:19px;margin-bottom:6px}
+.fc-node h6{font-size:11px;font-weight:700;margin-bottom:4px}
+.fc-node p{font-size:9.5px;color:var(--text2);line-height:1.4}
+.fc-node .fc-tag{position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-size:8px;background:var(--cyan);color:var(--bg);padding:1px 8px;border-radius:8px;font-weight:700;white-space:nowrap}
+.fc-arrow{display:flex;align-items:center;justify-content:center;color:var(--cyan);font-size:18px;flex:0 0 26px}
+.rev-flow{display:grid;grid-template-columns:1.1fr 30px 1.4fr;gap:0;align-items:center}
+.rf-source{background:linear-gradient(135deg,var(--cyan-dim),var(--blue-dim));border:1px solid rgba(0,212,255,.3);border-radius:10px;padding:16px;text-align:center}
+.rf-source .big{font-size:22px;font-weight:700;color:var(--cyan)}
+.rf-source .lbl{font-size:10px;color:var(--text2);margin-top:4px}
+.rf-arrow{text-align:center;color:var(--text3);font-size:18px}
+.rf-dest{display:flex;flex-direction:column;gap:6px}
+.rf-item{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:9px 12px}
+.rf-item .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.rf-item .nm{font-size:11px;flex:1}
+.rf-item .nm small{color:var(--text2);font-size:9.5px}
+.rf-item .amt{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+.rf-item .pctv{font-size:9px;color:var(--text3);width:38px;text-align:right}
+
+/* TAM SAM SOM */
+.tss{display:grid;grid-template-columns:1.25fr 1fr;gap:20px;align-items:center}
+.funnel{display:flex;flex-direction:column;gap:9px;align-items:center;padding:6px 0}
+.fbar{border-radius:10px;padding:14px 16px;text-align:center;position:relative;transition:all .2s}
+.fbar:hover{transform:scale(1.02)}
+.fbar .ft{font-size:10px;text-transform:uppercase;letter-spacing:.06em;opacity:.85;font-weight:600}
+.fbar .fv{font-size:21px;font-weight:700;line-height:1.1;margin-top:2px}
+.fbar .fd{font-size:10px;opacity:.8;margin-top:3px}
+.fbar.tam{width:100%;background:linear-gradient(135deg,#0b3a4a,#10212e);border:1px solid var(--cyan)}
+.fbar.tam .fv{color:var(--cyan)}
+.fbar.sam{width:74%;background:linear-gradient(135deg,#10322a,#11211c);border:1px solid var(--green)}
+.fbar.sam .fv{color:var(--green)}
+.fbar.som{width:48%;background:linear-gradient(135deg,#3a2f12,#22200f);border:1px solid var(--amber)}
+.fbar.som .fv{color:var(--amber)}
+.tss-detail{display:flex;flex-direction:column;gap:11px}
+.tss-row{border-left:3px solid var(--border2);padding:4px 0 4px 12px}
+.tss-row.tam{border-color:var(--cyan)}.tss-row.sam{border-color:var(--green)}.tss-row.som{border-color:var(--amber)}
+.tss-row h6{font-size:11px;font-weight:700;margin-bottom:3px}
+.tss-row p{font-size:10.5px;color:var(--text2);line-height:1.5}
+.tss-row .meth{font-size:9.5px;color:var(--text3);margin-top:3px;font-style:italic}
+
 /* SMART CONTRACT */
 .sc-page{width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr;overflow:hidden}
 .sc-head2{grid-column:1/-1;padding:13px 22px;border-bottom:1px solid var(--border);background:var(--bg2);display:flex;align-items:center;justify-content:space-between}
@@ -785,6 +827,14 @@ function renderBusiness(){
   const plnRetained=annKwh*(950-PORT.coupon_per_kwh); // Rp550/kWh
   const float40=PORT.fv_total*0.4;
   const tradingFee=PORT.fv_total*0.3*0.005;
+  // TAM / SAM / SOM (kapitalisasi token yang dapat ditokenisasi)
+  const avgCapUnit=PORT.fv_total/PORT.n_station;           // ~Rp 253 jt/unit (aktual Jabar)
+  const samUnits=3000, samFactor=0.70;                     // ±3.000 SPKLU PLN nasional, 70% utilisasi vs Jabar
+  const samCap=samUnits*avgCapUnit*samFactor;
+  const samRev=(PORT.tot_rev_y/PORT.n_station)*samUnits*samFactor;
+  const tamUnits=30000, tamAvgCap=400e6;                   // ±30.000 titik publik 2030, utilisasi matang
+  const tamCap=tamUnits*tamAvgCap;
+  const tamRev=10e12;
   const b=document.getElementById('business-body');
   b.innerHTML=`
   <div class="hero">
@@ -840,6 +890,61 @@ function renderBusiness(){
     </table>
   </div>
   <div class="disclaimer" style="margin-top:10px">Marjin ditahan bersifat berulang/tahunan; modal hasil tokenisasi bersifat sekali cair (dipakai membangun SPKLU baru yang kemudian menambah marjin &amp; pendapatan fee). Angka berbasis run-rate Maret 2026.</div>
+
+  <div class="section-title">Flowchart Bisnis — dari aset ke pasar <span class="line"></span></div>
+  <div class="card">
+    <div class="flowchart">
+      <div class="fc-node"><div class="fc-tag">ASET</div><div class="fc-ico">⚡</div><h6>SPKLU Beroperasi</h6><p>329 unit milik PLN, sudah menghasilkan arus kas</p></div>
+      <div class="fc-arrow">→</div>
+      <div class="fc-node"><div class="fc-tag">VERIFIKASI</div><div class="fc-ico">📡</div><h6>Oracle Meter</h6><p>Tiap kWh tercatat on-chain, real-time &amp; auditable</p></div>
+      <div class="fc-arrow">→</div>
+      <div class="fc-node"><div class="fc-tag">MINT</div><div class="fc-ico">🪙</div><h6>Cetak Token SRT</h6><p>Smart contract: Fair Value ÷ par = supply token</p></div>
+      <div class="fc-arrow">→</div>
+      <div class="fc-node"><div class="fc-tag">LISTING</div><div class="fc-ico">🏛️</div><h6>Bursa Sekunder</h6><p>Float 40% dilepas; PLN tetap pemilik &amp; operator</p></div>
+      <div class="fc-arrow">→</div>
+      <div class="fc-node"><div class="fc-tag">TRADING</div><div class="fc-ico">📈</div><h6>Investor</h6><p>Jual-beli token bebas; harga via price discovery</p></div>
+      <div class="fc-arrow">→</div>
+      <div class="fc-node"><div class="fc-tag">YIELD</div><div class="fc-ico">💸</div><h6>Distribusi Bulanan</h6><p>Coupon dibagikan pro-rata ke holder, on-chain</p></div>
+    </div>
+    <div style="text-align:center;font-size:10px;color:var(--text3);margin-top:10px">↺ Modal hasil listing → bangun SPKLU baru → volume naik → nilai token &amp; pendapatan PLN ikut naik (efek bola salju)</div>
+  </div>
+
+  <div class="section-title">Alur Pendapatan per kWh (Rp 2.608) <span class="line"></span></div>
+  <div class="card">
+    <div class="rev-flow">
+      <div class="rf-source"><div class="big">Rp 2.608</div><div class="lbl">dibayar pengguna EV<br>per kWh (rata-rata aktual)</div></div>
+      <div class="rf-arrow">⟶</div>
+      <div class="rf-dest">
+        <div class="rf-item"><span class="dot" style="background:var(--red)"></span><span class="nm">PPJ → Pemda <small>pajak pass-through</small></span><span class="amt">Rp 142</span><span class="pctv">5,4%</span></div>
+        <div class="rf-item"><span class="dot" style="background:var(--amber)"></span><span class="nm">Beban pokok listrik <small>curah + susut jaringan</small></span><span class="amt">Rp 1.150</span><span class="pctv">44%</span></div>
+        <div class="rf-item"><span class="dot" style="background:var(--blue)"></span><span class="nm">O&amp;M, IoT, payment, asuransi <small>biaya operasi</small></span><span class="amt">Rp 366</span><span class="pctv">14%</span></div>
+        <div class="rf-item" style="border-color:var(--purple)"><span class="dot" style="background:var(--purple)"></span><span class="nm">Coupon pemegang token <small>bagi hasil investor</small></span><span class="amt" style="color:var(--purple)">Rp 400</span><span class="pctv">15%</span></div>
+        <div class="rf-item" style="border-color:var(--green)"><span class="dot" style="background:var(--green)"></span><span class="nm">Marjin ditahan PLN <small>+ kepemilikan aset 100%</small></span><span class="amt" style="color:var(--green)">Rp 550</span><span class="pctv">21%</span></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:14px;margin-top:14px;flex-wrap:wrap">
+      <div class="pill">PLN dari 1 kWh: <b>Rp 550 marjin + Rp 400 dikelola</b></div>
+      <div class="pill">Investor: <b>Rp 400/kWh × volume token</b></div>
+      <div class="pill">× ${fmt(Math.round(PORT.tot_kwh_y/1e6))} jt kWh/th</div>
+    </div>
+  </div>
+
+  <div class="section-title">Analisa Pasar — TAM / SAM / SOM <span class="line"></span></div>
+  <div class="card">
+    <div class="tss">
+      <div class="funnel">
+        <div class="fbar tam"><div class="ft">TAM · Total Addressable Market</div><div class="fv">${rpShort(tamCap)}</div><div class="fd">Tokenisasi hak pendapatan seluruh charging point publik Indonesia (PLN + swasta), proyeksi 2030</div></div>
+        <div class="fbar sam"><div class="ft">SAM · Serviceable Available Market</div><div class="fv">${rpShort(samCap)}</div><div class="fd">Seluruh jaringan SPKLU PLN nasional (jangka menengah)</div></div>
+        <div class="fbar som"><div class="ft">SOM · Serviceable Obtainable Market</div><div class="fv">${rpShort(PORT.fv_total)}</div><div class="fd">329 SPKLU Jabar aktif — dapat ditokenisasi sekarang (data riil)</div></div>
+      </div>
+      <div class="tss-detail">
+        <div class="tss-row tam"><h6>TAM — ${rpShort(tamCap)} kapitalisasi · ±${rpShort(tamRev)}/th GMV</h6><p>Seluruh ekosistem pengisian EV publik Indonesia saat transisi energi matang (target ±30.000 titik, 2030).</p><div class="meth">Asumsi: 30.000 titik × avg kapitalisasi Rp 400 jt/unit (utilisasi matang).</div></div>
+        <div class="tss-row sam"><h6>SAM — ${rpShort(samCap)} kapitalisasi · ±${rpShort(samRev)}/th GMV</h6><p>Jaringan SPKLU PLN di seluruh Indonesia yang dapat dilayani model tokenisasi ini.</p><div class="meth">Asumsi: ±3.000 SPKLU PLN × ${rpShort(avgCapUnit)}/unit (skala unit-ekonomi Jabar) × 70% faktor utilisasi luar Jabar.</div></div>
+        <div class="tss-row som"><h6>SOM — ${rpShort(PORT.fv_total)} kapitalisasi · ${rpShort(PORT.tot_rev_y)}/th GMV</h6><p>Yang realistis ditangkap sekarang: 329 SPKLU Jabar yang sudah beroperasi &amp; menghasilkan, berbasis 101.020 transaksi aktual.</p><div class="meth">Bukan asumsi — angka aktual Maret 2026 (${fmt(PORT.n_station)} aset, ${fmt(PORT.supply_total)} token).</div></div>
+      </div>
+    </div>
+    <div class="disclaimer" style="margin-top:14px">Funnel digambar pada skala logaritmik (visual). SOM berbasis data riil; SAM &amp; TAM adalah estimasi top-down yang diturunkan dari unit-ekonomi Jabar dengan asumsi jumlah unit &amp; utilisasi yang dinyatakan eksplisit — bukan angka final, melainkan kerangka ukuran pasar.</div>
+  </div>
 
   <div class="section-title">Business Model Canvas <span class="line"></span></div>
   <div class="canvas">
