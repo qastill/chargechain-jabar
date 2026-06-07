@@ -411,6 +411,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>
       <div class="nav-tooltip">Pendapatan Tidak Langsung</div>
     </button>
+    <button class="nav-btn" onclick="switchTab('devtoken')" data-tab="devtoken">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V8l4-3 4 3v13"/><path d="M13 21V11l4-3 4 3v10"/><path d="M9 12v.01M9 16v.01"/></svg>
+      <div class="nav-tooltip">Development Token (Skema B)</div>
+    </button>
     <button class="nav-btn" onclick="switchTab('contract')" data-tab="contract">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
       <div class="nav-tooltip">Smart Contract</div>
@@ -551,6 +555,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
           <span class="badge">Hidden Revenue · kWh Uplift</span>
         </div>
         <div class="page-body" id="indirect-body"></div>
+      </div>
+    </div>
+
+    <!-- DEVELOPMENT TOKEN (SKEMA B) -->
+    <div class="panel" id="panel-devtoken">
+      <div class="page">
+        <div class="page-head">
+          <div><h2><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V8l4-3 4 3v13"/><path d="M13 21V11l4-3 4 3v10"/></svg> Development Token — Skema B (Pendanaan SPKLU Baru)</h2>
+            <div class="ph-sub">Greenfield / project finance: galang modal membangun SPKLU baru → menjawab langsung gap 6.400 unit. Nilai token di-anchor ke NAV proyek</div></div>
+          <span class="badge">Greenfield · Project Finance</span>
+        </div>
+        <div class="page-body" id="devtoken-body"></div>
       </div>
     </div>
 
@@ -1220,6 +1236,161 @@ function renderIndirect(){
   `;
 }
 
+/* ═══════════ DEVELOPMENT TOKEN — SKEMA B ═══════════ */
+function renderDevtoken(){
+  const b=document.getElementById('devtoken-body');
+  const par=PORT.par;                 // Rp 100.000
+  const capex=2.0e9;                  // CAPEX 1 SPKLU DC fast (ilustratif)
+  const supply=Math.round(capex/par);// 20.000 token
+  // Lintasan NAV per token (ilustratif) — gain berasal dari kompresi premi risiko + ramp arus kas
+  const nav=[
+    {st:'Penerbitan (Par)',t:'T0',dr:'—',v:100000,c:'var(--text2)',src:'Token = kontribusi biaya konstruksi (CAPEX). Dana masuk escrow SPV.'},
+    {st:'Konstruksi',t:'0–9 bln',dr:'~22%',v:92000,c:'var(--amber)',src:'Belum ada arus kas; risiko konstruksi & komisioning masih melekat → bisa di bawah par.'},
+    {st:'COD / Operasi',t:'Y1',dr:'~18%',v:110000,c:'var(--blue)',src:'Aset beroperasi, arus kas mulai mengalir, premi risiko konstruksi hilang.'},
+    {st:'Ramp-up',t:'Y2',dr:'~15%',v:125000,c:'var(--cyan)',src:'Utilisasi naik 25% → 45%; arus kas membesar, risiko ramp berkurang.'},
+    {st:'Matang',t:'Y3+',dr:'~12%',v:150000,c:'var(--green)',src:'Arus kas stabil, dihargai cap rate operasional — setara aset Skema A.'},
+  ];
+  const gainPct=Math.round((nav[4].v-par)/par*100);
+  let navNodes='';
+  nav.forEach((n,i)=>{
+    navNodes+=`<div class="fc-node" style="border-color:${n.c}"><div class="fc-tag" style="background:${n.c}">${n.t}</div>`+
+      `<h6>${n.st}</h6><div style="font-size:16px;font-weight:800;color:${n.c};margin:4px 0">${rp(n.v)}</div>`+
+      `<p style="margin-bottom:4px">disc. rate ${n.dr}</p><p>${n.src}</p></div>`;
+    if(i<nav.length-1) navNodes+=`<div class="fc-arrow">→</div>`;
+  });
+
+  // Tabel valuasi per tahap (NAV)
+  let navRows='';
+  nav.forEach(n=>{ navRows+=`<tr><td>${n.st} <span class="muted">(${n.t})</span></td><td style="text-align:center">${n.dr}</td><td class="r" style="color:${n.c}">${rp(n.v)}</td><td class="r">${n.v>=par?'+':''}${Math.round((n.v-par)/par*100)}%</td></tr>`; });
+
+  // Head-to-head Skema A vs B
+  const cmp=[
+    ['Menjawab gap SPKLU baru?','Tidak langsung — recycling modal','✓ Ya — mendanai pembangunan'],
+    ['Underlying','Aset operasional (brownfield)','Proyek baru (greenfield)'],
+    ['Risiko investor','Rendah (kas sudah terbukti)','Tinggi (konstruksi + utilisasi awal)'],
+    ['Daya tarik','Yield stabil, upside kecil','Upside besar (capital gain) + yield'],
+    ['Valuasi','Mudah (DCF kas existing)','Berbasis NAV proyek (per tahap)'],
+    ['Kecepatan launch','Cepat (aset sudah ada)','Lebih lambat (bangun → ramp-up)'],
+    ['Jalur regulasi','≈ KIK-EBA (asset-backed)','≈ Securities Crowdfunding (SCF)'],
+    ['"Kenapa bukan utang?"','Lemah (kas sudah milik PLN)','✓ Kuat (transfer risiko konstruksi)'],
+    ['Ekspansi off-balance-sheet','Tidak (hanya recycling)','✓ Ya (ekspansi tanpa CAPEX PLN)'],
+  ];
+  let cmpRows='';
+  cmp.forEach(r=>{ cmpRows+=`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td style="color:var(--green)">${r[2]}</td></tr>`; });
+
+  // Cash-flow waterfall Skema B (project finance)
+  const wf=[
+    ['1 · Penggalangan','Token dijual @ par (= biaya konstruksi)','Investor → SPV (escrow)'],
+    ['2 · Pencairan bertahap','Dana dirilis per milestone konstruksi (anti penyalahgunaan)','SPV → kontraktor EPC'],
+    ['3 · COD','SPKLU beroperasi, mulai jual listrik','Aset → arus kas'],
+    ['4 · Biaya wajib','PPJ (Rp 142) + O&M (Rp 366) per kWh','Pemda + operator'],
+    ['5 · Penjualan energi','Energi Rp 1.150/kWh ke bisnis inti PLN','PLN (sebagian dibagi sbg kompensasi pendanaan)'],
+    ['6 · Distribusi prioritas','Arus kas charging → token holder s/d target IRR (window ~8 thn)','SENIOR: Development token holder'],
+    ['7 · Residual','Sisa arus kas setelah distribusi prioritas','PLN'],
+    ['8 · Akhir window','Aset & seluruh arus kas kembali penuh ke PLN','PLN (kepemilikan tetap 100%)'],
+  ];
+  let wfRows='';
+  wf.forEach(r=>{ wfRows+=`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td class="r" style="font-weight:600">${r[2]}</td></tr>`; });
+
+  // Risiko Skema B & mitigasi
+  const risks=[
+    ['Utilisasi awal rendah (1–2 thn) → investor "nyangkut"','SPKLU baru lazim sepi di tahun pertama sebelum dikenal pengguna.',
+     'Bangun <b>hanya di lokasi tervalidasi</b> (data trafik tol/rest area); sediakan <b>ramp-up reserve / yield floor</b> selama masa ramp; <b>lock-up</b> bertahap; pertimbangkan <b>minimum revenue undertaking</b> dari PLN selama window.'],
+    ['Risiko reputasi PLN (ritel rugi di produk ber-merek PLN)','Kerugian ritel pada produk PLN = mimpi buruk reputasi.',
+     'Fase awal Skema B <b>institusi dulu</b> (SCF/anchor), ritel menyusul setelah track record; <b>disclosure penuh</b>; framing tegas <b>"nilai bisa naik ATAU turun"</b> — bukan janji return.'],
+    ['Capital gain dianggap spekulatif / mirip Ponzi','Jika nilai naik karena pembeli baru, bukan kinerja aset, OJK pasti menindak.',
+     'Kenaikan <b>di-anchor ke NAV</b>: berasal dari hilangnya premi risiko konstruksi + naiknya arus kas riil, <b>bukan</b> permintaan spekulatif. NAV dihitung & dipublikasikan transparan.'],
+    ['Valuasi sulit (aset belum hasilkan kas)','Tahap pra-operasi tidak punya arus kas untuk DCF langsung.',
+     '<b>Penilai independen</b> + metodologi NAV per tahap yang dipublikasi (discount rate turun seiring risiko hilang); audit eksternal saat COD.'],
+    ['Regulasi berlapis (A vs B beda izin)','Skema A ≈ KIK-EBA, Skema B ≈ SCF — struktur hukum berbeda.',
+     'Petakan sejak awal dengan <b>Divisi Hukum + konsultan pasar modal</b>; mulai Skema B via <b>penyelenggara SCF berlisensi</b> + OJK Sandbox.'],
+  ];
+  let riskHtml='';
+  risks.forEach((w,i)=>{ riskHtml+=`<div class="wk-card"><div class="wk-head"><div class="wk-num">${i+1}</div><div class="wk-title">${w[0]}</div></div>`+
+    `<div class="wk-risk"><b>Risiko:</b> ${w[1]}</div>`+
+    `<div class="wk-fix"><span class="fx">✓ Mitigasi</span>${w[2]}</div></div>`; });
+
+  b.innerHTML=`
+  <div class="hero">
+    <h1>Skema A memonetisasi yang <span>sudah ada</span>. Skema B membangun yang <span>belum ada</span> — menjawab langsung gap 6.400 SPKLU.</h1>
+    <p>Development Token adalah <b>project finance on-chain</b>: kebutuhan modal tiap lokasi SPKLU baru dipublikasikan → ditokenisasi → investor ikut mendanai pembangunan. Setelah jadi & beroperasi, nilai token (NAV) naik seiring hilangnya risiko konstruksi dan naiknya arus kas — investor bisa menjual (capital gain) dan menerima bagi hasil. Imbalannya layak karena <b>risiko konstruksi & utilisasi awal ditransfer ke investor yang bersedia</b> — inilah jawaban kuat atas "kenapa bukan utang".</p>
+    <div class="pill-row">
+      <div class="pill">Anchor: <b>NAV proyek</b>, bukan spekulasi</div>
+      <div class="pill">Transfer risiko konstruksi <b>ke investor</b></div>
+      <div class="pill">Ekspansi <b>off-balance-sheet</b> untuk PLN</div>
+    </div>
+  </div>
+
+  <div class="section-title">Dua mesin, satu platform <span class="line"></span></div>
+  <div class="grid2">
+    <div class="card" style="border-left:3px solid var(--blue)">
+      <h4 style="color:var(--blue)">Skema A — Yield Token <span style="color:var(--text3);text-transform:none;letter-spacing:0">· brownfield</span></h4>
+      <p style="font-size:11.5px;color:var(--text2);line-height:1.65">Tokenisasi hak arus kas SPKLU yang <b>sudah operasional</b>. Aset sudah menghasilkan; investor membeli slice arus kas yang ada. Risiko rendah, yield stabil, regulasi lebih bersih (≈ KIK-EBA). <b>Peran: etalase kepercayaan.</b></p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--green)">
+      <h4 style="color:var(--green)">Skema B — Development Token <span style="color:var(--text3);text-transform:none;letter-spacing:0">· greenfield</span></h4>
+      <p style="font-size:11.5px;color:var(--text2);line-height:1.65">Tokenisasi <b>kebutuhan modal SPKLU baru</b>. Investor mendanai pembangunan; nilai naik saat aset jadi & berkinerja. Risiko lebih tinggi, upside lebih besar (≈ SCF). <b>Peran: mesin pertumbuhan & jawaban atas gap RUPTL.</b></p>
+    </div>
+  </div>
+
+  <div class="section-title">Perbandingan head-to-head <span class="line"></span></div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="flow-table">
+      <thead><tr><th>Dimensi</th><th>Skema A — Yield Token</th><th>Skema B — Development Token</th></tr></thead>
+      <tbody>${cmpRows}</tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Strategi bertahap (sequenced) — bukan pilih salah satu <span class="line"></span></div>
+  <div class="card">
+    <div class="flowchart">
+      <div class="fc-node" style="border-color:var(--blue)"><div class="fc-tag" style="background:var(--blue)">FASE 1</div><div class="fc-ico">🏛️</div><h6>Pilot Skema A</h6><p>Tokenisasi sekeranjang SPKLU terbaik yang sudah operasional. Bukti platform jalan, track record, kenyamanan regulator.</p></div>
+      <div class="fc-arrow">→</div>
+      <div class="fc-node" style="border-color:var(--cyan)"><div class="fc-tag" style="background:var(--cyan)">JEMBATAN</div><div class="fc-ico">📊</div><h6>Track Record</h6><p>"SPKLU existing kami sudah bagi hasil sesuai janji." Basis investor yang percaya + data kinerja nyata.</p></div>
+      <div class="fc-arrow">→</div>
+      <div class="fc-node" style="border-color:var(--green)"><div class="fc-tag" style="background:var(--green)">FASE 2</div><div class="fc-ico">🏗️</div><h6>Skema B sebagai produk utama</h6><p>Tawarkan development tranche untuk pipeline SPKLU baru. Kepercayaan Fase 1 men-de-risk Fase 2.</p></div>
+    </div>
+    <div style="text-align:center;font-size:10px;color:var(--text3);margin-top:10px">Kita tidak meminta ritel mendanai aset yang belum ada sebelum ada bukti apa pun. A = "realistis sekarang", B = "visi besar & jawaban gap".</div>
+  </div>
+
+  <div class="section-title">Mekanik nilai "beli → naik → jual" — di-anchor ke NAV <span class="line"></span></div>
+  <div class="card">
+    <div class="flowchart">${navNodes}</div>
+    <div style="text-align:center;font-size:11px;color:var(--green);font-weight:600;margin-top:8px">Potensi capital gain T0 → matang: +${gainPct}% — seluruhnya dari hilangnya premi risiko konstruksi/ramp + naiknya arus kas riil, bukan dari pembeli baru.</div>
+  </div>
+  <div class="card" style="margin-top:14px;padding:0;overflow:hidden">
+    <table class="flow-table">
+      <thead><tr><th>Tahap (waktu)</th><th style="text-align:center">Discount rate</th><th style="text-align:right">NAV / token</th><th style="text-align:right">vs Par</th></tr></thead>
+      <tbody>${navRows}</tbody>
+    </table>
+  </div>
+  <div class="disclaimer" style="margin-top:10px;border-style:solid;border-color:var(--amber)"><b style="color:var(--amber)">⚠ Penting — bukan janji return.</b> NAV bisa juga <b>TURUN</b> jika konstruksi molor, biaya bengkak, atau utilisasi di bawah proyeksi. Kenaikan nilai sah hanya bila bersumber dari penyelesaian proyek & kinerja aset (kompresi discount rate atas arus kas yang makin pasti) — <b>bukan</b> permintaan spekulatif. Angka NAV ilustratif untuk 1 SPKLU DC fast (CAPEX ${rpShort(capex)}, ${fmt(supply)} token @ ${rp(par)}).</div>
+
+  <div class="section-title">Cash-flow waterfall Skema B (project finance) <span class="line"></span></div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="flow-table">
+      <thead><tr><th>Tahap</th><th>Mekanisme</th><th style="text-align:right">Aliran / Penerima</th></tr></thead>
+      <tbody>${wfRows}</tbody>
+    </table>
+  </div>
+  <div class="disclaimer" style="margin-top:10px">Berbeda dari Skema A (distribusi pro-rata arus kas existing), Skema B berstruktur <b>prioritas (senior)</b>: token holder didahulukan sampai target IRR selama window, setelah itu arus kas & aset kembali penuh ke PLN. Skema B layak karena PLN tetap menikmati <b>penjualan energi Rp 1.150/kWh</b> (lihat halaman Pendapatan Tidak Langsung) + aset baru tanpa CAPEX PLN — sebagian nilai energi inilah yang membuat imbalan investor dapat dibiayai.</div>
+
+  <div class="section-title">Risiko Skema B &amp; mitigasi <span class="line"></span></div>
+  <div class="grid2">${riskHtml}</div>
+
+  <div class="section-title">Catatan regulasi <span class="line"></span></div>
+  <div class="card">
+    <p style="font-size:11.5px;color:var(--text2);line-height:1.7">Dua skema kemungkinan butuh izin berbeda: <b>Skema A ≈ KIK-EBA / sekuritisasi aset</b> (asset-backed), <b>Skema B ≈ Securities Crowdfunding (SCF)</b> karena menggalang modal untuk proyek/usaha (disclosure lebih berat). Bila keduanya dijalankan, struktur hukumnya <b>berlapis</b> dan wajib dipetakan sejak awal bersama Divisi Hukum PLN + konsultan pasar modal, dimulai dari OJK Sandbox.</p>
+  </div>
+
+  <div class="dl-foot">
+    <span>🏗️ Skema B menjawab gap RUPTL; ekonominya ditopang penjualan listrik dari aset baru.</span>
+    <a class="dl-btn alt" onclick="switchTab('indirect')">⚡ Pendapatan Tidak Langsung</a>
+    <a class="dl-btn alt" onclick="switchTab('tokenomics')">Tokenomics (Skema A) →</a>
+  </div>
+  `;
+}
+
 /* ═══════════ FAQ & MITIGASI RISIKO ═══════════ */
 function renderFAQ(){
   const b=document.getElementById('faq-body');
@@ -1374,7 +1545,7 @@ function boot(){
   document.getElementById('mo-kwh').textContent=(PORT.tot_kwh_m/1e6).toFixed(2).replace('.',',')+' GWh';
   document.getElementById('mo-cap').textContent=rpShort(PORT.fv_total);
   document.getElementById('mo-yield').textContent=(PORT.cap_rate*100).toString().replace('.',',')+'%';
-  renderStationList();renderMarket();renderTokenomics();renderBusiness();renderIndirect();renderContract();renderFAQ();
+  renderStationList();renderMarket();renderTokenomics();renderBusiness();renderIndirect();renderDevtoken();renderContract();renderFAQ();
   if(tradeable().length)selectToken(tradeable()[0].id);
   initMap();
 }
