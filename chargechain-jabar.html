@@ -334,6 +334,31 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 .modal-overlay.show{display:flex}
 .modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:24px;max-width:440px;width:90%;max-height:85vh;overflow-y:auto}
 .disclaimer{font-size:10px;color:var(--text3);line-height:1.5;padding:12px 16px;background:var(--bg2);border:1px dashed var(--border2);border-radius:8px;margin-top:16px}
+/* FAQ */
+.faq-cat{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--cyan);margin:22px 0 10px;display:flex;align-items:center;gap:8px}
+.faq-cat:first-child{margin-top:4px}
+.faq-cat .line{flex:1;height:1px;background:var(--border)}
+.faq-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;transition:border-color .15s}
+.faq-item[open]{border-color:var(--border2)}
+.faq-item summary{list-style:none;cursor:pointer;padding:13px 16px;display:flex;align-items:flex-start;gap:10px;font-size:12.5px;font-weight:600;color:var(--text);user-select:none}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary .q{flex:1}
+.faq-item summary .chev{color:var(--text2);transition:transform .2s;flex-shrink:0;margin-top:1px}
+.faq-item[open] summary .chev{transform:rotate(180deg)}
+.faq-item summary .qno{font-size:10px;font-weight:700;color:var(--cyan);background:var(--cyan-dim);padding:2px 7px;border-radius:6px;flex-shrink:0}
+.faq-ans{padding:0 16px 14px 49px;font-size:11.5px;color:var(--text2);line-height:1.65}
+.faq-ans b{color:var(--text)}
+.faq-ans .lead{display:inline-block;color:var(--green);font-weight:600;margin-bottom:5px}
+/* Weakness / mitigation cards */
+.wk-card{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:10px;padding:15px 16px;display:flex;flex-direction:column;gap:10px}
+.wk-card .wk-head{display:flex;align-items:flex-start;gap:9px}
+.wk-card .wk-num{font-size:11px;font-weight:700;color:var(--amber);background:var(--amber-dim);width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.wk-card .wk-title{font-size:12.5px;font-weight:600;line-height:1.4}
+.wk-card .wk-risk{font-size:11px;color:var(--text2);line-height:1.6}
+.wk-card .wk-risk b{color:var(--red)}
+.wk-card .wk-fix{font-size:11px;color:var(--text2);line-height:1.6;background:var(--green-dim);border:1px solid rgba(63,185,80,.25);border-radius:8px;padding:10px 12px}
+.wk-card .wk-fix .fx{color:var(--green);font-weight:700;font-size:9px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.wk-card .wk-fix b{color:var(--text)}
 @media(max-width:1100px){.grid4{grid-template-columns:repeat(2,1fr)}.canvas{grid-template-columns:repeat(2,1fr)}.dash{grid-template-columns:1fr 320px}}
 
 .leaflet-container{background:#070B0E}
@@ -385,6 +410,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
     <button class="nav-btn" onclick="switchTab('contract')" data-tab="contract">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
       <div class="nav-tooltip">Smart Contract</div>
+    </button>
+    <button class="nav-btn" onclick="switchTab('faq')" data-tab="faq">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+      <div class="nav-tooltip">FAQ &amp; Mitigasi Risiko</div>
     </button>
   </div>
 
@@ -518,6 +547,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
         </div>
         <div class="sc-col left" id="sc-left"></div>
         <div class="sc-col right" id="sc-right"></div>
+      </div>
+    </div>
+
+    <!-- FAQ & MITIGASI RISIKO -->
+    <div class="panel" id="panel-faq">
+      <div class="page">
+        <div class="page-head">
+          <div><h2><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg> FAQ &amp; Mitigasi Risiko</h2>
+            <div class="ph-sub">Antisipasi pertanyaan dewan juri + kelemahan jujur model ini &amp; cara kami mengatasinya</div></div>
+          <span class="badge">Q&amp;A · Honest Risk</span>
+        </div>
+        <div class="page-body" id="faq-body"></div>
       </div>
     </div>
   </div>
@@ -1072,6 +1113,149 @@ function renderContract(){
     <div class="disclaimer">Simulasi event. Oracle meter terhubung ke sistem billing SPKLU mencatat tiap kWh; coupon terakru otomatis &amp; didistribusikan bulanan ke pemegang token secara pro-rata.</div>`;
 }
 
+/* ═══════════ FAQ & MITIGASI RISIKO ═══════════ */
+function renderFAQ(){
+  const b=document.getElementById('faq-body');
+  // Kategori FAQ — pertanyaan & jawaban (posisi sudah disesuaikan dengan mitigasi/perbaikan)
+  const cats=[
+    {t:'Masalah & Peluang', items:[
+      ['Apa masalah inti yang ChargeChain selesaikan?',
+       'Gap pendanaan & pemanfaatan SPKLU. Penjualan EV melonjak (22.500 unit Q1-2026) tapi SPKLU baru 3.233 unit — rasio 1:21 vs ideal 1:10. Target RUPTL 62.918 SPKLU 2030 sulit dicapai hanya dengan CAPEX/utang konvensional. ChargeChain <b>mencairkan nilai arus kas SPKLU yang sudah beroperasi</b> menjadi modal hari ini, tanpa menjual aset & tanpa menambah utang.'],
+      ['Kenapa sekarang (why now)?',
+       'Tiga pemicu bertemu: (1) kerangka aset keuangan digital sudah aktif di OJK (UU P2SK & POJK 27/2024), (2) mandat Danantara mendorong monetisasi & <i>capital recycling</i> aset BUMN, (3) pasar EV & investor ritel meledak (11,7 juta investor ritel, +18% YoY). Window-nya sempit — kalau swasta menokenisasi SPKLU privat duluan, PLN jadi follower.'],
+      ['Bukankah ini cuma ikut tren "tokenisasi"?',
+       'Tidak. Underlying-nya <b>aset fisik riil PLN yang sudah operasional & menghasilkan arus kas</b> — bukan token spekulatif. Kekuatan kami: aset nyata + data utilisasi real-time yang tidak dimiliki pemain tokenisasi lain.'],
+    ]},
+    {t:'Solusi, Novelty & Blockchain', items:[
+      ['Jelaskan solusinya dalam 30 detik.',
+       'Sekuritisasi digital atas hak <b>sebagian arus kas</b> SPKLU. Aset tetap 100% milik PLN; investor membeli hak atas sebagian arus kas charging mulai Rp100rb, dividen terdistribusi otomatis lewat smart contract, dan token dapat diperdagangkan di pasar sekunder. PLN dapat modal + utilisasi naik; investor dapat yield hijau berbasis aset riil.'],
+      ['Kenapa harus blockchain, kenapa bukan KIK-EBA/reksa dana biasa?',
+       'EBA/reksa dana konvensional tidak ekonomis untuk tiket Rp100rb dengan distribusi dividen otomatis & likuiditas harian. Blockchain membuat <i>micro-ticket</i>, auto-distribution, dan transparansi audit jadi murah & real-time. Blockchain di sini <b>infrastruktur efisiensi, bukan gimmick</b>.'],
+      ['Kalau teknologinya gagal/diserang, apa yang terjadi ke aset PLN?',
+       'Aset fisik SPKLU tidak pernah berpindah — selalu 100% milik PLN. Token hanya merepresentasikan hak arus kas yang dikelola SPV. Risiko teknologi tidak menyentuh kepemilikan aset; mitigasi: audit smart contract pihak ketiga + asuransi siber.'],
+    ]},
+    {t:'Regulasi & Legal', items:[
+      ['Apakah token ini legal di Indonesia?',
+       'Kerangkanya sudah ada. Karena token kami berbagi hasil ke publik, kami memperlakukannya sebagai <b>efek</b> dan menempuh jalur berlisensi OJK — <b>menggandeng penyelenggara Securities Crowdfunding (SCF) yang sudah berlisensi</b> atau struktur KIK-EBA, bukan kripto bebas. Struktur final divalidasi dengan Divisi Hukum PLN + konsultan pasar modal.'],
+      ['Bagaimana kalau izin OJK lama atau ditolak?',
+       '<span class="lead">Ini risiko eksistensial, jadi kami de-risk sejak awal.</span> Tiga lapis: (1) <b>pinjam lisensi</b> penyelenggara SCF yang sudah ada alih-alih bikin baru; (2) mulai dari OJK Sandbox; (3) <b>Plan B</b> — struktur KIK-EBA biasa tanpa tokenisasi ritel, supaya ide tetap hidup walau tokenisasi penuh belum dikabulkan.'],
+      ['Apakah PLN boleh "menjual" arus kas aset negara?',
+       'Yang dilepas adalah <b>hak atas sebagian arus kas</b>, bukan aset/kepemilikan. Ini selaras mandat Danantara untuk monetisasi & <i>capital recycling</i> aset BUMN. Dasar kebijakan internal difinalkan dengan Divhukum.'],
+    ]},
+    {t:'Validasi Pasar & Pelanggan', items:[
+      ['Kenapa investor butuh token, bukan reksa dana hijau biasa di Bibit?',
+       '<span class="lead">Kami tidak mengandalkan investor murni — kami mengandalkan pemilik EV.</span> Reksa dana hijau tidak bisa meniru <b>manfaat ganda</b>: holder token sekaligus pengguna SPKLU mendapat loyalty (diskon/prioritas charging) + hak voting (advisory) lokasi SPKLU baru. Itu hook unik yang menaikkan utilisasi SPKLU PLN sekaligus.'],
+      ['Siapa pelanggan pertama (beachhead)?',
+       'Pemilik EV & investor ritel urban Jawa Barat usia 22–40, melek digital, sudah pernah invest, peduli ESG. Diakses lewat komunitas EV (IEVCI/KOLCEV) & PLN Mobile (zero-CAC).'],
+      ['Apa bukti orang mau beli token ini?',
+       'Validasi via survei purchase-intent + wawancara mendalam + waitlist komunitas EV, plus surat dukungan UID Jabar untuk pilot. <b>Angka final diamankan di fase bootcamp</b> — kami sajikan jujur, termasuk hasil yang kurang bagus.'],
+    ]},
+    {t:'Model Bisnis & Revenue', items:[
+      ['PLN dapat uang dari mana, persisnya?',
+       'Yang masuk ke PLN: <b>marjin operasi ditahan</b> (~Rp550/kWh, terbesar & berulang), modal hasil tokenisasi (sekali cair untuk reinvestasi), fee bursa sekunder 0,5%, listing fee, + uplift utilisasi dari efek loyalty. <b>Yield investor BUKAN benefit PLN</b> — itu milik investor (tidak di-double-count).'],
+      ['Apakah pilot Jabar menguntungkan sebagai platform?',
+       '<span class="lead">Tidak, dan kami jujur soal itu.</span> 329 SPKLU × ~Rp215 jt/th ≈ Rp70 M revenue; fee 2% dari AUM masih di bawah biaya dev+legal+audit. <b>Pilot Jabar = proof-of-concept</b>; profitabilitas platform baru tercapai di <b>skala nasional + multi-aset</b>. Kalau juri mengira Jabar harus untung sendiri, framing-nya keliru.'],
+      ['Apakah model ini scalable di luar SPKLU?',
+       'Ya — itu visi besarnya & sekaligus <i>hedge</i>. Platform yang sama bisa menokenisasi PLTS, aset EBT, & carbon credit, lalu dilisensikan ke BUMN lain via Danantara. SPKLU hanya use case pertama; tesis tidak bergantung hanya pada EV.'],
+    ]},
+    {t:'Keuangan, Yield & Cost of Capital', items:[
+      ['Yield ini kan lebih mahal dari obligasi PLN ~6–7%. Kenapa tidak utang saja?',
+       '<span class="lead">Nilainya bukan "dana murah" — itu transfer risiko + penciptaan demand.</span> (1) <b>Investor menanggung risiko utilisasi</b>, bukan PLN — beda dengan utang yang bunganya wajib bayar apa pun kondisinya; (2) holder = pelanggan loyal → utilisasi & pendapatan kWh PLN naik; (3) <i>capital recycling</i> mempercepat ekspansi (off-balance-sheet); (4) hanya diterapkan ke <b>SPKLU yang CAPEX-nya benar-benar dijatah</b>. Kami posisikan sebagai <b>green premium yang wajar</b>, bukan pengganti obligasi murah.'],
+      ['Dari mana angka yield berasal & apakah dijamin?',
+       'Dari <i>cash-flow waterfall</i>: pendapatan charging − beban listrik (COGS) − O&M − biaya SPV/platform = arus kas bersih yang didistribusi. <b>Yield mengambang (floor + upside), mengikuti kinerja — bukan dijanjikan tetap.</b> Transparan & auditable on-chain.'],
+      ['Bagaimana kalau utilisasi SPKLU rendah, kasnya tidak cukup menutup yield?',
+       'Dua kunci: (1) kami <b>cherry-pick SPKLU top-utilisasi</b> (cash cow) untuk pilot, atau <b>bundle portofolio</b> agar rata-rata; (2) yield variabel — kalau kas turun, distribusi turun (floor + upside), jadi tidak ada janji yang mustahil ditepati. Worst-case (utilisasi 25%) sudah dimodelkan & ROI platform tetap positif.'],
+    ]},
+    {t:'Kompetisi & Moat', items:[
+      ['Kalau fintech/startup swasta meniru, apa moat-nya?',
+       'Mereka tidak punya aset SPKLU, data utilisasi riil, lisensi kelistrikan, & kanal 40+ juta pengguna PLN Mobile. Kombinasi <b>aset + trust BUMN + distribusi</b> inilah moat yang tidak bisa direplikasi swasta.'],
+      ['Kenapa PLN tidak gandeng platform yang sudah ada saja?',
+       'Justru itu strategi de-risk kami: gandeng penyelenggara SCF berlisensi atau PLN Icon Plus sebagai operator teknologi. <b>PLN fokus di aset, data & distribusi; mitra fokus di lisensi & teknologi.</b>'],
+    ]},
+    {t:'Eksekusi, Tim & Tata Kelola', items:[
+      ['Apakah tim punya kompetensi blockchain & pasar modal?',
+       '<span class="lead">Jujur: belum penuh.</span> Tim inti kuat di energi/operasi PLN & data. Untuk blockchain & pasar modal, rencananya <b>rekrut/gandeng spesialis + mitra berlisensi</b> (ada di roadmap SDM). Kami tidak mengklaim ahli yang belum kami miliki.'],
+      ['Bagaimana buy-in internal PLN (Treasury) yang punya opsi utang lebih murah?',
+       'Kami posisikan sebagai <b>pilot dana inovasi</b> di bawah payung Danantara — bukan bersaing dengan Treasury. Framing: <i>capability-building</i> + pendapatan lisensi platform di masa depan + transfer risiko utilisasi. Pilot kecil & terukur dengan gerbang Go/No-Go.'],
+      ['Bagaimana voting holder atas lokasi SPKLU agar tidak bentrok dengan perencanaan grid?',
+       'Voting bersifat <b>advisory (tidak mengikat)</b> dan hanya di antara <b>kandidat lokasi yang sudah disetujui PLN</b> secara teknis/jaringan. Tetap demokratis untuk holder, tanpa mengganggu perencanaan grid PLN.'],
+      ['Bagaimana klaim ESG/CO₂ dipertanggungjawabkan?',
+       'Pakai <b>metodologi resmi</b> (faktor emisi grid KLHK/ESDM) dengan baseline eksplisit & <b>verifikasi pihak ketiga</b> — tidak over-claim. Penghematan CO₂ tercatat auditable on-chain.'],
+    ]},
+  ];
+
+  let faqHtml='';
+  let n=0;
+  cats.forEach(c=>{
+    faqHtml+=`<div class="faq-cat">${c.t}<span class="line"></span></div>`;
+    c.items.forEach(it=>{ n++;
+      faqHtml+=`<details class="faq-item"><summary><span class="qno">${n}</span><span class="q">${it[0]}</span>`+
+        `<svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></summary>`+
+        `<div class="faq-ans">${it[1]}</div></details>`;
+    });
+  });
+
+  // KELEMAHAN JUJUR & CARA MENGATASINYA — semua diubah sesuai solusi
+  const weaknesses=[
+    ['Paradoks cost of capital','Bayar yield lebih tinggi dari obligasi PLN ~6–7% terlihat menghancurkan nilai jika dianggap sekadar "dana murah".',
+     'Reposisi: nilainya = <b>transfer risiko utilisasi ke investor</b> + penciptaan demand (loyalty → utilisasi naik) + capital recycling, bukan biaya dana. Yield ditarik ke kisaran <b>green premium yang wajar</b>, dan tokenisasi <b>dibatasi pada SPKLU yang CAPEX-nya benar-benar dijatah</b>.'],
+    ['Aset mungkin tak cukup hasilkan kas','Utilisasi SPKLU mayoritas masih rendah; setelah COGS + O&M + biaya SPV, sisa kas bersih bisa tipis.',
+     'Tokenisasi hanya SPKLU <b>top-utilisasi (cash cow)</b> atau <b>bundle portofolio</b> agar rata-rata, dengan <b>yield variabel (floor + upside)</b> yang transparan mengikuti kinerja — bukan janji tetap.'],
+    ['Ekonomi platform sub-scale di Jabar','Revenue total Jabar ±Rp70 M; fee platform belum menutup biaya dev + legal + audit.',
+     'Jangan jual pilot Jabar sebagai profit center. Tegaskan <b>pilot = proof-of-concept</b>; profitabilitas butuh <b>skala nasional + multi-aset</b>. Ekspektasi juri dikelola sejak awal.'],
+    ['Risiko regulasi eksistensial','Seluruh bisnis bergantung izin OJK untuk struktur token-efek baru yang bisa makan 12–24+ bulan.',
+     'De-risk: <b>gandeng penyelenggara SCF berlisensi</b> (pinjam lisensi), mulai dari Sandbox, dan siapkan <b>Plan B KIK-EBA biasa</b> tanpa tokenisasi ritel agar ide tetap hidup.'],
+    ['"Kenapa token, bukan reksa dana hijau?"','Untuk investor murni, token menambah kompleksitas; reksa dana sudah familiar, likuid, & diawasi.',
+     'Jangan andalkan investor murni — <b>andalkan pemilik EV</b> dengan manfaat ganda (invest + diskon charging + voting advisory) yang reksa dana tak bisa tiru.'],
+    ['Ilusi likuiditas','"Bursa sekunder 24/7" butuh pembeli nyata; token niche bisa tipis likuiditasnya → investor nyangkut.',
+     'Sediakan <b>market maker + Danantara sebagai backstop</b>, dan jujur bertahap: likuiditas penuh menyusul (mis. Y2 via EBA listed). <b>Kelola ekspektasi</b>, jangan over-promise.'],
+    ['Misalignment insentif internal PLN','Treasury bisa enggan mendukung dana yang lebih mahal & kompleks dibanding opsi konvensional.',
+     'Posisikan sebagai <b>pilot dana inovasi</b> (bukan saingan Treasury), payung Danantara, dengan framing capability-building + pendapatan lisensi platform masa depan.'],
+    ['Ketergantungan pada satu tren EV','Kalau adopsi EV melambat, utilisasi rendah & tesis melemah — risiko konsentrasi.',
+     'Pivot <b>multi-aset (PLTS, EBT, carbon credit)</b> sebagai hedge — eksplisit bahwa platform tidak bergantung hanya pada EV.'],
+    ['Voting lokasi bentrok perencanaan grid','Voting mengikat bisa konflik dengan kendala teknis/jaringan PLN.',
+     'Buat voting <b>advisory</b> dan hanya di antara <b>kandidat lokasi yang sudah disetujui PLN</b> — bukan mengikat.'],
+    ['Klaim ESG/CO₂ longgar','Klaim "ton CO₂ auditable" mudah dipatahkan tanpa metodologi yang kredibel.',
+     'Pakai <b>faktor emisi grid resmi KLHK/ESDM</b> + baseline eksplisit + <b>verifikasi pihak ketiga</b>. Jangan over-claim.'],
+    ['Gap kompetensi tim','Tim kuat di energi/operasi tapi tipis di blockchain & pasar modal → kredibilitas eksekusi turun.',
+     'Tunjukkan rencana <b>rekrut/gandeng spesialis + mitra berlisensi</b> di roadmap SDM. Jujur, tidak mengaku ahli.'],
+    ['Inkonsistensi angka & double-counting','Satuan per-lokasi vs total bisa tertukar; ROI tak boleh memasukkan yield investor sebagai benefit PLN.',
+     'Rekonsiliasi semua angka (per lokasi vs total, per bulan vs per tahun), <b>keluarkan yield investor dari "benefit PLN"</b>, dan pastikan scope (Jabar vs nasional) ditegaskan eksplisit.'],
+  ];
+
+  let wkHtml='';
+  weaknesses.forEach((w,i)=>{
+    wkHtml+=`<div class="wk-card"><div class="wk-head"><div class="wk-num">${i+1}</div><div class="wk-title">${w[0]}</div></div>`+
+      `<div class="wk-risk"><b>Kelemahan:</b> ${w[1]}</div>`+
+      `<div class="wk-fix"><span class="fx">✓ Cara kami mengatasinya</span>${w[2]}</div></div>`;
+  });
+
+  b.innerHTML=`
+  <div class="hero">
+    <h1>Pertanyaan tersulit dewan juri — <span>dijawab terbuka</span>, plus kelemahan yang kami akui &amp; <span>cara kami mengatasinya</span>.</h1>
+    <p>Mengakui kelemahan + menunjukkan mitigasi yang konkret justru menaikkan kredibilitas pada kriteria <b>Risiko &amp; kejujuran bukti</b>. Semua jawaban di bawah sudah disesuaikan dengan perbaikan model: yield sebagai transfer risiko (bukan dana murah), yield mengambang, pilot sebagai proof-of-concept, de-risk regulasi via mitra berlisensi, dan pivot multi-aset.</p>
+    <div class="pill-row">
+      <div class="pill">${n} pertanyaan inti</div>
+      <div class="pill">${weaknesses.length} kelemahan + mitigasi</div>
+      <div class="pill">Posisi <b>sudah diperbaiki</b></div>
+    </div>
+  </div>
+
+  <div class="section-title">Antisipasi Pertanyaan Dewan Juri <span class="line"></span></div>
+  ${faqHtml}
+
+  <div class="section-title" style="margin-top:28px">Kelemahan Jujur &amp; Cara Kami Mengatasinya <span class="line"></span></div>
+  <div class="disclaimer" style="margin-top:0;margin-bottom:14px;border-style:solid;border-color:var(--border2)">Titik terlemah model ini ada di <b>logika finansial (cost of capital + yield vs kas riil aset)</b> dan <b>ketergantungan regulasi</b>. Empat yang paling menentukan: #1, #2, #4, dan #12. Tabel di bawah adalah versi yang sudah kami perbaiki sesuai solusi.</div>
+  <div class="grid2">${wkHtml}</div>
+
+  <div class="dl-foot">
+    <span>📑 Ingin lihat bagaimana mitigasi ini tercermin di model bisnis &amp; tokenomics?</span>
+    <a class="dl-btn alt" onclick="switchTab('business')">Model Bisnis &amp; Potensi PLN →</a>
+    <a class="dl-btn alt" onclick="switchTab('tokenomics')">Tokenomics &amp; Pricing →</a>
+  </div>
+  `;
+}
+
 /* ═══════════ INIT ═══════════ */
 function boot(){
   // topbar
@@ -1083,7 +1267,7 @@ function boot(){
   document.getElementById('mo-kwh').textContent=(PORT.tot_kwh_m/1e6).toFixed(2).replace('.',',')+' GWh';
   document.getElementById('mo-cap').textContent=rpShort(PORT.fv_total);
   document.getElementById('mo-yield').textContent=(PORT.cap_rate*100).toString().replace('.',',')+'%';
-  renderStationList();renderMarket();renderTokenomics();renderBusiness();renderContract();
+  renderStationList();renderMarket();renderTokenomics();renderBusiness();renderContract();renderFAQ();
   if(tradeable().length)selectToken(tradeable()[0].id);
   initMap();
 }
