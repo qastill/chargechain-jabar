@@ -407,6 +407,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"/><path d="M9 9v.01M9 12v.01M9 15v.01"/></svg>
       <div class="nav-tooltip">Model Bisnis & Potensi PLN</div>
     </button>
+    <button class="nav-btn" onclick="switchTab('indirect')" data-tab="indirect">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>
+      <div class="nav-tooltip">Pendapatan Tidak Langsung</div>
+    </button>
     <button class="nav-btn" onclick="switchTab('contract')" data-tab="contract">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
       <div class="nav-tooltip">Smart Contract</div>
@@ -535,6 +539,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
           <span class="badge">Strategic Value</span>
         </div>
         <div class="page-body" id="business-body"></div>
+      </div>
+    </div>
+
+    <!-- PENDAPATAN TIDAK LANGSUNG -->
+    <div class="panel" id="panel-indirect">
+      <div class="page">
+        <div class="page-head">
+          <div><h2><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg> Pendapatan Tidak Langsung — Kenaikan Penjualan Listrik</h2>
+            <div class="ph-sub">Nilai yang sering luput: tiap kWh EV mengisi = listrik yang dijual PLN. Skema ini menaikkan volume → pendapatan energi PLN ikut naik</div></div>
+          <span class="badge">Hidden Revenue · kWh Uplift</span>
+        </div>
+        <div class="page-body" id="indirect-body"></div>
       </div>
     </div>
 
@@ -925,7 +941,7 @@ function renderBusiness(){
     </div>
   </div>
 
-  <div class="section-title">7 Potensi nyata untuk PLN <span class="line"></span></div>
+  <div class="section-title">Potensi nyata untuk PLN <span class="line"></span></div>
   <div class="grid4">
     <div class="benefit"><div class="bicon" style="background:var(--cyan-dim);color:var(--cyan)">💧</div><h5>Capital recycling</h5><p>Cairkan nilai arus kas SPKLU eksisting menjadi dana segar untuk ekspansi, tanpa lego aset.</p><div class="bnum">${rpShort(float40)}</div><div class="tiny muted">jika lepas 40% revenue-share</div></div>
     <div class="benefit"><div class="bicon" style="background:var(--green-dim);color:var(--green)">🏦</div><h5>Tanpa utang baru</h5><p>Off-balance-sheet: bukan pinjaman, tidak menambah DER. Tidak ada bunga, hanya bagi hasil bila SPKLU menghasilkan.</p><div class="bnum">0% DER</div><div class="tiny muted">dampak ke rasio utang</div></div>
@@ -935,6 +951,7 @@ function renderBusiness(){
     <div class="benefit"><div class="bicon" style="background:var(--green-dim);color:var(--green)">🏷️</div><h5>Valuasi berbasis pasar</h5><p>Price discovery memberi PLN benchmark nilai jaringan SPKLU yang transparan &amp; dapat diaudit.</p><div class="bnum">${PORT.cap_rate*100}%</div><div class="tiny muted">implied cap rate</div></div>
     <div class="benefit"><div class="bicon" style="background:var(--cyan-dim);color:var(--cyan)">🔁</div><h5>Fee bursa berkelanjutan</h5><p>PLN/operator memungut fee 0,5% tiap transaksi sekunder — pendapatan baru yang berulang.</p><div class="bnum">${rpShort(tradingFee)}/th</div><div class="tiny muted">est. turnover 30%/th</div></div>
     <div class="benefit"><div class="bicon" style="background:var(--purple-dim);color:var(--purple)">🤝</div><h5>Partisipasi publik</h5><p>Ritel ikut memiliki transisi energi → loyalitas pelanggan PLN Mobile &amp; dukungan sosial-politik.</p><div class="bnum">Inklusi</div><div class="tiny muted">ESG &amp; brand</div></div>
+    <div class="benefit" style="border-color:var(--border2);cursor:pointer" onclick="switchTab('indirect')"><div class="bicon" style="background:var(--blue-dim);color:var(--blue)">⚡</div><h5>Penjualan listrik tidak langsung</h5><p>Tiap kWh pengisian = energi yang dijual PLN (Rp 1.150/kWh ke bisnis inti). Uplift utilisasi dari skema menaikkan pendapatan ini. <b>Lihat detail →</b></p><div class="bnum">${rpShort(PORT.tot_kwh_y*1150)}/th</div><div class="tiny muted">baseline energi terjual @329 SPKLU</div></div>
   </div>
 
   <div class="section-title">Bukan crowdfunding — perbedaan model <span class="line"></span></div>
@@ -993,16 +1010,17 @@ function renderBusiness(){
       <div class="rf-arrow">⟶</div>
       <div class="rf-dest">
         <div class="rf-item"><span class="dot" style="background:var(--red)"></span><span class="nm">PPJ → Pemda <small>pajak pass-through</small></span><span class="amt">Rp 142</span><span class="pctv">5,4%</span></div>
-        <div class="rf-item"><span class="dot" style="background:var(--amber)"></span><span class="nm">Beban pokok listrik <small>curah + susut jaringan</small></span><span class="amt">Rp 1.150</span><span class="pctv">44%</span></div>
+        <div class="rf-item"><span class="dot" style="background:var(--amber)"></span><span class="nm">Beban pokok listrik <small>= penjualan energi ke bisnis inti PLN (indirect)</small></span><span class="amt">Rp 1.150</span><span class="pctv">44%</span></div>
         <div class="rf-item"><span class="dot" style="background:var(--blue)"></span><span class="nm">O&amp;M, IoT, payment, asuransi <small>biaya operasi</small></span><span class="amt">Rp 366</span><span class="pctv">14%</span></div>
         <div class="rf-item" style="border-color:var(--purple)"><span class="dot" style="background:var(--purple)"></span><span class="nm">Coupon pemegang token <small>bagi hasil investor</small></span><span class="amt" style="color:var(--purple)">Rp 400</span><span class="pctv">15%</span></div>
         <div class="rf-item" style="border-color:var(--green)"><span class="dot" style="background:var(--green)"></span><span class="nm">Marjin ditahan PLN <small>+ kepemilikan aset 100%</small></span><span class="amt" style="color:var(--green)">Rp 550</span><span class="pctv">21%</span></div>
       </div>
     </div>
     <div style="display:flex;gap:14px;margin-top:14px;flex-wrap:wrap">
-      <div class="pill">PLN dari 1 kWh: <b>Rp 550 marjin + Rp 400 dikelola</b></div>
+      <div class="pill">PLN total/kWh: <b>Rp 1.700</b> (energi Rp 1.150 + marjin Rp 550)</div>
       <div class="pill">Investor: <b>Rp 400/kWh × volume token</b></div>
       <div class="pill">× ${fmt(Math.round(PORT.tot_kwh_y/1e6))} jt kWh/th</div>
+      <div class="pill" style="cursor:pointer;border-color:var(--blue)" onclick="switchTab('indirect')"><b>⚡ Pendapatan tidak langsung →</b></div>
     </div>
   </div>
 
@@ -1111,6 +1129,95 @@ function renderContract(){
     </div>
     <div class="tx-feed">${feed}</div>
     <div class="disclaimer">Simulasi event. Oracle meter terhubung ke sistem billing SPKLU mencatat tiap kWh; coupon terakru otomatis &amp; didistribusikan bulanan ke pemegang token secara pro-rata.</div>`;
+}
+
+/* ═══════════ PENDAPATAN TIDAK LANGSUNG — KENAIKAN PENJUALAN LISTRIK ═══════════ */
+function renderIndirect(){
+  const b=document.getElementById('indirect-body');
+  // Komponen nilai per kWh (konsisten dengan waterfall Rp 2.608)
+  const tariff=PORT.blended_tariff;          // 2.608
+  const ENERGY=1150;                          // beban pokok listrik = energi curah yg DIJUAL bisnis inti PLN
+  const OM=366, PPJ=142, COUPON=PORT.coupon_per_kwh /*400*/, MARGIN=550;
+  const plnPerKwh=ENERGY+MARGIN;             // 1.700 total yg dinikmati PLN per kWh
+  const baseUtil=0.40;                        // asumsi utilisasi base (selaras slide finansial)
+  const annKwh=PORT.tot_kwh_y;               // 27,11 GWh/th aktual @ ~40%
+  const capKwh=annKwh/baseUtil;              // kapasitas implied @ 100%
+  const perStationKwh=annKwh/PORT.n_station;
+  // Baseline penjualan listrik (sudah mengalir, sering tak dihitung di P&L SPKLU)
+  const baseEnergySale=annKwh*ENERGY;
+  // Proyeksi 5 tahun — uplift utilisasi vs BAU 40% (efek loyalty holder + awareness + voting)
+  const withUtil=[0.45,0.50,0.53,0.56,0.60];
+  let cumInc=0,cumEnergy=0,cumMargin=0,cumTot=0,rows='';
+  withUtil.forEach((u,i)=>{
+    const dpp=u-baseUtil;
+    const inc=capKwh*dpp;                     // tambahan kWh/th vs BAU
+    const en=inc*ENERGY, mg=inc*MARGIN, tot=inc*plnPerKwh;
+    cumInc+=inc;cumEnergy+=en;cumMargin+=mg;cumTot+=tot;
+    rows+=`<tr><td>Y${i+1} (${2026+i})</td><td style="text-align:center">${(u*100).toFixed(0)}% <span class="muted">vs 40%</span></td>`+
+      `<td class="r">${(inc/1e6).toFixed(2).replace('.',',')} GWh</td>`+
+      `<td class="r">${rpShort(en)}</td><td class="r">${rpShort(mg)}</td>`+
+      `<td class="r" style="color:var(--cyan)">${rpShort(tot)}</td></tr>`;
+  });
+  rows+=`<tr class="total"><td>Kumulatif 5 tahun</td><td style="text-align:center">—</td>`+
+    `<td class="r">${(cumInc/1e6).toFixed(1).replace('.',',')} GWh</td>`+
+    `<td class="r">${rpShort(cumEnergy)}</td><td class="r">${rpShort(cumMargin)}</td>`+
+    `<td class="r">${rpShort(cumTot)}</td></tr>`;
+  // Skenario ekspansi (capital recycling → SPKLU baru), selaras target +250 di deck
+  const newSPKLU=250;
+  const expKwh=newSPKLU*perStationKwh;        // @ utilisasi matang setara Jabar
+  const expEnergy=expKwh*ENERGY, expMargin=expKwh*MARGIN, expTot=expKwh*plnPerKwh;
+  const y5Inc=capKwh*(0.60-baseUtil);
+
+  b.innerHTML=`
+  <div class="hero">
+    <h1>Marjin charging hanya separuh cerita. Tiap kWh yang diisi EV adalah <span>listrik yang dibangkitkan &amp; dijual PLN</span> — <span>Rp ${fmt(ENERGY)}/kWh</span> mengalir ke bisnis inti PLN.</h1>
+    <p>Banyak <i>business case</i> SPKLU hanya menghitung marjin pengisian dan memperlakukan biaya energi sebagai "beban". Padahal bagi PLN yang membangkitkan &amp; mendistribusikan listrik, energi itu adalah <b>pendapatan penjualan listrik riil</b>. Skema ChargeChain menaikkan volume pengisian (loyalty holder + ekspansi dari capital recycling + eksposur 42 jt pengguna PLN Mobile), sehingga pendapatan tidak langsung ini ikut tumbuh di atas ekonomi token.</p>
+    <div class="pill-row">
+      <div class="pill">PLN per kWh <b>Rp ${fmt(plnPerKwh)}</b> (energi + marjin)</div>
+      <div class="pill">Baseline energi terjual <b>${rpShort(baseEnergySale)}/th</b></div>
+      <div class="pill">Tambahan @ Y5 <b>+${rpShort(y5Inc*plnPerKwh)}/th</b></div>
+    </div>
+  </div>
+
+  <div class="section-title">Berapa yang dinikmati PLN dari 1 kWh pengisian? <span class="line"></span></div>
+  <div class="grid4">
+    <div class="kpi b"><div class="klabel">⚡ Penjualan energi (indirect)</div><div class="kval">Rp ${fmt(ENERGY)}</div><div class="ksub">ke bisnis inti PLN — pembangkitan &amp; distribusi</div></div>
+    <div class="kpi g"><div class="klabel">🏦 Marjin SPKLU ditahan</div><div class="kval">Rp ${fmt(MARGIN)}</div><div class="ksub">benefit langsung pengoperasian SPKLU</div></div>
+    <div class="kpi c"><div class="klabel">Σ Total ke PLN / kWh</div><div class="kval">Rp ${fmt(plnPerKwh)}</div><div class="ksub">${Math.round(plnPerKwh/tariff*100)}% dari tarif Rp ${fmt(tariff)}</div></div>
+    <div class="kpi p"><div class="klabel">ke pihak lain / kWh</div><div class="kval">Rp ${fmt(tariff-plnPerKwh)}</div><div class="ksub">coupon investor Rp ${fmt(COUPON)} · O&amp;M Rp ${fmt(OM)} · PPJ Rp ${fmt(PPJ)}</div></div>
+  </div>
+  <div class="disclaimer" style="margin-top:12px">Rp ${fmt(ENERGY)}/kWh adalah <b>nilai penjualan energi</b> yang mengalir ke bisnis inti PLN (curah + jaringan), bukan laba bersih murni — pembangkitan punya biayanya sendiri. Tetapi ini pendapatan riil PLN-grup yang lazim luput dari P&amp;L SPKLU yang berdiri sendiri. Itulah inti "keuntungan tidak langsung" skema ini.</div>
+
+  <div class="section-title">Mengapa skema ini menaikkan penjualan listrik <span class="line"></span></div>
+  <div class="grid3">
+    <div class="benefit"><div class="bicon" style="background:var(--green-dim);color:var(--green)">🔁</div><h5>Loyalty → utilisasi naik</h5><p>Holder token mendapat diskon &amp; prioritas charging + hak voting lokasi. Mereka berubah jadi <b>pengguna aktif &amp; berulang</b> di SPKLU PLN, bukan sekadar investor.</p><div class="bnum">+10–20pp</div><div class="tiny muted">uplift utilisasi vs BAU</div></div>
+    <div class="benefit"><div class="bicon" style="background:var(--cyan-dim);color:var(--cyan)">💧</div><h5>Capital recycling → SPKLU baru</h5><p>Modal hasil tokenisasi mendanai SPKLU baru. Tiap titik baru = kapasitas penjualan listrik baru — efek bola salju.</p><div class="bnum">+${newSPKLU}</div><div class="tiny muted">target SPKLU baru</div></div>
+    <div class="benefit"><div class="bicon" style="background:var(--purple-dim);color:var(--purple)">📣</div><h5>Eksposur 42 jt PLN Mobile</h5><p>Distribusi token via PLN Mobile mengedukasi &amp; mendorong adopsi EV → permintaan pengisian listrik nasional tumbuh.</p><div class="bnum">42 jt</div><div class="tiny muted">kanal zero-CAC</div></div>
+  </div>
+
+  <div class="section-title">Tambahan penjualan listrik dari uplift utilisasi — 329 SPKLU eksisting <span class="line"></span></div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="flow-table">
+      <thead><tr><th>Tahun</th><th style="text-align:center">Utilisasi</th><th style="text-align:right">Tambahan Volume</th><th style="text-align:right">Penjualan Energi (Rp ${fmt(ENERGY)})</th><th style="text-align:right">Marjin SPKLU (Rp ${fmt(MARGIN)})</th><th style="text-align:right">Total ke PLN</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>
+  <div class="disclaimer" style="margin-top:10px">Hanya menghitung <b>aset eksisting</b> (329 SPKLU) tanpa ekspansi — murni efek skema menaikkan utilisasi dari 40% (BAU) menuju 60% di Y5. Tambahan volume = kapasitas implied @100% (${(capKwh/1e6).toFixed(1).replace('.',',')} GWh) × kenaikan poin utilisasi vs baseline. Angka berbasis run-rate aktual Maret 2026.</div>
+
+  <div class="section-title">Skenario upside — ekspansi dari capital recycling <span class="line"></span></div>
+  <div class="grid3">
+    <div class="kpi c"><div class="klabel">+${newSPKLU} SPKLU baru</div><div class="kval">${(expKwh/1e6).toFixed(1).replace('.',',')} GWh</div><div class="ksub">tambahan listrik terjual/th @ utilisasi matang</div></div>
+    <div class="kpi b"><div class="klabel">Penjualan energi tambahan</div><div class="kval">${rpShort(expEnergy)}</div><div class="ksub">/th ke bisnis inti PLN</div></div>
+    <div class="kpi g"><div class="klabel">Total ke PLN (energi + marjin)</div><div class="kval">${rpShort(expTot)}</div><div class="ksub">/th saat ${newSPKLU} SPKLU baru matang</div></div>
+  </div>
+  <div class="disclaimer" style="margin-top:10px">Skenario ekspansi terpisah dari tabel di atas. Asumsi: ${newSPKLU} SPKLU baru (selaras target di roadmap) dengan unit-ekonomi setara rata-rata Jabar (${fmt(Math.round(perStationKwh/1e3))} ribu kWh/SPKLU/th @ ~40% utilisasi). Ini upside, bukan dijumlahkan ke skenario dasar untuk menghindari <i>double-counting</i>.</div>
+
+  <div class="dl-foot">
+    <span>⚡ Pendapatan tidak langsung ini melengkapi marjin &amp; fee di halaman Model Bisnis.</span>
+    <a class="dl-btn alt" onclick="switchTab('business')">← Model Bisnis &amp; Potensi PLN</a>
+    <a class="dl-btn alt" onclick="switchTab('tokenomics')">Tokenomics &amp; Pricing →</a>
+  </div>
+  `;
 }
 
 /* ═══════════ FAQ & MITIGASI RISIKO ═══════════ */
@@ -1267,7 +1374,7 @@ function boot(){
   document.getElementById('mo-kwh').textContent=(PORT.tot_kwh_m/1e6).toFixed(2).replace('.',',')+' GWh';
   document.getElementById('mo-cap').textContent=rpShort(PORT.fv_total);
   document.getElementById('mo-yield').textContent=(PORT.cap_rate*100).toString().replace('.',',')+'%';
-  renderStationList();renderMarket();renderTokenomics();renderBusiness();renderContract();renderFAQ();
+  renderStationList();renderMarket();renderTokenomics();renderBusiness();renderIndirect();renderContract();renderFAQ();
   if(tradeable().length)selectToken(tradeable()[0].id);
   initMap();
 }
