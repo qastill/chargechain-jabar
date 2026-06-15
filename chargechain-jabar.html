@@ -1152,6 +1152,23 @@ function renderKemitraan(){
     </table>
   </div>
 
+  <div class="section-title">Perbandingan: Kondisi Existing vs ChargeChain → solusi yang terselesaikan <span class="line"></span></div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="flow-table">
+      <thead><tr><th style="width:18%">Aspek</th><th style="width:30%">Kondisi Existing (Kemitraan PLN)</th><th style="width:30%">Dengan ChargeChain (Blockchain)</th><th style="width:22%">Solusi yang Terselesaikan</th></tr></thead>
+      <tbody>
+        <tr><td><b>Settlement bagi-hasil</b></td><td>Splitting manual lewat CSMS → IconPay → IconCash, jeda H+0 s.d. H+2, hanya hari kerja</td><td>Smart contract memecah pendapatan otomatis per transaksi, instan & 24/7</td><td style="color:var(--green)">Jeda pembayaran hilang; arus kas mitra real-time</td></tr>
+        <tr><td><b>Rekonsiliasi data</b></td><td>Pencocokan G20 vs III-09/309 menyisakan gap 2,66 jt kWh yang divalidasi manual</td><td>Satu ledger tunggal dari oracle meter = single source of truth</td><td style="color:var(--green)">Tidak ada dua catatan → rekonsiliasi nol</td></tr>
+        <tr><td><b>Administrasi PKS</b></td><td>140 unit perlu tindak lanjut (81 belum PKS, 30 expired, 9 adendum), dikejar manual per UP3</td><td>PKS terprogram: masa berlaku & klausul jadi parameter; adendum = versi ber-timestamp</td><td style="color:var(--green)">Expiry & perubahan ter-flag otomatis, tak ada PKS terlewat</td></tr>
+        <tr><td><b>Monitoring Dashboard</b></td><td>20 unit ber-PKS belum terdaftar; mitra pantau via portal terpusat</td><td>SPKLU on-chain otomatis termonitor; data dibaca langsung dari chain</td><td style="color:var(--green)">Pendaftaran tak lagi jadi bottleneck</td></tr>
+        <tr><td><b>Transparansi & kepercayaan</b></td><td>Mitra percaya pada kalkulasi & laporan sistem PLN</td><td>Tiap kWh & split tercatat permanen, dapat diaudit siapa pun</td><td style="color:var(--green)">Trustless — tak perlu saling percaya</td></tr>
+        <tr><td><b>Likuiditas modal mitra</b></td><td>Modal terkunci sepanjang masa PKS, tak ada jalan keluar</td><td>Hak bagi-hasil jadi token, bisa dijual di bursa sekunder kapan saja</td><td style="color:var(--green)">Mitra bisa exit lebih awal</td></tr>
+        <tr><td><b>Skalabilitas onboarding</b></td><td>Tiap tambahan unit menambah beban administrasi back-office secara linear</td><td>Onboarding jadi proses data on-chain, kontrak ter-template</td><td style="color:var(--green)">392 → ribuan unit tanpa beban membengkak</td></tr>
+        <tr><td><b>Komposisi investasi</b></td><td>Porsi Skema 1–4 tertulis di dokumen, perlu dicocokkan ke lampiran PKS</td><td>Persentase (charger 73–83% / lahan 15–25% / PLN 2%) di-encode di kontrak</td><td style="color:var(--green)">Split otomatis & tak bisa diubah sepihak</td></tr>
+      </tbody>
+    </table>
+  </div>
+
   <div class="section-title">Arsitektur kolaborasi — blockchain sebagai lapisan settlement & ledger <span class="line"></span></div>
   <div class="card">
     <div class="flowchart">
