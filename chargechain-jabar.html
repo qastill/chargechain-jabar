@@ -415,6 +415,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V8l4-3 4 3v13"/><path d="M13 21V11l4-3 4 3v10"/><path d="M9 12v.01M9 16v.01"/></svg>
       <div class="nav-tooltip">Development Token (Skema B)</div>
     </button>
+    <button class="nav-btn" onclick="switchTab('kemitraan')" data-tab="kemitraan">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5"/><path d="M21 3l-7 7"/><path d="M8 21H3v-5"/><path d="M3 21l7-7"/><path d="M3 8V3h5"/><path d="M16 21h5v-5"/></svg>
+      <div class="nav-tooltip">Kemitraan ⇄ Blockchain</div>
+    </button>
     <button class="nav-btn" onclick="switchTab('contract')" data-tab="contract">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
       <div class="nav-tooltip">Smart Contract</div>
@@ -571,6 +575,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
     </div>
 
     <!-- SMART CONTRACT -->
+    <!-- KEMITRAAN ⇄ BLOCKCHAIN -->
+    <div class="panel" id="panel-kemitraan">
+      <div class="page">
+        <div class="page-head">
+          <div><h2><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><path d="M16 3h5v5"/><path d="M21 3l-7 7"/><path d="M8 21H3v-5"/><path d="M3 21l7-7"/></svg> Kemitraan SPKLU PLN × ChargeChain — Kolaborasi On-Chain</h2>
+            <div class="ph-sub">Menyatukan skema kemitraan SPKLU eksisting PLN Jabar (Kepmen ESDM 182.K/2023) dengan lapisan blockchain ChargeChain: settlement otomatis, rekonsiliasi nol, dan PKS terprogram</div></div>
+          <span class="badge">Integrasi · Hybrid On-Chain</span>
+        </div>
+        <div class="page-body" id="kemitraan-body"></div>
+      </div>
+    </div>
+
     <div class="panel" id="panel-contract">
       <div class="sc-page">
         <div class="sc-head2">
@@ -1082,6 +1098,112 @@ function renderBusiness(){
   `;
 }
 
+/* ═══════════ KEMITRAAN ⇄ BLOCKCHAIN ═══════════ */
+function renderKemitraan(){
+  const b=document.getElementById('kemitraan-body');
+  if(!b) return;
+  // Angka aktual dari deck "Refresh Kemitraan Jabar" (2026 s.d. Mei)
+  const K={total:649, mitra:392, mitraPct:60, skema1:276, skema23:116,
+    okPks:252, follow:140, followPct:36, belumPks:81, pksExpired:30, belumDash:20, adendum:9,
+    g20:10687337, p309:8024146, gap:2663191};
+  const gapPct=Math.round(K.gap/K.g20*100);
+  b.innerHTML=`
+  <div class="hero">
+    <h1>Program kemitraan PLN sudah <span>menggandakan jumlah SPKLU</span> — ChargeChain menjadikan <span>bagi-hasil & administrasinya otomatis, transparan, dan tak terbantahkan</span>.</h1>
+    <p>Skema Kemitraan SPKLU PLN (Kepmen ESDM No. 182.K/2023) sudah berhasil menarik mitra lahan & mitra charger: SPKLU Jabar tumbuh <b>+116%</b> dan <b>60% kini berbasis kemitraan</b>. Tapi pertumbuhan itu memunculkan beban baru — rekonsiliasi dana, penertiban PKS, dan pendaftaran Dashboard. <b>ChargeChain tidak mengganti program ini; ChargeChain menjadi lapisan settlement & ledger on-chain di atasnya</b> sehingga setiap kWh, setiap rupiah bagi-hasil, dan setiap klausul PKS hidup sebagai data yang terverifikasi dan dapat diaudit.</p>
+    <div class="pill-row">
+      <div class="pill">SPKLU Jabar <b>${K.total} unit (+116%)</b></div>
+      <div class="pill">SPKLU kemitraan <b>${K.mitra} unit (${K.mitraPct}%)</b></div>
+      <div class="pill">Butuh tindak lanjut <b>${K.follow} unit (${K.followPct}%)</b></div>
+      <div class="pill">Gap rekonsiliasi G20↔309 <b>${fmt(K.gap)} kWh</b></div>
+    </div>
+  </div>
+
+  <div class="section-title">Kondisi kemitraan SPKLU Jabar hari ini <span class="line"></span></div>
+  <div class="grid4">
+    <div class="kpi c"><div class="klabel">Total SPKLU Jabar</div><div class="kval">${K.total}</div><div class="ksub">naik dari 300 → 532 → ${K.total} (+116%)</div></div>
+    <div class="kpi g"><div class="klabel">SPKLU Kemitraan</div><div class="kval">${K.mitra}</div><div class="ksub">${K.mitraPct}% dari total — kini mayoritas</div></div>
+    <div class="kpi a"><div class="klabel">Perlu Tindak Lanjut Adm.</div><div class="kval">${K.follow}</div><div class="ksub">${K.followPct}% mitra: PKS / adendum / dashboard</div></div>
+    <div class="kpi p"><div class="klabel">Gap Rekonsiliasi</div><div class="kval">${(K.gap/1e6).toFixed(2).replace('.',',')} jt</div><div class="ksub">kWh selisih G20 vs III-09/309</div></div>
+  </div>
+  <div class="disclaimer" style="margin-top:10px">Seluruh angka pada halaman ini diambil dari deck operasional <b>"Refresh Skema Kemitraan SPKLU Jabar"</b> (data 2026 s.d. Mei): 392 SPKLU kemitraan, di mana 252 sudah PKS & terdaftar Dashboard, sementara 140 unit (81 belum PKS, 30 PKS habis berlaku, 20 belum Dashboard, 9 perlu adendum) masih memerlukan penertiban administrasi.</div>
+
+  <div class="section-title">Skema kemitraan eksisting yang kami kolaborasikan <span class="line"></span></div>
+  <div class="grid4">
+    <div class="benefit"><div class="bicon" style="background:var(--cyan-dim);color:var(--cyan)">1</div><h5>Skema 1 — Lahan + Charger pisah</h5><p>Mitra Lahan menyediakan lokasi, Mitra Charger menyediakan mesin. Bagi hasil charger <b>73–83%</b>, lahan <b>15–25%</b>, PLN platform <b>2%</b>.</p><div class="bnum">${K.skema1} unit</div><div class="tiny muted">kontributor terbesar kemitraan 2026</div></div>
+    <div class="benefit"><div class="bicon" style="background:var(--green-dim);color:var(--green)">2</div><h5>Skema 2 — Lahan+Charger satu mitra</h5><p>Satu mitra memiliki lahan sekaligus charger set. Revenue mitra <b>98%</b>, PLN <b>2%</b>.</p><div class="bnum">${K.skema23} unit</div><div class="tiny muted">Skema 2 &amp; 3 mulai bertumbuh</div></div>
+    <div class="benefit"><div class="bicon" style="background:var(--purple-dim);color:var(--purple)">3</div><h5>Skema 3 — Dua mitra berbeda</h5><p>Mitra 1 (lahan) & Mitra 2 (charger). Charger owner <b>73–88%</b>, land owner <b>10–25%</b>, PLN <b>2%</b>.</p><div class="bnum">Investasi</div><div class="tiny muted">porsi terbesar ke pemilik aset charger</div></div>
+    <div class="benefit"><div class="bicon" style="background:var(--amber-dim);color:var(--amber)">4</div><h5>Skema 4 — IUPTLU mitra</h5><p>Mitra membangun SPKLU lengkap (SPKLU+IUPTLU), PLN sebagai penyedia App/PLN Mobile & integrasi.</p><div class="bnum">Geotagging</div><div class="tiny muted">terintegrasi PLN Mobile</div></div>
+  </div>
+  <div class="disclaimer" style="margin-top:10px">Prinsip kunci program PLN: <b>bagi hasil berbasis komposisi investasi tiap mitra</b> — porsi terbesar untuk pemilik aset charger. ChargeChain meng-encode persentase ini langsung ke dalam smart contract sehingga split-nya otomatis dan tak bisa diubah sepihak.</div>
+
+  <div class="section-title">Titik nyeri hari ini → solusi on-chain ChargeChain <span class="line"></span></div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="flow-table">
+      <thead><tr><th style="width:26%">Titik Nyeri Program Kemitraan</th><th style="width:37%">Cara kerja sekarang</th><th style="width:37%">Dengan ChargeChain (on-chain)</th></tr></thead>
+      <tbody>
+        <tr><td><b>Splitting & pelimpahan dana</b></td><td>CSMS → IconPay rekonsiliasi manual → IconCash → mitra. Timeline <b>H+0 s.d. H+2</b>, hanya hari kerja.</td><td class="r" style="text-align:left;color:var(--green)">Smart contract memecah pendapatan <b>per transaksi, otomatis & instan</b> sesuai porsi PKS. Tanpa lag H+2, 24/7.</td></tr>
+        <tr><td><b>Rekonsiliasi data</b></td><td>Pencocokan G20 vs III-09/309 menyisakan gap <b>${fmt(K.gap)} kWh (${gapPct}%)</b> yang harus divalidasi bersama.</td><td class="r" style="text-align:left;color:var(--green)">Satu <b>ledger tunggal dari oracle meter</b> = single source of truth. Tidak ada dua catatan untuk direkonsiliasi.</td></tr>
+        <tr><td><b>Penertiban PKS</b></td><td>140 unit perlu tindak lanjut: 81 belum PKS, 30 habis berlaku, 9 perlu adendum — dikejar manual per UP3.</td><td class="r" style="text-align:left;color:var(--green)"><b>PKS terprogram</b>: masa berlaku & klausul jadi parameter kontrak; expiry otomatis ter-flag, adendum = versi baru ber-timestamp.</td></tr>
+        <tr><td><b>Pendaftaran & monitoring Dashboard</b></td><td>20 unit sudah PKS tapi belum terdaftar Dashboard; mitra pantau via portal terpusat partnership.pln.co.id.</td><td class="r" style="text-align:left;color:var(--green)">Begitu SPKLU on-chain, ia <b>otomatis termonitor & transparan</b> — mitra membaca data langsung dari chain, bukan dari laporan pihak lain.</td></tr>
+        <tr><td><b>Kepercayaan bagi-hasil</b></td><td>Mitra harus percaya pada kalkulasi & laporan yang dibuat sistem PLN.</td><td class="r" style="text-align:left;color:var(--green)"><b>Trustless & auditable</b>: tiap kWh dan tiap split tercatat permanen, dapat diverifikasi siapa pun, tak bisa diubah retroaktif.</td></tr>
+        <tr><td><b>Likuiditas mitra</b></td><td>Modal mitra terkunci sepanjang masa PKS — tak ada jalan keluar sebelum kontrak berakhir.</td><td class="r" style="text-align:left;color:var(--green)">Hak bagi-hasil jadi <b>token yang bisa dijual di bursa sekunder</b> kapan saja — mitra bisa exit lebih awal. <b>Lihat Bursa →</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Arsitektur kolaborasi — blockchain sebagai lapisan settlement & ledger <span class="line"></span></div>
+  <div class="card">
+    <div class="flowchart">
+      <div class="fc-node"><div class="fc-tag">SUMBER</div><div class="fc-ico">🔌</div><h6>Pelanggan isi di SPKLU</h6><p>Transaksi tercatat di CSMS PLN (sistem eksisting tetap dipakai)</p></div>
+      <div class="fc-arrow">→</div>
+      <div class="fc-node"><div class="fc-tag">JEMBATAN</div><div class="fc-ico">📡</div><h6>Oracle Meter</h6><p>kWh & nilai transaksi dari CSMS dikirim on-chain real-time</p></div>
+      <div class="fc-arrow">→</div>
+      <div class="fc-node"><div class="fc-tag">LEDGER</div><div class="fc-ico">⛓️</div><h6>Smart Contract Kemitraan</h6><p>Porsi Skema 1–4 di-encode; split PLN / lahan / charger dihitung otomatis</p></div>
+      <div class="fc-arrow">→</div>
+      <div class="fc-node"><div class="fc-tag">SETTLEMENT</div><div class="fc-ico">💸</div><h6>IconPay / IconCash</h6><p>Rail pembayaran PLN tetap dipakai; pemicunya kini on-chain & instan</p></div>
+      <div class="fc-arrow">→</div>
+      <div class="fc-node"><div class="fc-tag">MONITOR</div><div class="fc-ico">📊</div><h6>Dashboard On-Chain</h6><p>Setara Dashboard Kemitraan, tapi datanya langsung dari chain & terbuka</p></div>
+    </div>
+  </div>
+  <div class="disclaimer" style="margin-top:10px"><b>Hybrid, bukan rip-and-replace.</b> CSMS, IconPay, IconCash, dan Dashboard Kemitraan tetap berperan. ChargeChain menyisipkan lapisan oracle + smart contract di antaranya — sehingga rekonsiliasi hilang, settlement jadi instan, dan administrasi PKS menjadi data yang hidup, bukan dokumen yang dikejar.</div>
+
+  <div class="section-title">Kelebihan yang dikembangkan dari kolaborasi ini <span class="line"></span></div>
+  <div class="grid4">
+    <div class="benefit"><div class="bicon" style="background:var(--green-dim);color:var(--green)">⚡</div><h5>Settlement instan</h5><p>Bagi-hasil dipecah per transaksi secara otomatis — menghapus jeda H+0…H+2 dan batas hari kerja.</p><div class="bnum">≈ real-time</div><div class="tiny muted">dari H+2 → instan</div></div>
+    <div class="benefit"><div class="bicon" style="background:var(--cyan-dim);color:var(--cyan)">🎯</div><h5>Rekonsiliasi nol</h5><p>Satu ledger oracle menggantikan pencocokan G20 vs 309 — selisih ${fmt(K.gap)} kWh tak lagi mungkin terjadi.</p><div class="bnum">0 gap</div><div class="tiny muted">single source of truth</div></div>
+    <div class="benefit"><div class="bicon" style="background:var(--purple-dim);color:var(--purple)">📜</div><h5>PKS terprogram</h5><p>Masa berlaku, porsi bagi-hasil & adendum jadi parameter kontrak — expiry & perubahan ter-flag otomatis.</p><div class="bnum">${K.belumPks}+${K.pksExpired}+${K.adendum}</div><div class="tiny muted">unit PKS yang kini terkelola sistem</div></div>
+    <div class="benefit"><div class="bicon" style="background:var(--amber-dim);color:var(--amber)">🔍</div><h5>Transparansi & audit</h5><p>Tiap kWh & split tercatat permanen dan dapat diaudit siapa pun, tanpa perlu saling percaya.</p><div class="bnum">100%</div><div class="tiny muted">immutable & verifiable</div></div>
+    <div class="benefit" style="cursor:pointer" onclick="switchTab('market')"><div class="bicon" style="background:var(--blue-dim);color:var(--blue)">💧</div><h5>Likuiditas mitra</h5><p>Hak bagi-hasil mitra menjadi token yang bisa dijual sebelum PKS berakhir. <b>Lihat Bursa →</b></p><div class="bnum">Exit kapan saja</div><div class="tiny muted">pasar sekunder</div></div>
+    <div class="benefit"><div class="bicon" style="background:var(--green-dim);color:var(--green)">📈</div><h5>Skalabilitas</h5><p>392 → ribuan unit tanpa beban administrasi yang ikut membengkak linear; onboarding jadi proses data.</p><div class="bnum">x→∞</div><div class="tiny muted">tanpa tambah beban back-office</div></div>
+    <div class="benefit"><div class="bicon" style="background:var(--cyan-dim);color:var(--cyan)">🧩</div><h5>Komposisi investasi ter-encode</h5><p>Porsi Skema 1–4 (mis. charger 73–83%, lahan 15–25%) tertulis di kontrak — tak bisa diubah sepihak.</p><div class="bnum">Skema 1–4</div><div class="tiny muted">fair & otomatis</div></div>
+    <div class="benefit"><div class="bicon" style="background:var(--purple-dim);color:var(--purple)">🤝</div><h5>Kepemilikan fraksional</h5><p>Mitra Lahan & Mitra Charger jadi kelas token berbeda; publik pun bisa ikut memiliki sebagian arus kas.</p><div class="bnum">Inklusi</div><div class="tiny muted">partisipasi lebih luas</div></div>
+  </div>
+
+  <div class="section-title">Pemetaan: peran kemitraan → struktur token <span class="line"></span></div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="flow-table">
+      <thead><tr><th>Peran dalam PKS</th><th>Porsi (contoh Skema 1)</th><th style="text-align:left">Representasi on-chain</th></tr></thead>
+      <tbody>
+        <tr><td>Mitra Charger (pemilik mesin)</td><td>73% – 83% revenue</td><td style="text-align:left">Token kelas Charger — porsi terbesar, beragun arus kas SPKLU</td></tr>
+        <tr><td>Mitra Lahan (pemilik lokasi)</td><td>15% – 25% revenue</td><td style="text-align:left">Token kelas Lahan — hak sewa-revenue, dapat diperdagangkan</td></tr>
+        <tr><td>PLN (platform & operator)</td><td>2% platform fee + marjin</td><td style="text-align:left">Fee on-chain otomatis + kendali aset tetap di PLN</td></tr>
+        <tr class="total"><td>Total per SPKLU</td><td>100% revenue sharing</td><td style="text-align:left">Satu smart contract per stasiun, split otomatis tiap kWh</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Roadmap integrasi bertahap <span class="line"></span></div>
+  <div class="grid3">
+    <div class="cblock"><h6>Fase 1 · Pilot (UP3 prioritas)</h6><p style="font-size:12px;color:var(--text2)">Pasang oracle CSMS di beberapa SPKLU kemitraan di Top-4 UP3 (Purwakarta, Sumedang, Karawang, Cirebon — 61 dari 140 tindak lanjut). Settlement on-chain berjalan paralel sebagai bukti banding rekonsiliasi.</p></div>
+    <div class="cblock"><h6>Fase 2 · Hybrid (skala Jabar)</h6><p style="font-size:12px;color:var(--text2)">Seluruh 392 SPKLU kemitraan ber-PKS terprogram & ter-settle on-chain. Dashboard Kemitraan membaca data chain; IconPay/IconCash jadi rail eksekusi pembayaran.</p></div>
+    <div class="cblock"><h6>Fase 3 · Pasar token & nasional</h6><p style="font-size:12px;color:var(--text2)">Hak bagi-hasil mitra dibuka di bursa sekunder (likuiditas + price discovery). Model direplikasi ke wilayah PLN lain mengikuti pertumbuhan kemitraan.</p></div>
+  </div>
+
+  <div class="disclaimer" style="margin-top:14px">Halaman ini bersifat edukasi/simulasi integrasi. Implementasi riil memerlukan persetujuan tata kelola PLN, kepatuhan Kepmen ESDM No. 182.K/2023 & regulasi ketenagalistrikan, struktur hukum efek/EBA bila hak bagi-hasil diperdagangkan, audit independen, dan persetujuan OJK. Bukan ajakan investasi.</div>
+  `;
+}
+
 /* ═══════════ SMART CONTRACT ═══════════ */
 function renderContract(){
   const top=tradeable().slice(0,6);
@@ -1545,7 +1667,7 @@ function boot(){
   document.getElementById('mo-kwh').textContent=(PORT.tot_kwh_m/1e6).toFixed(2).replace('.',',')+' GWh';
   document.getElementById('mo-cap').textContent=rpShort(PORT.fv_total);
   document.getElementById('mo-yield').textContent=(PORT.cap_rate*100).toString().replace('.',',')+'%';
-  renderStationList();renderMarket();renderTokenomics();renderBusiness();renderIndirect();renderDevtoken();renderContract();renderFAQ();
+  renderStationList();renderMarket();renderTokenomics();renderBusiness();renderIndirect();renderDevtoken();renderKemitraan();renderContract();renderFAQ();
   if(tradeable().length)selectToken(tradeable()[0].id);
   initMap();
 }
