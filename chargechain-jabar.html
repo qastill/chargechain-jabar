@@ -203,6 +203,24 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 .formula{background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:13px;font-family:'SF Mono',Menlo,monospace;font-size:11px;color:var(--cyan);line-height:1.7;overflow-x:auto}
 .formula .c{color:var(--text3)}
 .formula .n{color:var(--amber)}
+.cg-row{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.cg-btn{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;background:var(--bg);border:1px solid var(--border2);border-radius:9px;cursor:pointer;transition:all .15s;color:var(--text)}
+.cg-btn:hover{border-color:var(--cyan)}
+.cg-btn.active{border-color:var(--cyan);background:var(--cyan-dim);box-shadow:0 0 0 1px var(--cyan) inset}
+.cg-btn .cg-ico{font-size:16px}
+.cg-btn b{font-size:12px}
+.cg-btn small{font-size:10px;color:var(--text2)}
+.cmp-bars{display:flex;flex-direction:column;gap:11px}
+.cmpbar{display:grid;grid-template-columns:200px 1fr 130px;align-items:center;gap:12px}
+.cmpbar .cb-label{font-size:12px;color:var(--text)}
+.cmpbar .cb-label small{display:block;font-size:10px;color:var(--text2)}
+.cmpbar .cb-track{height:18px;background:var(--bg);border-radius:5px;overflow:hidden}
+.cmpbar .cb-fill{height:100%;background:var(--text3);border-radius:5px;transition:width .35s ease}
+.cmpbar .cb-fill.cc{background:linear-gradient(90deg,var(--green),var(--cyan))}
+.cmpbar.cc .cb-label{color:var(--cyan);font-weight:600}
+.cmpbar .cb-val{font-size:13px;font-weight:700;text-align:right;color:var(--text)}
+.cmpbar .cb-val small{display:block;font-size:10px;font-weight:400;color:var(--text2)}
+@media(max-width:760px){.cmpbar{grid-template-columns:120px 1fr 90px}.cg-row{grid-template-columns:1fr}}
 .step{display:flex;gap:12px;margin-bottom:14px}
 .step-num{width:26px;height:26px;border-radius:50%;background:var(--cyan-dim);color:var(--cyan);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
 .step-body h5{font-size:12px;font-weight:600;margin-bottom:3px}
@@ -399,6 +417,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></svg>
       <div class="nav-tooltip">Bursa Token</div>
     </button>
+    <button class="nav-btn" onclick="switchTab('investor')" data-tab="investor">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5.5 21a7 7 0 0 1 13 0"/><path d="M19 7l2 2 3-4" transform="translate(-2 0)"/></svg>
+      <div class="nav-tooltip">POV Investor Ritel</div>
+    </button>
     <button class="nav-btn" onclick="switchTab('tokenomics')" data-tab="tokenomics">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 3.5M12 17h.01"/></svg>
       <div class="nav-tooltip">Tokenomics & Pricing</div>
@@ -527,6 +549,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
     </div>
 
     <!-- TOKENOMICS -->
+    <!-- POV INVESTOR RITEL -->
+    <div class="panel" id="panel-investor">
+      <div class="page">
+        <div class="page-head">
+          <div><h2><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5.5 21a7 7 0 0 1 13 0"/></svg> POV Investor Ritel — "Kalau saya invest Rp 100 juta, dapat berapa?"</h2>
+            <div class="ph-sub">Simulasikan sendiri: atur nominal, jenis charger, okupansi & konsumsi ngecas Anda. Lihat pendapatan bulanan, bandingkan dengan deposito/obligasi, dan manfaat ekstra yang tak dimiliki instrumen lain</div></div>
+          <span class="badge">Simulasi Interaktif</span>
+        </div>
+        <div class="page-body" id="investor-body"></div>
+      </div>
+    </div>
+
     <div class="panel" id="panel-tokenomics">
       <div class="page">
         <div class="page-head">
@@ -855,6 +889,180 @@ function setTK(k,v){TK[k]=parseFloat(v);
   if(k==='energy')setTxt('lbl-energy','Rp '+fmt(v));
   recompute();
 }
+/* ═══════════ POV INVESTOR RITEL ═══════════ */
+const CHARGERS={
+  ac7 :{name:'AC 7 kW',   pw:7,  tarif:2467, base:9,  loc:'Rumah / Apartemen',  ico:'🏠'},
+  ac22:{name:'AC 22 kW',  pw:22, tarif:2475, base:12, loc:'Mall / Perkantoran', ico:'🏬'},
+  dc50:{name:'DC Fast 50 kW', pw:50, tarif:2608, base:16, loc:'SPBU / Rest Area', ico:'⚡'},
+  dc100:{name:'DC Ultra 100 kW', pw:100, tarif:2700, base:22, loc:'Tol / Hub Logistik', ico:'🚀'}
+};
+const INV={amount:100000000, charger:'dc50', occ:16, drive:150};
+const INV_DISC=0.05;   // diskon ngecas untuk pemegang token
+const INV_CAP=0.13;    // target yield @ okupansi baseline
+const INST=[
+  {k:'Deposito Bank',         r:4.25, note:'bruto, dipotong pajak 20%'},
+  {k:'Reksa Dana Pasar Uang', r:4.5,  note:'likuid, risiko rendah'},
+  {k:'SBN Ritel (ORI / SR)',  r:6.4,  note:'dijamin negara'},
+  {k:'Obligasi Korporasi',    r:7.5,  note:'ada risiko gagal bayar'}
+];
+const POOL10=[100,60,40,30,25,20,15,12,8,5]; // nominal (juta) 10 investor di satu titik
+
+function setCharger(k){
+  INV.charger=k; INV.occ=CHARGERS[k].base;
+  const s=document.getElementById('inv-occ'); if(s)s.value=INV.occ;
+  setTxt('lbl-occ',INV.occ+'%');
+  document.querySelectorAll('.cg-btn').forEach(b=>b.classList.toggle('active',b.dataset.k===k));
+  updateInvSim();
+}
+function setInv(k,v){
+  INV[k]=parseFloat(v);
+  if(k==='amount')setTxt('lbl-amount',rp(INV.amount));
+  if(k==='occ')setTxt('lbl-occ',INV.occ+'%');
+  if(k==='drive')setTxt('lbl-drive',fmt(INV.drive)+' kWh/bln');
+  updateInvSim();
+}
+function updateInvSim(){
+  const cg=CHARGERS[INV.charger];
+  const occF=INV.occ/cg.base;
+  const yieldAct=INV_CAP*100*occF;
+  const tokens=INV.amount/PORT.par;
+  const monthly=INV.amount*yieldAct/100/12;
+  const annual=INV.amount*yieldAct/100;
+  const price=Math.round(PORT.par*occF);
+  const capGain=INV.amount*(occF-1);
+  const discMo=INV.drive*cg.tarif*INV_DISC;
+  const discYr=discMo*12;
+  const total1=annual+discYr+(capGain>0?capGain:0);
+  // KPI utama
+  setTxt('iv-monthly',rp(Math.round(monthly)));
+  setTxt('iv-yield',yieldAct.toFixed(1).replace('.',',')+'%');
+  setTxt('iv-tokens',fmt(tokens)+' token');
+  setTxt('iv-price',rp(price));
+  setTxt('iv-price-sub',(price>=PORT.par?'premium +':'diskon ')+( (occF-1)*100 ).toFixed(0)+'% vs par');
+  // breakdown
+  setTxt('iv-annual',rp(Math.round(annual)));
+  setTxt('iv-capgain',(capGain>=0?'+ ':'− ')+rp(Math.round(Math.abs(capGain))));
+  setTxt('iv-disc',rp(Math.round(discMo))+' / bln');
+  setTxt('iv-discyr',rp(Math.round(discYr))+' / th');
+  setTxt('iv-total',rp(Math.round(total1)));
+  setTxt('iv-charger-name',cg.name+' · '+cg.loc);
+  // station context (untuk skenario 10 investor)
+  const kwhM=cg.pw*24*30*INV.occ/100;
+  const grossM=kwhM*cg.tarif;
+  const fvSt=kwhM*400*12/INV_CAP;
+  setTxt('iv-st-kwh',fmt(Math.round(kwhM))+' kWh');
+  setTxt('iv-st-gross',rpShort(grossM));
+  setTxt('iv-st-fv',rpShort(fvSt));
+  setTxt('iv-st-occ',INV.occ+'%');
+  // ── tabel perbandingan instrumen ──
+  const rows=INST.map(i=>({k:i.k,note:i.note,ret:INV.amount*i.r/100,r:i.r,cc:false}));
+  rows.push({k:'ChargeChain SRT (kupon)',note:'imbal hasil dari arus kas SPKLU',ret:annual,r:yieldAct,cc:true});
+  const maxRet=Math.max.apply(null,rows.map(r=>r.ret));
+  document.getElementById('inv-compare').innerHTML=rows.map(r=>`
+    <div class="cmpbar ${r.cc?'cc':''}">
+      <div class="cb-label">${r.k}<small>${r.note}</small></div>
+      <div class="cb-track"><div class="cb-fill ${r.cc?'cc':''}" style="width:${Math.max(4,r.ret/maxRet*100)}%"></div></div>
+      <div class="cb-val">${rpShort(r.ret)}<small>${r.r.toFixed(1).replace('.',',')}%/th</small></div>
+    </div>`).join('');
+  // ── tabel 10 investor di satu titik ──
+  const sum10=POOL10.reduce((a,b)=>a+b,0);
+  document.getElementById('inv-pool').innerHTML=POOL10.map((jt,idx)=>{
+    const nom=jt*1e6, tk=nom/PORT.par, mo=nom*yieldAct/100/12, share=jt/sum10*100;
+    const me=jt===100;
+    return `<tr${me?' style="background:var(--cyan-dim)"':''}>
+      <td>${me?'<b>Anda</b>':'Investor '+(idx+1)}</td>
+      <td class="r">${rpShort(nom)}</td>
+      <td class="r">${fmt(tk)}</td>
+      <td class="r">${share.toFixed(1).replace('.',',')}%</td>
+      <td class="r" style="color:var(--green)">${rp(Math.round(mo))}</td>
+      <td class="r">${yieldAct.toFixed(1).replace('.',',')}%</td>
+    </tr>`;
+  }).join('')+`<tr class="total"><td>Total 10 investor</td><td class="r">${rpShort(sum10*1e6)}</td><td class="r">${fmt(sum10*1e6/PORT.par)}</td><td class="r">100%</td><td class="r" style="color:var(--green)">${rp(Math.round(sum10*1e6*yieldAct/100/12))}</td><td class="r">${yieldAct.toFixed(1).replace('.',',')}%</td></tr>`;
+}
+function renderInvestor(){
+  const b=document.getElementById('investor-body');
+  if(!b)return;
+  const cg=CHARGERS[INV.charger];
+  b.innerHTML=`
+  <div class="grid4" style="margin-bottom:20px">
+    <div class="kpi g"><div class="klabel">Pendapatan / bulan</div><div class="kval" id="iv-monthly">—</div><div class="ksub">kupon bagi-hasil masuk tiap bulan</div></div>
+    <div class="kpi c"><div class="klabel">Yield / tahun</div><div class="kval" id="iv-yield">—</div><div class="ksub">imbal hasil berjalan</div></div>
+    <div class="kpi p"><div class="klabel">Token Dimiliki</div><div class="kval" id="iv-tokens">—</div><div class="ksub">@ ${rp(PORT.par)} / token</div></div>
+    <div class="kpi a"><div class="klabel">Harga Token (sekunder)</div><div class="kval" id="iv-price">—</div><div class="ksub" id="iv-price-sub">—</div></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h4>① Atur simulasi investasi Anda</h4>
+      <div class="slider-box">
+        <label>Nominal investasi <b id="lbl-amount">${rp(INV.amount)}</b></label>
+        <input type="range" min="1000000" max="1000000000" step="1000000" value="${INV.amount}" oninput="setInv('amount',this.value)">
+      </div>
+      <label style="font-size:11px;color:var(--text2);display:block;margin:14px 0 7px">Jenis charger SPKLU (lokasi token)</label>
+      <div class="cg-row">
+        ${Object.keys(CHARGERS).map(k=>`<button class="cg-btn ${k===INV.charger?'active':''}" data-k="${k}" onclick="setCharger('${k}')"><span class="cg-ico">${CHARGERS[k].ico}</span><b>${CHARGERS[k].name}</b><small>${CHARGERS[k].loc}</small></button>`).join('')}
+      </div>
+      <div class="slider-box" style="margin-top:16px">
+        <label>Okupansi / utilisasi stasiun <b id="lbl-occ">${INV.occ}%</b></label>
+        <input type="range" id="inv-occ" min="4" max="35" step="1" value="${INV.occ}" oninput="setInv('occ',this.value)">
+      </div>
+      <div class="slider-box">
+        <label>Konsumsi ngecas Anda (jika punya EV) <b id="lbl-drive">${fmt(INV.drive)} kWh/bln</b></label>
+        <input type="range" min="0" max="600" step="10" value="${INV.drive}" oninput="setInv('drive',this.value)">
+      </div>
+      <div class="disclaimer">Okupansi = seberapa sibuk charger dipakai. Makin tinggi → kupon &amp; nilai token naik. Baseline tiap jenis charger berbeda; geser untuk melihat skenario sepi vs ramai.</div>
+    </div>
+
+    <div class="card">
+      <h4>② Rincian hasil — <span id="iv-charger-name" style="color:var(--cyan);font-weight:600">—</span></h4>
+      <table class="flow-table"><tbody>
+        <tr><td>Kupon bagi-hasil / tahun</td><td class="r" style="color:var(--green)" id="iv-annual">—</td></tr>
+        <tr><td>Potensi nilai token pasar sekunder<small style="display:block;color:var(--text3)">jika okupansi bertahan di level ini (mark-to-market)</small></td><td class="r" id="iv-capgain">—</td></tr>
+        <tr><td>Hemat biaya ngecas (diskon ${INV_DISC*100}% utk holder)</td><td class="r" style="color:var(--cyan)" id="iv-disc">—</td></tr>
+        <tr><td>→ ekuivalen setahun</td><td class="r" style="color:var(--cyan)" id="iv-discyr">—</td></tr>
+        <tr class="total"><td>Total manfaat tahun-1 (kupon + capital gain + hemat)</td><td class="r" id="iv-total">—</td></tr>
+      </tbody></table>
+      <div class="disclaimer">Kupon bersifat berulang tiap tahun; capital gain hanya terealisasi bila token dijual saat premium. Hemat ngecas hanya berlaku bila Anda pengguna EV. Angka simulasi, bukan jaminan.</div>
+    </div>
+  </div>
+
+  <div class="section-title">Rp ${fmt(INV.amount/1e6)} juta di sini vs instrumen lain (imbal hasil / tahun) <span class="line"></span></div>
+  <div class="card"><div class="cmp-bars" id="inv-compare"></div>
+    <div class="disclaimer" style="margin-top:6px">Pembanding memakai kisaran yield bruto 2026. ChargeChain SRT beragun arus kas riil 329 SPKLU operasional — bukan proyeksi. Belum termasuk potensi capital gain &amp; hemat ngecas yang tak dimiliki deposito/obligasi.</div>
+  </div>
+
+  <div class="section-title">Kejadian nyata: 1 titik SPKLU, 10 investor patungan <span class="line"></span></div>
+  <div class="grid4" style="margin-bottom:14px">
+    <div class="kpi c"><div class="klabel">Okupansi disimulasikan</div><div class="kval" id="iv-st-occ">—</div><div class="ksub">geser slider okupansi di atas</div></div>
+    <div class="kpi g"><div class="klabel">Energi tersalur / bln</div><div class="kval" style="font-size:20px" id="iv-st-kwh">—</div><div class="ksub">pada charger terpilih</div></div>
+    <div class="kpi a"><div class="klabel">Omzet kotor / bln</div><div class="kval" style="font-size:20px" id="iv-st-gross">—</div><div class="ksub">total transaksi stasiun</div></div>
+    <div class="kpi p"><div class="klabel">Nilai wajar stasiun</div><div class="kval" style="font-size:20px" id="iv-st-fv">—</div><div class="ksub">kapitalisasi token stasiun</div></div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="flow-table">
+      <thead><tr><th>Pemodal</th><th class="r">Nominal</th><th class="r">Token</th><th class="r">Porsi grup</th><th class="r">Kupon / bln</th><th class="r">Yield / th</th></tr></thead>
+      <tbody id="inv-pool"></tbody>
+    </table>
+  </div>
+  <div class="disclaimer" style="margin-top:8px">Semua investor di satu stasiun mendapat <b>yield yang sama</b>; yang membedakan hanya besar nominal → makin besar setor, makin besar kupon. Bila okupansi naik, kupon semua investor ikut naik. Nominal bersifat ilustratif. PLN tetap pemilik &amp; operator aset; token hanya mewakili hak bagi-hasil.</div>
+
+  <div class="section-title">Kenapa cara ini lebih baik dari metode lama <span class="line"></span></div>
+  <div class="grid4">
+    <div class="benefit"><div class="bicon" style="background:var(--green-dim);color:var(--green)">🎟️</div><h5>Tiket terjangkau</h5><p>Mulai dari Rp 100 ribu/token. Bangun SPKLU sendiri butuh miliaran &amp; izin teknis; di sini cukup beli token.</p><div class="bnum">Rp 100 rb</div><div class="tiny muted">vs miliaran modal sendiri</div></div>
+    <div class="benefit"><div class="bicon" style="background:var(--cyan-dim);color:var(--cyan)">💧</div><h5>Likuid</h5><p>Jual token kapan saja di bursa sekunder. Deposito terkunci tenor; kemitraan SPKLU terkunci masa PKS bertahun.</p><div class="bnum">Exit 24/7</div><div class="tiny muted">vs modal terkunci</div></div>
+    <div class="benefit"><div class="bicon" style="background:var(--purple-dim);color:var(--purple)">🏭</div><h5>Beragun aset riil</h5><p>Didukung arus kas 329 SPKLU yang sudah beroperasi &amp; menghasilkan — bukan janji proyek crowdfunding.</p><div class="bnum">329 SPKLU</div><div class="tiny muted">cash flow aktual</div></div>
+    <div class="benefit"><div class="bicon" style="background:var(--amber-dim);color:var(--amber)">🔍</div><h5>Transparan on-chain</h5><p>Tiap kWh &amp; bagi-hasil tercatat di blockchain, dapat diaudit sendiri. Tak perlu percaya laporan pihak lain.</p><div class="bnum">100%</div><div class="tiny muted">auditable</div></div>
+    <div class="benefit"><div class="bicon" style="background:var(--green-dim);color:var(--green)">📈</div><h5>Imbal hasil lebih tinggi</h5><p>Yield berbasis marjin SPKLU (≈13% @ baseline) di atas deposito &amp; SBN ritel — dengan kupon bulanan.</p><div class="bnum">~13%+</div><div class="tiny muted">vs 4–7,5%</div></div>
+    <div class="benefit"><div class="bicon" style="background:var(--blue-dim);color:var(--blue)">🔌</div><h5>Diskon ngecas</h5><p>Pemegang token dapat potongan tarif ${INV_DISC*100}% saat mengisi EV — instrumen finansial lain tak punya utilitas ini.</p><div class="bnum">−${INV_DISC*100}%</div><div class="tiny muted">tarif pengisian</div></div>
+    <div class="benefit" style="cursor:pointer" onclick="switchTab('market')"><div class="bicon" style="background:var(--purple-dim);color:var(--purple)">🚀</div><h5>Upside pasar sekunder</h5><p>Bila okupansi SPKLU naik, harga token bisa premium — capital gain di atas kupon. <b>Lihat Bursa →</b></p><div class="bnum">Capital gain</div><div class="tiny muted">price discovery</div></div>
+    <div class="benefit"><div class="bicon" style="background:var(--cyan-dim);color:var(--cyan)">🌱</div><h5>Dampak nyata</h5><p>Modal Anda mempercepat infrastruktur EV Jabar — return finansial sekaligus kontribusi transisi energi.</p><div class="bnum">ESG</div><div class="tiny muted">ikut memiliki transisi</div></div>
+  </div>
+  <div class="disclaimer" style="margin-top:14px">Halaman ini simulasi/edukasi. Imbal hasil bukan jaminan &amp; bergantung okupansi aktual. Instrumen riil memerlukan struktur efek beragun aset/sukuk, izin OJK, dan audit independen. Bukan ajakan investasi.</div>
+  `;
+  document.querySelectorAll('.cg-btn').forEach(bt=>bt.classList.toggle('active',bt.dataset.k===INV.charger));
+  updateInvSim();
+}
+
 function renderTokenomics(){
   const b=document.getElementById('tokenomics-body');
   b.innerHTML=`
@@ -1684,7 +1892,7 @@ function boot(){
   document.getElementById('mo-kwh').textContent=(PORT.tot_kwh_m/1e6).toFixed(2).replace('.',',')+' GWh';
   document.getElementById('mo-cap').textContent=rpShort(PORT.fv_total);
   document.getElementById('mo-yield').textContent=(PORT.cap_rate*100).toString().replace('.',',')+'%';
-  renderStationList();renderMarket();renderTokenomics();renderBusiness();renderIndirect();renderDevtoken();renderKemitraan();renderContract();renderFAQ();
+  renderStationList();renderMarket();renderInvestor();renderTokenomics();renderBusiness();renderIndirect();renderDevtoken();renderKemitraan();renderContract();renderFAQ();
   if(tradeable().length)selectToken(tradeable()[0].id);
   initMap();
 }
