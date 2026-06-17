@@ -1,4 +1,4 @@
-# ChargeChain Nasional — Pasar Modal Token SPKLU
+# ChargeChain — Pasar Modal Token SPKLU
 
 **Bursa sekunder untuk jual-beli token bagi-hasil (revenue-share) dari SPKLU PLN yang sudah beroperasi di Indonesia.**
 
@@ -52,6 +52,16 @@ Bahan persiapan internal — **tidak ditampilkan ke publik/juri**: antisipasi pe
 
 - Diakses lewat tombol gembok (🔒) di bagian bawah sidebar, atau URL `…/#admin`.
 - Dilindungi gerbang kata sandi sederhana di sisi klien (lihat konstanta `ADMIN_PW` di `index.html`). Ini menyembunyikan materi dari pengunjung biasa, **bukan** keamanan kriptografis — jangan menaruh rahasia sungguhan di sini.
+
+### Berkas internal & privasi (folder `admin/`)
+
+Proposal dan berkas sumber data — termasuk **data pelanggan/PII** — disimpan di folder `admin/` dan **dikecualikan dari deploy publik** lewat `.vercelignore`:
+
+- `ChargeChain-Proposal-IG2026.pptx` — proposal.
+- `Data SPKLU.xlsx`, `Master SPKLU Maret 2026.xlsx`, `Detail Transaksi SPKLU 202603.xlsx` — data operasional.
+- `DataMasterPelangganKBLBB (2).xls` — **data master pelanggan (sensitif/PII)**.
+
+Berkas-berkas ini tetap tersedia untuk tim lewat repo privat, tetapi **tidak pernah diunggah ke Vercel** sehingga tidak bisa diakses publik/juri.
 
 ## Teknologi
 

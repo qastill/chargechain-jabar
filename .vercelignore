@@ -1,0 +1,8 @@
+# Bahan internal tim — JANGAN di-deploy ke publik (juri/pengunjung tidak boleh akses).
+# File tetap ada di repo privat untuk tim, tetapi tidak diunggah ke Vercel.
+admin/
+
+# Berkas sumber data & proposal (proteksi privasi) — termasuk data pelanggan/PII.
+*.pptx
+*.xlsx
+*.xls
