@@ -406,376 +406,399 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 .leaflet-bar a{background:#161B22;color:#8B949E;border-color:#21262D}
 .leaflet-bar a:hover{background:#1C2333;color:#00D4FF}
 
-/* ═══ LANDING PAGE — gaya AI modern (a la nyxium.ai), tema cerah ═══ */
-.lp{position:fixed;inset:0;z-index:9999;overflow-y:auto;overflow-x:hidden;background:#FBFCFF;
-  color:#0E1116;font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+/* ═══ LANDING PAGE — model & desain a la agridex.com (RWA marketplace), tema EV/SPKLU cerah ═══ */
+.lp{position:fixed;inset:0;z-index:9999;overflow-y:auto;overflow-x:hidden;background:#FFFFFF;
+  color:#1A2B23;font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
 .lp *{box-sizing:border-box}
-.lp ::selection{background:rgba(109,94,248,.22)}
+.lp ::selection{background:rgba(18,183,106,.2)}
 .lp a{text-decoration:none;color:inherit;cursor:pointer}
 .lp-wrap{max-width:1200px;margin:0 auto;padding:0 24px;position:relative;z-index:2}
-.lp h1,.lp h2,.lp h3,.lp h4{line-height:1.12;letter-spacing:-.025em;font-weight:800;color:#0A0D14;margin:0}
+.lp h1,.lp h2,.lp h3,.lp h4{line-height:1.12;letter-spacing:-.025em;font-weight:800;color:#08231A;margin:0}
 .lp p{margin:0}
-
-/* animated mesh background + grid */
-.lp-bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
-.lp-blob{position:absolute;border-radius:50%;filter:blur(72px);opacity:.55;animation:lpfloat 20s ease-in-out infinite}
-.lp-blob.b1{width:540px;height:540px;background:#C4B5FD;top:-140px;left:-90px}
-.lp-blob.b2{width:480px;height:480px;background:#A5F3FC;top:-80px;right:-70px;animation-delay:-5s}
-.lp-blob.b3{width:440px;height:440px;background:#A7F3D0;top:540px;left:6%;animation-delay:-9s}
-.lp-blob.b4{width:400px;height:400px;background:#FBCFE8;top:420px;right:4%;animation-delay:-13s}
-@keyframes lpfloat{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(44px,-32px) scale(1.08)}66%{transform:translate(-32px,30px) scale(.94)}}
-.lp-grid-ov{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.55;
-  background-image:linear-gradient(#e9ecf6 1px,transparent 1px),linear-gradient(90deg,#e9ecf6 1px,transparent 1px);
-  background-size:48px 48px;
-  -webkit-mask-image:radial-gradient(ellipse 75% 55% at 50% 0%,#000 35%,transparent 78%);
-  mask-image:radial-gradient(ellipse 75% 55% at 50% 0%,#000 35%,transparent 78%)}
-
-/* reveal + gradient text */
-.lp-reveal{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+.lp-reveal{opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
 .lp-reveal.in{opacity:1;transform:none}
-.lp-grad{background:linear-gradient(100deg,#6D5EF8,#00C2FF 45%,#10B981);background-size:200% auto;
+.lp-grad{background:linear-gradient(100deg,#059669,#12B76A 48%,#06C5B0);background-size:200% auto;
   -webkit-background-clip:text;background-clip:text;color:transparent;animation:lpsheen 6s linear infinite}
 @keyframes lpsheen{to{background-position:200% center}}
 
+/* buttons */
+.lp-btn{display:inline-flex;align-items:center;gap:9px;padding:15px 28px;border-radius:14px;font-weight:700;
+  font-size:15.5px;cursor:pointer;border:none;transition:transform .15s,box-shadow .15s}
+.lp-btn.primary{background:linear-gradient(135deg,#059669,#12B76A);color:#fff;box-shadow:0 14px 34px -12px rgba(5,150,105,.7)}
+.lp-btn.primary:hover{transform:translateY(-2px);box-shadow:0 20px 44px -12px rgba(5,150,105,.85)}
+.lp-btn.ghost{background:#fff;color:#0B5C3F;border:1.5px solid #CFEADD}
+.lp-btn.ghost:hover{border-color:#12B76A;color:#12B76A;transform:translateY(-2px)}
+
 /* nav */
-.lp-nav{position:sticky;top:0;z-index:30}
-.lp-nav-in{max-width:1200px;margin:14px auto;padding:9px 14px 9px 18px;display:flex;align-items:center;gap:22px;
-  background:rgba(255,255,255,.62);backdrop-filter:blur(18px) saturate(160%);border:1px solid rgba(255,255,255,.75);
-  border-radius:18px;box-shadow:0 14px 44px -20px rgba(60,80,160,.32)}
-@media(max-width:1240px){.lp-nav-in{margin:14px 16px}}
-.lp-brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:20px;color:#0A0D14;letter-spacing:-.03em}
-.lp-brand span{background:linear-gradient(100deg,#6D5EF8,#00C2FF);-webkit-background-clip:text;background-clip:text;color:transparent}
-.lp-logo{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#6D5EF8,#00C2FF);
-  display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -6px rgba(109,94,248,.7);flex:none}
-.lp-logo::after{content:"";width:12px;height:12px;border:2.5px solid #fff;border-radius:50%;
-  border-right-color:transparent;border-bottom-color:transparent;transform:rotate(45deg)}
-.lp-links{display:flex;gap:24px;margin-left:auto;font-size:14.5px;font-weight:500;color:#3C4656}
-.lp-links a:hover{color:#6D5EF8}
-.lp-navcta{padding:10px 20px;border-radius:13px;background:linear-gradient(135deg,#6D5EF8,#00C2FF);color:#fff;
-  font-weight:600;font-size:14.5px;border:none;cursor:pointer;box-shadow:0 10px 24px -8px rgba(109,94,248,.8);
-  transition:transform .15s,box-shadow .15s}
-.lp-navcta:hover{transform:translateY(-1px);box-shadow:0 14px 30px -8px rgba(109,94,248,.95)}
+.lp-nav{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.82);backdrop-filter:blur(14px) saturate(150%);
+  border-bottom:1px solid #EAF1ED}
+.lp-nav-in{max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:24px}
+.lp-brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:20px;color:#08231A;letter-spacing:-.03em}
+.lp-brand span{color:#12B76A}
+.lp-logo{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#059669,#12B76A);
+  display:flex;align-items:center;justify-content:center;box-shadow:0 8px 18px -6px rgba(5,150,105,.7);flex:none;position:relative}
+.lp-logo::after{content:"";font-size:18px;font-weight:900;color:#fff;line-height:1;content:"\26A1"}
+.lp-links{display:flex;gap:24px;margin-left:auto;font-size:14.5px;font-weight:500;color:#3A4D44}
+.lp-links a:hover{color:#12B76A}
+.lp-navcta{padding:10px 20px;border-radius:12px;background:linear-gradient(135deg,#059669,#12B76A);color:#fff;
+  font-weight:600;font-size:14.5px;border:none;cursor:pointer;box-shadow:0 10px 22px -8px rgba(5,150,105,.75);
+  transition:transform .15s}
+.lp-navcta:hover{transform:translateY(-1px)}
 @media(max-width:820px){.lp-links{display:none}}
 
 /* hero */
-.lp-hero{position:relative;text-align:center;padding:66px 0 30px}
-.lp-badge{display:inline-flex;align-items:center;gap:9px;font-size:13px;font-weight:600;color:#4B3FD6;
-  background:rgba(255,255,255,.72);backdrop-filter:blur(10px);border:1px solid rgba(109,94,248,.25);
-  padding:8px 16px;border-radius:30px;margin-bottom:26px;box-shadow:0 6px 18px -8px rgba(109,94,248,.4)}
-.lp-badge .dot{width:7px;height:7px;border-radius:50%;background:#6D5EF8;box-shadow:0 0 10px #6D5EF8}
-.lp-hero h1{font-size:66px;font-weight:800;letter-spacing:-.045em;margin-bottom:24px}
-.lp-hero .sub{font-size:20px;color:#46505F;max-width:700px;margin:0 auto 36px}
-.lp-cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:18px}
-.lp-trust{font-size:13px;color:#7A8595;margin-bottom:50px}
-.lp-trust b{color:#3C4656}
-.lp-btn{display:inline-flex;align-items:center;gap:9px;padding:16px 30px;border-radius:15px;font-weight:700;
-  font-size:16px;cursor:pointer;border:none;transition:transform .15s,box-shadow .15s}
-.lp-btn.primary{background:linear-gradient(135deg,#6D5EF8,#00C2FF);color:#fff;box-shadow:0 16px 40px -12px rgba(109,94,248,.8)}
-.lp-btn.primary:hover{transform:translateY(-2px);box-shadow:0 22px 52px -12px rgba(109,94,248,.95)}
-.lp-btn.ghost{background:rgba(255,255,255,.78);backdrop-filter:blur(10px);color:#1B2230;border:1px solid #E2E6F0}
-.lp-btn.ghost:hover{border-color:#6D5EF8;color:#6D5EF8;transform:translateY(-2px)}
-@media(max-width:680px){.lp-hero{padding:42px 0 18px}.lp-hero h1{font-size:38px}.lp-hero .sub{font-size:17px}}
+.lp-hero{position:relative;overflow:hidden;
+  background:radial-gradient(950px 520px at 82% -12%,#D6F6E6 0,rgba(214,246,230,0) 58%),
+             radial-gradient(760px 430px at -5% 8%,#D7F4F1 0,rgba(215,244,241,0) 55%),#fff}
+.lp-hero-in{max-width:1200px;margin:0 auto;padding:74px 24px 80px;display:grid;grid-template-columns:1.02fr .98fr;gap:54px;align-items:center}
+.lp-badge{display:inline-flex;align-items:center;gap:9px;font-size:12.5px;font-weight:700;letter-spacing:.03em;color:#0B7A52;
+  background:#DBF6E8;border:1px solid #B7E8CF;padding:7px 15px;border-radius:30px;margin-bottom:24px}
+.lp-badge .dot{width:7px;height:7px;border-radius:50%;background:#12B76A;box-shadow:0 0 9px #12B76A}
+.lp-hero h1{font-size:55px;font-weight:800;letter-spacing:-.04em;margin-bottom:22px}
+.lp-hero .sub{font-size:19px;color:#42564C;max-width:560px;margin-bottom:32px}
+.lp-cta-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:26px}
+.lp-trust{display:flex;gap:22px;flex-wrap:wrap;font-size:13px;color:#5E7268}
+.lp-trust b{color:#08231A;font-weight:700}
+@media(max-width:900px){.lp-hero-in{grid-template-columns:1fr;gap:42px}.lp-hero h1{font-size:40px}}
+@media(max-width:680px){.lp-hero h1{font-size:34px}.lp-hero .sub{font-size:17px}.lp-hero-in{padding:48px 24px 56px}}
 
-/* hero glass preview */
-.lp-preview{position:relative;max-width:1000px;margin:0 auto;border-radius:24px;overflow:hidden;
-  border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.55);backdrop-filter:blur(20px);
-  box-shadow:0 60px 130px -44px rgba(60,80,160,.6)}
-.lp-pv-bar{display:flex;align-items:center;gap:7px;padding:13px 16px;border-bottom:1px solid rgba(2,6,40,.06);background:rgba(255,255,255,.55)}
-.lp-pv-bar i{width:11px;height:11px;border-radius:50%;display:inline-block}
-.lp-pv-bar .u{margin-left:14px;font-size:12px;color:#7A8595;font-weight:600}
-.lp-pv-body{display:grid;grid-template-columns:1.45fr 1fr}
-@media(max-width:760px){.lp-pv-body{grid-template-columns:1fr}}
-.lp-pv-map{position:relative;min-height:320px;overflow:hidden;padding:18px;
-  background:radial-gradient(circle at 28% 30%,rgba(109,94,248,.35),transparent 42%),
-             radial-gradient(circle at 72% 64%,rgba(0,194,255,.32),transparent 44%),
-             radial-gradient(circle at 50% 90%,rgba(16,185,129,.3),transparent 46%),
-             linear-gradient(135deg,#0F1430,#1B2350)}
-.lp-pv-map .ovl{position:absolute;inset:0;opacity:.35;
-  background-image:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);
-  background-size:34px 34px}
-.lp-pin{position:absolute;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,#5EF5D0,#10B981);
-  box-shadow:0 0 0 5px rgba(52,245,200,.16),0 0 18px rgba(16,185,129,.8);animation:lppulse 2.6s ease-in-out infinite}
-.lp-pin.c{background:radial-gradient(circle,#7FE3FF,#00C2FF);box-shadow:0 0 0 5px rgba(0,194,255,.16),0 0 18px rgba(0,194,255,.8)}
-.lp-pin.v{background:radial-gradient(circle,#C3B5FF,#6D5EF8);box-shadow:0 0 0 5px rgba(109,94,248,.16),0 0 18px rgba(109,94,248,.8)}
-@keyframes lppulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.35);opacity:.65}}
-.lp-pv-tag{position:absolute;left:16px;bottom:16px;background:rgba(255,255,255,.16);backdrop-filter:blur(8px);
-  border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:9px 13px;color:#fff}
-.lp-pv-tag b{font-size:16px;font-weight:800}
-.lp-pv-tag span{font-size:11px;opacity:.85;display:block}
-.lp-pv-side{padding:18px;display:grid;gap:10px;align-content:start;background:rgba(255,255,255,.6)}
-.lp-pv-side .h{font-size:12px;font-weight:700;color:#7A8595;text-transform:uppercase;letter-spacing:.06em}
-.lp-pvrow{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:13px;
-  background:#fff;border:1px solid #EEF0F7;box-shadow:0 6px 16px -12px rgba(40,60,140,.4)}
-.lp-pvrow .nm{font-weight:700;font-size:13.5px;color:#16203A}
-.lp-pvrow .nm small{display:block;font-weight:500;color:#8A94A6;font-size:11px}
-.lp-pvrow .yl{font-weight:800;font-size:14px;background:linear-gradient(100deg,#6D5EF8,#10B981);-webkit-background-clip:text;background-clip:text;color:transparent}
+/* product mockup (reusable) */
+.lp-mock{position:relative;border-radius:22px;overflow:hidden;border:1px solid #E6EFEA;background:#fff;
+  box-shadow:0 50px 110px -42px rgba(8,60,40,.5)}
+.lp-mock-bar{display:flex;align-items:center;gap:7px;padding:12px 15px;border-bottom:1px solid #EEF3F0;background:#F8FBF9}
+.lp-mock-bar i{width:11px;height:11px;border-radius:50%;display:inline-block}
+.lp-mock-bar .u{margin-left:13px;font-size:12px;color:#7E8E86;font-weight:600}
+.lp-mock-body{display:grid;grid-template-columns:1.45fr 1fr}
+@media(max-width:520px){.lp-mock-body{grid-template-columns:1fr}}
+.lp-mock-map{position:relative;min-height:300px;overflow:hidden;padding:16px;
+  background:radial-gradient(circle at 28% 30%,rgba(18,183,106,.4),transparent 42%),
+             radial-gradient(circle at 72% 64%,rgba(6,197,176,.32),transparent 44%),
+             radial-gradient(circle at 52% 92%,rgba(5,150,105,.32),transparent 46%),
+             linear-gradient(135deg,#0B1F19,#0E2A28)}
+.lp-mock-map .ovl{position:absolute;inset:0;opacity:.35;
+  background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);
+  background-size:32px 32px}
+.lp-pin{position:absolute;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,#7CF5C2,#12B76A);
+  box-shadow:0 0 0 5px rgba(18,183,106,.16),0 0 18px rgba(18,183,106,.85);animation:lppulse 2.6s ease-in-out infinite}
+.lp-pin.t{background:radial-gradient(circle,#86F1EA,#06C5B0);box-shadow:0 0 0 5px rgba(6,197,176,.16),0 0 18px rgba(6,197,176,.85)}
+@keyframes lppulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.35);opacity:.6}}
+.lp-mock-tag{position:absolute;left:15px;bottom:15px;background:rgba(255,255,255,.14);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.22);border-radius:12px;padding:9px 13px;color:#fff}
+.lp-mock-tag b{font-size:16px;font-weight:800}
+.lp-mock-tag span{font-size:11px;opacity:.85;display:block}
+.lp-mock-side{padding:16px;display:grid;gap:9px;align-content:start;background:#fff}
+.lp-mock-side .h{font-size:11.5px;font-weight:700;color:#7E8E86;text-transform:uppercase;letter-spacing:.06em}
+.lp-mrow{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;border-radius:12px;background:#F7FBF9;border:1px solid #EBF2EE}
+.lp-mrow .nm{font-weight:700;font-size:13px;color:#13332A}
+.lp-mrow .nm small{display:block;font-weight:500;color:#8A998F;font-size:10.5px}
+.lp-mrow .yl{font-weight:800;font-size:13.5px;color:#0B7A52}
 
-/* marquee */
-.lp-marq{position:relative;overflow:hidden;padding:30px 0;margin-top:8px;
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
-  mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
-.lp-marq-track{display:flex;gap:46px;width:max-content;animation:lpmarq 30s linear infinite}
+/* credibility marquee */
+.lp-marq{position:relative;overflow:hidden;padding:24px 0;border-top:1px solid #EEF3F0;border-bottom:1px solid #EEF3F0;background:#FAFCFB;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.lp-marq-track{display:flex;gap:44px;width:max-content;animation:lpmarq 30s linear infinite}
 @keyframes lpmarq{to{transform:translateX(-50%)}}
-.lp-marq-item{display:flex;align-items:center;gap:10px;font-weight:600;color:#5A6573;font-size:15px;white-space:nowrap}
-.lp-marq-item .d{width:6px;height:6px;border-radius:50%;background:linear-gradient(135deg,#6D5EF8,#00C2FF)}
+.lp-marq-item{display:flex;align-items:center;gap:10px;font-weight:600;color:#5E7268;font-size:15px;white-space:nowrap}
+.lp-marq-item .d{width:6px;height:6px;border-radius:50%;background:linear-gradient(135deg,#059669,#06C5B0)}
+
+/* stat band (gradient) */
+.lp-statband{background:linear-gradient(125deg,#047857,#12B76A 58%,#06C5B0);color:#fff}
+.lp-statband-in{max-width:1200px;margin:0 auto;padding:48px 24px;display:grid;grid-template-columns:repeat(4,1fr);gap:22px;text-align:center}
+.lp-sb .n{font-size:40px;font-weight:800;letter-spacing:-.04em;line-height:1}
+.lp-sb .l{font-size:13.5px;opacity:.92;margin-top:9px}
+@media(max-width:760px){.lp-statband-in{grid-template-columns:repeat(2,1fr);gap:30px}.lp-sb .n{font-size:32px}}
 
 /* section scaffold */
-.lp-sec{position:relative;padding:90px 0}
-.lp-head{text-align:center;max-width:720px;margin:0 auto 56px}
-.lp-kick{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:#6D5EF8;background:rgba(109,94,248,.1);padding:6px 14px;border-radius:20px;margin-bottom:18px}
-.lp-head h2{font-size:42px;margin-bottom:16px;letter-spacing:-.035em}
-.lp-head p{font-size:18px;color:#4D5563}
-@media(max-width:680px){.lp-head h2{font-size:30px}.lp-sec{padding:60px 0}}
+.lp-sec{position:relative;padding:88px 0}
+.lp-sec.alt{background:#F5FAF7}
+.lp-head{text-align:center;max-width:720px;margin:0 auto 54px}
+.lp-kick{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#0B7A52;
+  background:#DBF6E8;padding:6px 14px;border-radius:20px;margin-bottom:18px}
+.lp-head h2{font-size:40px;margin-bottom:16px;letter-spacing:-.035em}
+.lp-head p{font-size:18px;color:#4A5A52}
+@media(max-width:680px){.lp-head h2{font-size:29px}.lp-sec{padding:58px 0}}
 
-/* stats */
-.lp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
-@media(max-width:760px){.lp-stats{grid-template-columns:repeat(2,1fr)}}
-.lp-stat{text-align:center;padding:30px 18px;border-radius:20px;background:rgba(255,255,255,.7);
-  backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.85);box-shadow:0 24px 60px -32px rgba(60,80,160,.4)}
-.lp-stat .n{font-size:42px;font-weight:800;letter-spacing:-.04em;line-height:1}
-.lp-stat .l{font-size:13.5px;color:#5A6573;margin-top:10px}
-@media(max-width:680px){.lp-stat .n{font-size:32px}}
+/* problem cards */
+.lp-probs{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+@media(max-width:880px){.lp-probs{grid-template-columns:1fr}}
+.lp-prob{border-radius:20px;padding:30px;background:#fff;border:1px solid #EAF1ED;box-shadow:0 22px 50px -36px rgba(8,60,40,.4)}
+.lp-prob .pic{width:50px;height:50px;border-radius:14px;background:#FEF0EE;color:#E05641;display:flex;align-items:center;justify-content:center;font-size:23px;margin-bottom:18px}
+.lp-prob h3{font-size:19px;margin-bottom:9px}
+.lp-prob p{font-size:14.5px;color:#4A5A52}
 
-/* bento */
-.lp-bento{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-@media(max-width:880px){.lp-bento{grid-template-columns:1fr}}
-.lp-bcard{position:relative;overflow:hidden;border-radius:22px;padding:30px;background:rgba(255,255,255,.72);
-  backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.85);box-shadow:0 26px 60px -34px rgba(60,80,160,.4);
-  transition:transform .2s,box-shadow .2s}
-.lp-bcard:hover{transform:translateY(-5px);box-shadow:0 40px 80px -38px rgba(60,80,160,.55)}
-.lp-bcard .glow{position:absolute;width:220px;height:220px;border-radius:50%;filter:blur(60px);opacity:.4;top:-60px;right:-50px}
-.lp-bcard.span2{grid-column:span 2}
-@media(max-width:880px){.lp-bcard.span2{grid-column:span 1}}
-.lp-ic{width:54px;height:54px;border-radius:15px;display:flex;align-items:center;justify-content:center;
-  font-size:25px;color:#fff;margin-bottom:20px;box-shadow:0 14px 28px -10px rgba(60,80,160,.6);position:relative;z-index:2}
-.lp-ic.v{background:linear-gradient(135deg,#6D5EF8,#9F7BFF)}
-.lp-ic.c{background:linear-gradient(135deg,#0EA5E9,#00C2FF)}
-.lp-ic.g{background:linear-gradient(135deg,#10B981,#34D399)}
-.lp-bcard h3{font-size:21px;margin-bottom:10px;position:relative;z-index:2}
-.lp-bcard p{font-size:15px;color:#4D5563;position:relative;z-index:2}
-.lp-bcard.feature{display:flex;flex-direction:column;justify-content:center;
-  background:linear-gradient(120deg,#6D5EF8,#00C2FF 70%,#10B981);color:#fff;grid-column:span 3}
-@media(max-width:880px){.lp-bcard.feature{grid-column:span 1}}
-.lp-bcard.feature h3{color:#fff;font-size:26px}
-.lp-bcard.feature p{color:rgba(255,255,255,.92);font-size:16px;max-width:760px}
-.lp-bcard.feature .tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-  background:rgba(255,255,255,.2);padding:6px 13px;border-radius:20px;margin-bottom:16px;width:fit-content}
+/* how it works */
+.lp-how{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;position:relative}
+@media(max-width:880px){.lp-how{grid-template-columns:1fr}}
+.lp-hstep{position:relative;border-radius:20px;padding:32px 28px;background:#fff;border:1px solid #EAF1ED;box-shadow:0 22px 54px -36px rgba(8,60,40,.4)}
+.lp-hstep .no{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#059669,#12B76A);color:#fff;font-weight:800;
+  font-size:20px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 12px 24px -8px rgba(5,150,105,.7)}
+.lp-hstep h4{font-size:19px;margin-bottom:9px}
+.lp-hstep p{font-size:14.5px;color:#4A5A52}
 
-/* steps */
-.lp-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-@media(max-width:880px){.lp-steps{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.lp-steps{grid-template-columns:1fr}}
-.lp-step{position:relative;border-radius:20px;padding:28px 24px;background:rgba(255,255,255,.72);
-  backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.85);box-shadow:0 24px 56px -34px rgba(60,80,160,.4)}
-.lp-step .no{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#6D5EF8,#00C2FF);color:#fff;
-  font-weight:800;font-size:19px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;
-  box-shadow:0 12px 24px -8px rgba(109,94,248,.7)}
-.lp-step h4{font-size:18px;margin-bottom:8px}
-.lp-step p{font-size:14px;color:#4D5563}
+/* features grid */
+.lp-feats{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+@media(max-width:760px){.lp-feats{grid-template-columns:1fr}}
+.lp-feat{display:flex;gap:18px;align-items:flex-start;border-radius:20px;padding:28px;background:#fff;border:1px solid #EAF1ED;
+  box-shadow:0 20px 50px -36px rgba(8,60,40,.4);transition:transform .18s,box-shadow .18s}
+.lp-feat:hover{transform:translateY(-4px);box-shadow:0 34px 70px -40px rgba(8,60,40,.5)}
+.lp-ic{flex:none;width:54px;height:54px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;
+  box-shadow:0 12px 26px -10px rgba(8,60,40,.5)}
+.lp-ic.g{background:linear-gradient(135deg,#059669,#12B76A)}
+.lp-ic.t{background:linear-gradient(135deg,#0891B2,#06C5B0)}
+.lp-ic.b{background:linear-gradient(135deg,#2563EB,#06C5B0)}
+.lp-ic.a{background:linear-gradient(135deg,#D97706,#F59E0B)}
+.lp-feat h3{font-size:19px;margin-bottom:8px}
+.lp-feat p{font-size:14.5px;color:#4A5A52}
 
-/* why grid */
-.lp-why{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-@media(max-width:880px){.lp-why{grid-template-columns:1fr}}
-.lp-wcard{display:flex;gap:15px;align-items:flex-start;border-radius:18px;padding:24px;background:rgba(255,255,255,.7);
-  backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.85);box-shadow:0 20px 50px -34px rgba(60,80,160,.4);
-  transition:transform .18s}
-.lp-wcard:hover{transform:translateY(-4px)}
-.lp-wcard .tick{flex:none;width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;
-  font-weight:800;font-size:16px;color:#fff;background:linear-gradient(135deg,#10B981,#34D399);box-shadow:0 10px 20px -8px rgba(16,185,129,.7)}
-.lp-wcard h4{font-size:16px;margin-bottom:5px}
-.lp-wcard p{font-size:14px;color:#4D5563}
+/* token section */
+.lp-token{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+@media(max-width:880px){.lp-token{grid-template-columns:1fr;gap:36px}}
+.lp-token-txt h2{font-size:38px;margin-bottom:16px;letter-spacing:-.035em}
+.lp-token-txt p{font-size:17px;color:#4A5A52;margin-bottom:22px}
+.lp-tokchk{display:grid;gap:12px}
+.lp-tokchk div{display:flex;gap:11px;align-items:flex-start;font-size:15px;color:#2B3A33}
+.lp-tokchk .tk{flex:none;width:24px;height:24px;border-radius:8px;background:#DBF6E8;color:#0B7A52;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px}
+.lp-tokcard{position:relative;overflow:hidden;border-radius:24px;padding:34px;color:#fff;
+  background:linear-gradient(135deg,#08322A,#0B5C3F 55%,#0E7C5A);box-shadow:0 44px 100px -42px rgba(8,60,40,.7)}
+.lp-tokcard::before{content:"";position:absolute;width:280px;height:280px;border-radius:50%;background:rgba(6,197,176,.4);filter:blur(70px);top:-90px;right:-70px}
+.lp-tokcard .tt{position:relative;display:flex;align-items:center;justify-content:space-between;margin-bottom:26px}
+.lp-tokcard .tt b{font-size:17px;font-weight:800}
+.lp-tokcard .tt .chip{font-size:11px;font-weight:700;background:rgba(255,255,255,.18);padding:5px 11px;border-radius:20px}
+.lp-tokcard .big{position:relative;font-size:38px;font-weight:800;letter-spacing:-.03em;margin-bottom:4px}
+.lp-tokcard .cap{position:relative;font-size:13px;opacity:.82;margin-bottom:24px}
+.lp-tokgrid{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.lp-tokgrid div{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:14px}
+.lp-tokgrid .k{font-size:11px;opacity:.8}
+.lp-tokgrid .v{font-size:19px;font-weight:800;margin-top:3px}
+
+/* marketplace band */
+.lp-mkt{display:grid;grid-template-columns:.95fr 1.05fr;gap:48px;align-items:center}
+@media(max-width:880px){.lp-mkt{grid-template-columns:1fr;gap:34px}}
+.lp-mkt h2{font-size:38px;margin-bottom:16px;letter-spacing:-.035em}
+.lp-mkt p{font-size:17px;color:#4A5A52;margin-bottom:24px}
 
 /* final cta */
 .lp-final{padding:30px 0 100px}
 .lp-final-box{position:relative;overflow:hidden;border-radius:30px;text-align:center;color:#fff;padding:74px 28px;
-  background:linear-gradient(125deg,#6D5EF8,#00C2FF 55%,#10B981);box-shadow:0 50px 110px -40px rgba(109,94,248,.7)}
-.lp-final-box::before{content:"";position:absolute;inset:0;opacity:.25;
+  background:linear-gradient(125deg,#047857,#12B76A 55%,#06C5B0);box-shadow:0 50px 110px -42px rgba(5,150,105,.7)}
+.lp-final-box::before{content:"";position:absolute;inset:0;opacity:.22;
   background-image:linear-gradient(rgba(255,255,255,.25) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.25) 1px,transparent 1px);
-  background-size:42px 42px;-webkit-mask-image:radial-gradient(ellipse 60% 60% at 50% 0%,#000,transparent 70%);
-  mask-image:radial-gradient(ellipse 60% 60% at 50% 0%,#000,transparent 70%)}
-.lp-final-box h2{color:#fff;font-size:44px;margin-bottom:16px;position:relative;letter-spacing:-.04em}
+  background-size:42px 42px;-webkit-mask-image:radial-gradient(ellipse 60% 60% at 50% 0%,#000,transparent 70%);mask-image:radial-gradient(ellipse 60% 60% at 50% 0%,#000,transparent 70%)}
+.lp-final-box h2{color:#fff;font-size:43px;margin-bottom:16px;position:relative;letter-spacing:-.04em}
 .lp-final-box p{font-size:18.5px;opacity:.95;max-width:640px;margin:0 auto 32px;position:relative}
-.lp-final-box .lp-btn{position:relative;background:#fff;color:#5B4BE0;box-shadow:0 18px 40px rgba(0,0,0,.2)}
-.lp-final-box .lp-btn:hover{box-shadow:0 24px 50px rgba(0,0,0,.28)}
-@media(max-width:680px){.lp-final-box h2{font-size:30px}.lp-final-box{padding:52px 22px}}
+.lp-final-box .lp-btn{position:relative;background:#fff;color:#0B7A52;box-shadow:0 18px 40px rgba(0,0,0,.18)}
+@media(max-width:680px){.lp-final-box h2{font-size:29px}.lp-final-box{padding:52px 22px}}
 
 /* footer */
-.lp-foot{position:relative;background:#0B0F1A;color:#9AA6BD;padding:46px 0;font-size:13.5px;z-index:2}
+.lp-foot{background:#08231A;color:#9FB8AC;padding:46px 0;font-size:13.5px}
 .lp-foot-in{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:flex-start}
 .lp-foot .lp-brand{color:#fff;margin-bottom:12px}
-.lp-foot .lp-brand span{background:linear-gradient(100deg,#9F8BFF,#5FE0FF);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lp-foot .lp-brand span{color:#3FE0A0}
 .lp-foot .dis{max-width:580px;line-height:1.7}
-.lp-foot a{color:#6FE3FF}
+.lp-foot a{color:#46E3A6}
 
 </style></head><body>
 
-<!-- ═══ LANDING PAGE (tampil pertama saat web dibuka, tema cerah) ═══ -->
+<!-- ═══ LANDING PAGE — model & desain a la agridex.com, tema SPKLU/EV charging ═══ -->
 <div class="lp" id="landing">
-
-  <!-- animated background -->
-  <div class="lp-bg" aria-hidden="true">
-    <div class="lp-blob b1"></div><div class="lp-blob b2"></div>
-    <div class="lp-blob b3"></div><div class="lp-blob b4"></div>
-  </div>
-  <div class="lp-grid-ov" aria-hidden="true"></div>
 
   <!-- NAV -->
   <nav class="lp-nav">
-    <div class="lp-wrap" style="padding:0">
-      <div class="lp-nav-in">
-        <div class="lp-brand"><span class="lp-logo"></span>Charge<span>Chain</span></div>
-        <div class="lp-links">
-          <a onclick="lpScroll('lp-what')">Apa Itu</a>
-          <a onclick="lpScroll('lp-how')">Cara Kerja</a>
-          <a onclick="lpScroll('lp-why')">Keunggulan</a>
-        </div>
-        <button class="lp-navcta" onclick="enterApp()">Masuk Platform →</button>
+    <div class="lp-nav-in">
+      <div class="lp-brand"><span class="lp-logo"></span>Charge<span>Chain</span></div>
+      <div class="lp-links">
+        <a onclick="lpScroll('lp-what')">Platform</a>
+        <a onclick="lpScroll('lp-how')">Cara Kerja</a>
+        <a onclick="lpScroll('lp-token')">Token</a>
+        <a onclick="lpScroll('lp-why')">Keunggulan</a>
       </div>
+      <button class="lp-navcta" onclick="enterApp()">Masuk Platform →</button>
     </div>
   </nav>
 
   <!-- HERO -->
   <header class="lp-hero">
-    <div class="lp-wrap">
-      <div class="lp-badge lp-reveal"><span class="dot"></span> Pasar Token Bagi-Hasil SPKLU PLN</div>
-      <h1 class="lp-reveal">Miliki Bagian dari<br><span class="lp-grad">Pendapatan SPKLU PLN</span></h1>
-      <p class="sub lp-reveal">ChargeChain mentokenisasi pendapatan <b>329 stasiun pengisian mobil listrik PLN yang sudah beroperasi</b> menjadi token bagi-hasil yang bisa Anda miliki, pantau, dan perjualbelikan — mulai dari Rp 100.000.</p>
-      <div class="lp-cta-row lp-reveal">
-        <button class="lp-btn primary" onclick="enterApp()">Jelajahi Platform <span>→</span></button>
-        <button class="lp-btn ghost" onclick="lpScroll('lp-how')">Lihat Cara Kerja</button>
-      </div>
-      <div class="lp-trust lp-reveal">Berbasis data operasional nyata · <b>Maret 2026</b> · Settlement on-chain</div>
-
-      <!-- glass app preview -->
-      <div class="lp-preview lp-reveal">
-        <div class="lp-pv-bar">
-          <i style="background:#FF5F57"></i><i style="background:#FEBC2E"></i><i style="background:#28C840"></i>
-          <span class="u">app.chargechain.id · Dashboard Aset</span>
+    <div class="lp-hero-in">
+      <div>
+        <div class="lp-badge lp-reveal"><span class="dot"></span> RWA Marketplace · Pendapatan SPKLU on-chain</div>
+        <h1 class="lp-reveal">Membawa pendapatan <span class="lp-grad">SPKLU PLN</span> ke blockchain</h1>
+        <p class="sub lp-reveal">ChargeChain mentokenisasi pendapatan stasiun pengisian kendaraan listrik PLN yang sudah beroperasi menjadi aset digital yang bisa dimiliki, diperdagangkan, dan dibagihasilkan secara otomatis on-chain — mulai dari Rp 100.000.</p>
+        <div class="lp-cta-row lp-reveal">
+          <button class="lp-btn primary" onclick="enterApp()">Masuk Platform <span>→</span></button>
+          <button class="lp-btn ghost" onclick="lpScroll('lp-how')">Cara Kerja</button>
         </div>
-        <div class="lp-pv-body">
-          <div class="lp-pv-map">
-            <div class="ovl"></div>
-            <div class="lp-pin g" style="top:26%;left:22%"></div>
-            <div class="lp-pin c" style="top:40%;left:48%;width:16px;height:16px"></div>
-            <div class="lp-pin v" style="top:62%;left:33%"></div>
-            <div class="lp-pin g" style="top:55%;left:68%;width:15px;height:15px"></div>
-            <div class="lp-pin c" style="top:30%;left:75%"></div>
-            <div class="lp-pin v" style="top:74%;left:58%"></div>
-            <div class="lp-pin g" style="top:48%;left:14%"></div>
-            <div class="lp-pv-tag"><b>329 SPKLU</b><span>aktif · menghasilkan revenue</span></div>
+        <div class="lp-trust lp-reveal">
+          <div><b>329</b> SPKLU aktif</div>
+          <div><b>Rp 70,7 M</b> pendapatan/th</div>
+          <div><b>~13%</b> imbal hasil</div>
+        </div>
+      </div>
+      <div class="lp-hero-art lp-reveal">
+        <div class="lp-mock">
+          <div class="lp-mock-bar">
+            <i style="background:#FF5F57"></i><i style="background:#FEBC2E"></i><i style="background:#28C840"></i>
+            <span class="u">app.chargechain.id · Dashboard Aset</span>
           </div>
-          <div class="lp-pv-side">
-            <div class="h">Token teratas</div>
-            <div class="lp-pvrow"><div class="nm">SPKLU Bandung DC<small>okupansi 71%</small></div><div class="yl">14,2%</div></div>
-            <div class="lp-pvrow"><div class="nm">SPKLU Cirebon DC<small>okupansi 68%</small></div><div class="yl">15,1%</div></div>
-            <div class="lp-pvrow"><div class="nm">SPKLU Bekasi AC<small>okupansi 63%</small></div><div class="yl">12,6%</div></div>
-            <div class="lp-pvrow"><div class="nm">SPKLU Depok AC<small>okupansi 59%</small></div><div class="yl">11,9%</div></div>
+          <div class="lp-mock-body">
+            <div class="lp-mock-map">
+              <div class="ovl"></div>
+              <div class="lp-pin" style="top:26%;left:22%"></div>
+              <div class="lp-pin t" style="top:40%;left:48%;width:16px;height:16px"></div>
+              <div class="lp-pin" style="top:62%;left:33%"></div>
+              <div class="lp-pin t" style="top:55%;left:68%;width:15px;height:15px"></div>
+              <div class="lp-pin" style="top:30%;left:75%"></div>
+              <div class="lp-pin t" style="top:74%;left:58%"></div>
+              <div class="lp-pin" style="top:48%;left:14%"></div>
+              <div class="lp-mock-tag"><b>329 SPKLU</b><span>aktif · menghasilkan revenue</span></div>
+            </div>
+            <div class="lp-mock-side">
+              <div class="h">Token teratas</div>
+              <div class="lp-mrow"><div class="nm">SPKLU Bandung DC<small>okupansi 71%</small></div><div class="yl">14,2%</div></div>
+              <div class="lp-mrow"><div class="nm">SPKLU Cirebon DC<small>okupansi 68%</small></div><div class="yl">15,1%</div></div>
+              <div class="lp-mrow"><div class="nm">SPKLU Bekasi AC<small>okupansi 63%</small></div><div class="yl">12,6%</div></div>
+              <div class="lp-mrow"><div class="nm">SPKLU Depok AC<small>okupansi 59%</small></div><div class="yl">11,9%</div></div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- MARQUEE -->
+  <!-- CREDIBILITY MARQUEE -->
   <div class="lp-marq" aria-hidden="true">
     <div class="lp-marq-track" id="lp-marq">
-      <div class="lp-marq-item"><span class="d"></span>329 SPKLU PLN aktif</div>
+      <div class="lp-marq-item"><span class="d"></span>Berbasis data operasional PLN</div>
+      <div class="lp-marq-item"><span class="d"></span>329 SPKLU aktif</div>
       <div class="lp-marq-item"><span class="d"></span>2,26 GWh / bulan</div>
       <div class="lp-marq-item"><span class="d"></span>101.020 transaksi / bulan</div>
-      <div class="lp-marq-item"><span class="d"></span>Imbal hasil ~13% / tahun</div>
       <div class="lp-marq-item"><span class="d"></span>Settlement on-chain</div>
+      <div class="lp-marq-item"><span class="d"></span>Smart contract</div>
       <div class="lp-marq-item"><span class="d"></span>Mulai Rp 100.000</div>
-      <div class="lp-marq-item"><span class="d"></span>Data operasional Maret 2026</div>
     </div>
   </div>
 
-  <!-- STATS -->
-  <section class="lp-sec" style="padding-top:30px">
-    <div class="lp-wrap">
-      <div class="lp-stats">
-        <div class="lp-stat lp-reveal"><div class="n lp-grad lp-count" data-to="329">0</div><div class="l">SPKLU sudah beroperasi</div></div>
-        <div class="lp-stat lp-reveal"><div class="n lp-grad lp-count" data-to="101020">0</div><div class="l">Transaksi pengisian / bulan</div></div>
-        <div class="lp-stat lp-reveal"><div class="n lp-grad lp-count" data-to="2.26" data-dec="1" data-suf=" GWh">0</div><div class="l">Energi tersalur / bulan</div></div>
-        <div class="lp-stat lp-reveal"><div class="n lp-grad lp-count" data-to="70.7" data-dec="1" data-pre="Rp " data-suf=" M">0</div><div class="l">Pendapatan kotor / tahun</div></div>
-      </div>
+  <!-- STAT BAND -->
+  <section class="lp-statband">
+    <div class="lp-statband-in">
+      <div class="lp-sb lp-reveal"><div class="n lp-count" data-to="329">0</div><div class="l">SPKLU sudah beroperasi</div></div>
+      <div class="lp-sb lp-reveal"><div class="n lp-count" data-to="2.26" data-dec="2" data-suf=" GWh">0</div><div class="l">Energi tersalur / bulan</div></div>
+      <div class="lp-sb lp-reveal"><div class="n lp-count" data-to="70.7" data-dec="1" data-pre="Rp " data-suf=" M">0</div><div class="l">Pendapatan kotor / tahun</div></div>
+      <div class="lp-sb lp-reveal"><div class="n lp-count" data-to="13" data-pre="~" data-suf="%">0</div><div class="l">Imbal hasil rata-rata</div></div>
     </div>
   </section>
 
-  <!-- WHAT (bento) -->
+  <!-- PROBLEM -->
   <section class="lp-sec" id="lp-what">
     <div class="lp-wrap">
       <div class="lp-head lp-reveal">
-        <span class="lp-kick">Apa Itu ChargeChain</span>
-        <h2>Investasi pada aset nyata yang sudah menghasilkan</h2>
-        <p>SPKLU adalah Stasiun Pengisian Kendaraan Listrik Umum milik PLN. ChargeChain membuat hak atas sebagian pendapatannya bisa dimiliki publik — transparan di blockchain.</p>
+        <span class="lp-kick">Masalahnya</span>
+        <h2>Aset infrastruktur energi terkunci dan tak likuid</h2>
+        <p>Sama seperti komoditas pertanian global yang sulit diakses sebelum dibawa on-chain, pendapatan SPKLU PLN selama ini tertutup bagi publik.</p>
       </div>
-      <div class="lp-bento">
-        <div class="lp-bcard span2 lp-reveal">
-          <div class="glow" style="background:#6D5EF8"></div>
-          <div class="lp-ic v">🏢</div>
-          <h3>Aset riil &amp; sudah beroperasi</h3>
-          <p>329 SPKLU PLN yang sudah berjalan dan menghasilkan arus kas nyata — bukan proyeksi, bukan stasiun yang belum dibangun. Seluruh angka di platform diturunkan dari data operasional aktual: 101.020 transaksi dan 2,26 GWh energi tersalur per bulan.</p>
-        </div>
-        <div class="lp-bcard lp-reveal">
-          <div class="glow" style="background:#00C2FF"></div>
-          <div class="lp-ic c">🪙</div>
-          <h3>Token bagi-hasil (SRT)</h3>
-          <p>Setiap Station Revenue Token mewakili hak atas marjin pendapatan pengisian — bagi hasil dari Rp 400 per kWh terjual.</p>
-        </div>
-        <div class="lp-bcard lp-reveal">
-          <div class="glow" style="background:#10B981"></div>
-          <div class="lp-ic g">🔄</div>
-          <h3>Pasar sekunder likuid</h3>
-          <p>Beli dan jual token kapan saja lewat order book. Harga bergerak mengikuti okupansi tiap stasiun.</p>
-        </div>
-        <div class="lp-bcard span2 lp-reveal">
-          <div class="glow" style="background:#9F7BFF"></div>
-          <div class="lp-ic v">⛓️</div>
-          <h3>Transparan &amp; otomatis di blockchain</h3>
-          <p>Distribusi bagi hasil tercatat on-chain dan dijalankan smart contract — Anda bisa memverifikasi tiap aliran pendapatan kapan saja.</p>
-        </div>
-        <div class="lp-bcard feature lp-reveal">
-          <span class="tag">Penting</span>
-          <h3>Ini <span style="text-decoration:underline;text-underline-offset:4px">bukan</span> crowdfunding.</h3>
-          <p>Aset yang ditokenisasi adalah SPKLU yang sudah beroperasi dan menghasilkan pendapatan, diperjualbelikan di pasar sekunder layaknya efek beragun aset — bukan menggalang dana untuk aset yang belum ada.</p>
-        </div>
+      <div class="lp-probs">
+        <div class="lp-prob lp-reveal"><div class="pic">🔒</div><h3>Hanya untuk pemain besar</h3><p>Investasi infrastruktur pengisian EV butuh modal besar — peluangnya tertutup bagi investor ritel.</p></div>
+        <div class="lp-prob lp-reveal"><div class="pic">🐌</div><h3>Tidak likuid</h3><p>Hak atas pendapatan aset energi sulit dijual kembali; dana terkunci bertahun-tahun.</p></div>
+        <div class="lp-prob lp-reveal"><div class="pic">🌫️</div><h3>Kurang transparan</h3><p>Aliran pendapatan dan bagi hasil sulit diaudit secara real-time oleh pemilik hak.</p></div>
       </div>
     </div>
   </section>
 
-  <!-- HOW -->
-  <section class="lp-sec" id="lp-how">
+  <!-- HOW IT WORKS -->
+  <section class="lp-sec alt" id="lp-how">
     <div class="lp-wrap">
       <div class="lp-head lp-reveal">
-        <span class="lp-kick">Cara Kerja</span>
-        <h2>Empat langkah sederhana</h2>
-        <p>Dari pendapatan SPKLU yang nyata hingga bagi hasil yang masuk ke kantong Anda.</p>
+        <span class="lp-kick">Solusinya</span>
+        <h2>Tiga langkah membawa SPKLU on-chain</h2>
+        <p>Model end-to-end: dari aset fisik yang sudah beroperasi menjadi token yang likuid dan bagi hasil otomatis.</p>
       </div>
-      <div class="lp-steps">
-        <div class="lp-step lp-reveal"><div class="no">1</div><h4>Pilih SPKLU</h4><p>Telusuri peta 329 SPKLU aktif. Lihat pendapatan, okupansi, dan imbal hasil tiap stasiun.</p></div>
-        <div class="lp-step lp-reveal"><div class="no">2</div><h4>Beli token</h4><p>Beli token SPKLU pilihan mulai Rp 100.000 langsung di bursa, kapan saja.</p></div>
-        <div class="lp-step lp-reveal"><div class="no">3</div><h4>Terima bagi hasil</h4><p>Tiap kWh yang terjual mengalirkan bagi hasil ke pemegang token otomatis lewat smart contract.</p></div>
-        <div class="lp-step lp-reveal"><div class="no">4</div><h4>Jual kapan saja</h4><p>Butuh likuiditas? Jual token di pasar sekunder — bisa untung dari capital gain saat okupansi naik.</p></div>
+      <div class="lp-how">
+        <div class="lp-hstep lp-reveal"><div class="no">1</div><h4>Tokenisasi</h4><p>Pendapatan tiap SPKLU diubah menjadi Station Revenue Token (SRT) yang mewakili hak atas marjin pengisian — diturunkan dari data operasional nyata.</p></div>
+        <div class="lp-hstep lp-reveal"><div class="no">2</div><h4>Perdagangan</h4><p>Beli dan jual SRT di pasar sekunder lewat order book, kapan saja, mulai Rp 100.000. Harga bergerak mengikuti okupansi stasiun.</p></div>
+        <div class="lp-hstep lp-reveal"><div class="no">3</div><h4>Settlement on-chain</h4><p>Tiap kWh terjual mengalirkan bagi hasil ke pemegang token secara otomatis dan transparan lewat smart contract.</p></div>
       </div>
     </div>
   </section>
 
-  <!-- WHY -->
+  <!-- FEATURES -->
   <section class="lp-sec" id="lp-why">
     <div class="lp-wrap">
       <div class="lp-head lp-reveal">
         <span class="lp-kick">Keunggulan</span>
-        <h2>Kenapa ChargeChain</h2>
-        <p>Akses ke aset infrastruktur energi bersih yang dulu hanya untuk investor besar.</p>
+        <h2>Infrastruktur energi, sekarang on-chain</h2>
+        <p>Settlement cepat, biaya rendah, transparan, dan terbuka untuk semua — meniru efisiensi marketplace RWA modern.</p>
       </div>
-      <div class="lp-why">
-        <div class="lp-wcard lp-reveal"><div class="tick">✓</div><div><h4>Imbal hasil ~13% / tahun</h4><p>Dihitung dari arus kas riil 329 SPKLU, bukan proyeksi.</p></div></div>
-        <div class="lp-wcard lp-reveal"><div class="tick">✓</div><div><h4>Mulai dari Rp 100.000</h4><p>Modal awal terjangkau — dapat dijangkau siapa saja.</p></div></div>
-        <div class="lp-wcard lp-reveal"><div class="tick">✓</div><div><h4>Transparan di blockchain</h4><p>Distribusi bagi hasil tercatat on-chain lewat smart contract.</p></div></div>
-        <div class="lp-wcard lp-reveal"><div class="tick">✓</div><div><h4>Likuid &amp; fleksibel</h4><p>Jual token kapan saja di pasar sekunder.</p></div></div>
-        <div class="lp-wcard lp-reveal"><div class="tick">✓</div><div><h4>Didukung data nyata</h4><p>101.020 transaksi &amp; 2,26 GWh energi tersalur / bulan.</p></div></div>
-        <div class="lp-wcard lp-reveal"><div class="tick">✓</div><div><h4>Dukung energi bersih</h4><p>Tiap token mempercepat ekosistem kendaraan listrik Indonesia.</p></div></div>
+      <div class="lp-feats">
+        <div class="lp-feat lp-reveal"><div class="lp-ic g">⚡</div><div><h3>Settlement otomatis on-chain</h3><p>Bagi hasil disalurkan smart contract tanpa perantara — cepat dan dapat diandalkan.</p></div></div>
+        <div class="lp-feat lp-reveal"><div class="lp-ic t">🔍</div><div><h3>Transparan &amp; dapat diaudit</h3><p>Setiap aliran pendapatan dan transaksi tercatat permanen di blockchain, bisa diverifikasi siapa saja.</p></div></div>
+        <div class="lp-feat lp-reveal"><div class="lp-ic b">💸</div><div><h3>Biaya rendah</h3><p>Tanpa rantai perantara panjang, biaya transaksi ditekan dibanding kanal investasi konvensional.</p></div></div>
+        <div class="lp-feat lp-reveal"><div class="lp-ic a">🌍</div><div><h3>Terbuka untuk semua</h3><p>Mulai dari Rp 100.000 — investor ritel kini bisa ikut memiliki aset infrastruktur energi.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOKEN -->
+  <section class="lp-sec alt" id="lp-token">
+    <div class="lp-wrap">
+      <div class="lp-token">
+        <div class="lp-token-txt lp-reveal">
+          <span class="lp-kick">Token</span>
+          <h2>Station Revenue Token (SRT)</h2>
+          <p>Token native ChargeChain yang mewakili hak atas sebagian marjin pendapatan SPKLU. Nilainya diturunkan dari arus kas riil, bukan spekulasi.</p>
+          <div class="lp-tokchk">
+            <div><span class="tk">✓</span> Bagi hasil dari Rp 400 per kWh terjual</div>
+            <div><span class="tk">✓</span> Nilai par Rp 100.000 per token</div>
+            <div><span class="tk">✓</span> Imbal hasil rata-rata ~13% / tahun</div>
+            <div><span class="tk">✓</span> Likuid di pasar sekunder kapan saja</div>
+          </div>
+        </div>
+        <div class="lp-tokcard lp-reveal">
+          <div class="tt"><b>$SRT</b><span class="chip">● On-chain</span></div>
+          <div class="big">Rp 83,4 Miliar</div>
+          <div class="cap">Kapitalisasi token portofolio · 837.600 token beredar</div>
+          <div class="lp-tokgrid">
+            <div><div class="k">Nilai par</div><div class="v">Rp 100rb</div></div>
+            <div><div class="k">Kupon</div><div class="v">Rp 400/kWh</div></div>
+            <div><div class="k">Yield @ par</div><div class="v">~13%</div></div>
+            <div><div class="k">Aset dasar</div><div class="v">329 SPKLU</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARKETPLACE PREVIEW -->
+  <section class="lp-sec">
+    <div class="lp-wrap">
+      <div class="lp-mkt">
+        <div class="lp-reveal">
+          <span class="lp-kick">Marketplace</span>
+          <h2>Pasar sekunder token SPKLU</h2>
+          <p>Jelajahi peta 329 SPKLU, pantau order book, dan simulasikan imbal hasil secara interaktif. Beli atau jual token kapan saja layaknya bursa.</p>
+          <button class="lp-btn primary" onclick="enterApp()">Buka Marketplace <span>→</span></button>
+        </div>
+        <div class="lp-reveal">
+          <div class="lp-mock">
+            <div class="lp-mock-bar">
+              <i style="background:#FF5F57"></i><i style="background:#FEBC2E"></i><i style="background:#28C840"></i>
+              <span class="u">app.chargechain.id · Bursa Token</span>
+            </div>
+            <div class="lp-mock-body">
+              <div class="lp-mock-map" style="background:linear-gradient(135deg,#0B1F19,#0E2A28)">
+                <div class="ovl"></div>
+                <div class="lp-mock-tag" style="left:15px;top:15px;bottom:auto"><b>Vol 24j · Rp 1,84 M</b><span>40 token listed</span></div>
+                <div class="lp-pin" style="top:55%;left:20%"></div><div class="lp-pin t" style="top:42%;left:42%"></div>
+                <div class="lp-pin" style="top:64%;left:64%"></div><div class="lp-pin t" style="top:34%;left:78%"></div>
+              </div>
+              <div class="lp-mock-side">
+                <div class="h">Order book · SPKLU Bandung DC</div>
+                <div class="lp-mrow"><div class="nm">Jual<small>102.400</small></div><div class="yl" style="color:#E05641">−0,8%</div></div>
+                <div class="lp-mrow"><div class="nm">Jual<small>101.900</small></div><div class="yl" style="color:#E05641">−0,3%</div></div>
+                <div class="lp-mrow"><div class="nm">Beli<small>101.200</small></div><div class="yl">+0,6%</div></div>
+                <div class="lp-mrow"><div class="nm">Beli<small>100.800</small></div><div class="yl">+1,1%</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -796,7 +819,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
     <div class="lp-foot-in">
       <div>
         <div class="lp-brand"><span class="lp-logo"></span>Charge<span>Chain</span></div>
-        <div>Pasar Modal Token SPKLU · Indonesia</div>
+        <div>RWA Marketplace Token SPKLU · Indonesia</div>
       </div>
       <div class="dis">
         <b style="color:#fff">Catatan:</b> Platform ini bersifat edukasi/simulasi. Implementasi riil memerlukan struktur hukum efek beragun aset, persetujuan OJK, audit independen, serta tata kelola sesuai regulasi PLN dan pasar modal Indonesia. Bukan ajakan investasi. <a onclick="enterApp()">Masuk platform →</a>
