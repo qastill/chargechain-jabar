@@ -116,7 +116,7 @@ Solana Explorer.
 
 `metadata/chrg-token.json` di-serve sebagai bagian dari situs (Vercel), sehingga
 `METADATA_URI` di `src/config.ts` menunjuk ke
-`https://chargechain-jabar.vercel.app/token/metadata/chrg-token.json`.
+`https://chargechain.vercel.app/token/metadata/chrg-token.json`.
 Ganti bila domain berbeda, lalu deploy ulang.
 
 ## Mendaftarkan CHRG ke registry Solana Foundation

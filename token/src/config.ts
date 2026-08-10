@@ -40,7 +40,7 @@ export const INITIAL_SUPPLY_BASE_UNITS =
 
 /** Off-chain metadata JSON URI (Metaplex/Token-2022 compatible). */
 export const METADATA_URI =
-  "https://chargechain-jabar.vercel.app/token/metadata/chrg-token.json";
+  "https://chargechain.vercel.app/token/metadata/chrg-token.json";
 
 /**
  * Additional on-chain metadata fields embedded in the Token-2022 metadata
@@ -55,7 +55,7 @@ export const ADDITIONAL_METADATA: [string, string][] = [
   ["scheme_1", "Existing · High Utilization (brownfield, proven cash flow)"],
   ["scheme_2", "Regional · Latent Demand (324 data-validated recommended points)"],
   ["issuer", "ChargeChain"],
-  ["project", "https://chargechain-jabar.vercel.app"],
+  ["project", "https://chargechain.vercel.app"],
 ];
 
 /**

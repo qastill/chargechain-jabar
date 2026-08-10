@@ -2,8 +2,8 @@
   "name": "ChargeChain SPKLU Revenue Token",
   "symbol": "CHRG",
   "description": "CHRG is the single asset-backed revenue-share token representing a claim on the operating margin of PLN's high-demand SPKLU electric-vehicle charging network in Indonesia. Principle: one token, tokenize only high-utilization / high-demand assets. Issued via two schemes — (1) Existing · High Utilization: 329 revenue-generating stations (actual operational data, March 2026); (2) Regional · Latent Demand: 324 data-validated recommended points (base scenario ~15.48 GWh/yr). Par value Rp 100,000, target yield 13%. Educational/simulation project — not an investment solicitation.",
-  "image": "https://chargechain-jabar.vercel.app/token/metadata/chrg-logo.svg",
-  "external_url": "https://chargechain-jabar.vercel.app",
+  "image": "https://chargechain.vercel.app/token/metadata/chrg-logo.svg",
+  "external_url": "https://chargechain.vercel.app",
   "decimals": 2,
   "attributes": [
     { "trait_type": "Asset class", "value": "Asset-backed / revenue-share (SRT)" },
@@ -20,7 +20,7 @@
     "category": "token",
     "files": [
       {
-        "uri": "https://chargechain-jabar.vercel.app/token/metadata/chrg-logo.svg",
+        "uri": "https://chargechain.vercel.app/token/metadata/chrg-logo.svg",
         "type": "image/svg+xml"
       }
     ]
