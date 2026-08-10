@@ -63,9 +63,23 @@ Proposal dan berkas sumber data — termasuk **data pelanggan/PII** — disimpan
 
 Berkas-berkas ini tetap tersedia untuk tim lewat repo privat, tetapi **tidak pernah diunggah ke Vercel** sehingga tidak bisa diakses publik/juri.
 
+## Token On-Chain (CHRG di Solana)
+
+Token **CHRG** (*ChargeChain SPKLU Revenue Token*) diimplementasikan sebagai
+**Token-2022 (Token Extensions)** di Solana dengan metadata on-chain. Toolkit
+lengkap — konfigurasi, builder instruksi, test eksekusi offline (LiteSVM),
+serta CLI deploy ke devnet/mainnet — ada di folder [`token/`](token/).
+
+- Suplai awal **837.600 CHRG** (2 desimal), par Rp 100.000, target yield 13% —
+  diturunkan langsung dari tokenomics di atas.
+- `cd token && bun install && bun test` memverifikasi pembuatan token secara
+  penuh tanpa jaringan (program Token-2022 asli dijalankan in-process).
+- `bun run src/deploy.ts --network devnet` menerbitkan token ke Solana
+  (perlu akses RPC + wallet berisi SOL). Lihat [`token/README.md`](token/README.md).
+
 ## Teknologi
 
-Single-page web (HTML/CSS/JS), peta Leaflet + CartoDB dark, deploy via Vercel (`vercel.json` me-rewrite `/` → `index.html`).
+Single-page web (HTML/CSS/JS), peta Leaflet + CartoDB dark, deploy via Vercel (`vercel.json` me-rewrite `/` → `index.html`). Token on-chain: Solana Token-2022 via `@solana/web3.js` + `@solana/spl-token` (lihat `token/`).
 
 ## Catatan
 

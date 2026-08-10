@@ -1,0 +1,9 @@
+# Dependencies
+node_modules/
+
+# Secrets — mint / wallet keypairs must never be committed
+keys/*.json
+!keys/.gitkeep
+
+# Local deployment record (written by deploy.ts)
+deployment.local.json

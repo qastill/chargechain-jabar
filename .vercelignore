@@ -6,3 +6,12 @@ admin/
 *.pptx
 *.xlsx
 *.xls
+
+# Toolkit token — jangan deploy dependency/secret/kode build ke publik.
+# Metadata (token/metadata/) TETAP di-serve agar URI metadata bisa diakses.
+token/node_modules/
+token/keys/
+token/src/
+token/test/
+token/bun.lock
+token/tsconfig.json
