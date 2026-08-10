@@ -47,10 +47,13 @@ export const METADATA_URI =
  * extension. These travel with the mint itself — no external program needed.
  */
 export const ADDITIONAL_METADATA: [string, string][] = [
-  ["description", "Revenue-share token for PLN's operating SPKLU network (Indonesia)."],
+  ["description", "Single revenue-share token for PLN's high-demand SPKLU EV-charging network (Indonesia)."],
   ["asset_class", "asset-backed / revenue-share (SRT)"],
   ["par_value_idr", "100000"],
   ["target_yield", "13%"],
+  ["principle", "one token, tokenize only high-utilization / high-demand SPKLU"],
+  ["scheme_1", "Existing · High Utilization (brownfield, proven cash flow)"],
+  ["scheme_2", "Regional · Latent Demand (324 data-validated recommended points)"],
   ["issuer", "ChargeChain"],
   ["project", "https://chargechain-jabar.vercel.app"],
 ];

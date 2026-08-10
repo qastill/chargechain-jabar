@@ -4,9 +4,15 @@ Toolkit untuk membuat **CHRG** (*ChargeChain SPKLU Revenue Token*) di Solana
 menggunakan standar **Token-2022 (Token Extensions)** dengan metadata on-chain
 yang menyatu di dalam mint (tanpa program Metaplex terpisah).
 
-Token CHRG adalah token bagi-hasil beragun aset (*Station Revenue Token / SRT*)
-yang mewakili hak atas sebagian marjin pendapatan jaringan SPKLU PLN — parameter
-ekonominya diturunkan langsung dari tokenomics di [`../README.md`](../README.md).
+**Prinsip: satu token (CHRG), dan hanya SPKLU berdemand tinggi yang ditokenisasi.**
+CHRG mewakili hak atas sebagian marjin pendapatan jaringan SPKLU PLN, diterbitkan
+lewat **2 skema** ke token yang sama:
+
+1. **Eksisting · Utilisasi Tinggi** — SPKLU yang sudah beroperasi (arus kas terbukti).
+2. **Wilayah · Latent Demand** — 324 titik rekomendasi berdemand laten tinggi
+   (data GeoSPKLU); CHRG baru dicetak bertahap saat titik terbangun & tervalidasi.
+
+Parameter ekonomi diturunkan langsung dari tokenomics di [`../README.md`](../README.md).
 
 | Parameter | Nilai |
 |---|---|
