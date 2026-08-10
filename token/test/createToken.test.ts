@@ -31,6 +31,8 @@ import {
   buildCreateMintInstructions,
   buildMintSupplyInstructions,
   buildTokenMetadata,
+  buildUpdateFieldInstructions,
+  chunk,
   getMintAccountSize,
 } from "../src/createToken";
 
@@ -77,6 +79,12 @@ describe("CHRG token creation (Token-2022, in-process)", () => {
     rentLamports: rent,
   });
 
+  const fieldIxs = buildUpdateFieldInstructions(
+    mint.publicKey,
+    payer.publicKey,
+    ADDITIONAL_METADATA,
+  );
+
   const { ata, instructions: supplyIxs } = buildMintSupplyInstructions({
     payer: payer.publicKey,
     mint: mint.publicKey,
@@ -85,24 +93,31 @@ describe("CHRG token creation (Token-2022, in-process)", () => {
     amountBaseUnits: INITIAL_SUPPLY_BASE_UNITS,
   });
 
-  const tx = new Transaction();
-  tx.add(...createIxs, ...supplyIxs);
-  tx.recentBlockhash = svm.latestBlockhash();
-  tx.feePayer = payer.publicKey;
-  tx.sign(payer, mint);
-
-  const result = svm.sendTransaction(tx);
-
-  test("transaction succeeds", () => {
-    // A failure returns FailedTransactionMetadata (has .err()); success has .logs()
-    const failed =
-      typeof (result as { err?: unknown }).err === "function";
+  // Send as separate transactions (mirrors deploy.ts) so no single tx exceeds
+  // Solana's 1232-byte limit. The mint keypair only signs the create tx.
+  function send(ixs: typeof createIxs, extraSigner?: Keypair): void {
+    const tx = new Transaction().add(...ixs);
+    tx.recentBlockhash = svm.latestBlockhash();
+    tx.feePayer = payer.publicKey;
+    if (extraSigner) tx.sign(payer, extraSigner);
+    else tx.sign(payer);
+    const res = svm.sendTransaction(tx);
+    const failed = typeof (res as { err?: unknown }).err === "function";
     if (failed) {
-      // Surface the program logs to make any failure debuggable.
-      // @ts-expect-error dynamic litesvm result
-      throw new Error("tx failed: " + JSON.stringify(result.meta?.().logs?.()));
+      // @ts-expect-error dynamic litesvm result shape
+      throw new Error("tx failed: " + JSON.stringify(res.meta?.().logs?.()));
     }
-    expect(failed).toBe(false);
+    svm.expireBlockhash();
+  }
+
+  // Execute the full flow once, up front, so every assertion below sees the
+  // final on-chain state regardless of test ordering.
+  send(createIxs, mint);
+  for (const group of chunk(fieldIxs, 3)) send(group);
+  send(supplyIxs);
+
+  test("mint account exists after the create + metadata + supply flow", () => {
+    expect(svm.getAccount(mint.publicKey)).not.toBeNull();
   });
 
   test("mint is owned by Token-2022 with correct decimals & supply", () => {

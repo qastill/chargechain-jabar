@@ -2,7 +2,12 @@
 
 **Bursa sekunder untuk jual-beli token bagi-hasil (revenue-share) dari SPKLU PLN yang sudah beroperasi di Indonesia.**
 
-Ini **bukan** crowdfunding. Aset yang ditokenisasi adalah 329 SPKLU milik PLN yang **sudah beroperasi dan menghasilkan arus kas**. Token (Station Revenue Token / SRT) mewakili hak atas sebagian marjin pendapatan pengisian, dan diperjualbelikan di pasar sekunder layaknya efek beragun aset — bukan menggalang dana untuk aset yang belum ada.
+**Prinsip:** hanya **satu token — CHRG** (Solana Token-2022), dan yang ditokenisasi **hanya SPKLU berdemand/berutilisasi tinggi**. CHRG diterbitkan lewat **2 skema**:
+
+1. **Skema 1 — Eksisting · Utilisasi Tinggi (brownfield):** hak atas sebagian marjin arus kas SPKLU PLN yang **sudah beroperasi** dengan utilisasi tinggi (329 stasiun, run-rate ± Rp 70,7 M/th). Arus kas terbukti — bukan proyeksi.
+2. **Skema 2 — Wilayah · Latent Demand (data-driven):** tokenisasi **324 titik rekomendasi** di Jabar/Banten/DKI yang demand-nya **sudah diprediksi dari data** (101.020 transaksi riil + 331 SPKLU eksisting, 26.289 heksagon, ArcGIS; skenario dasar ± 15,48 GWh/th ≈ Rp 40,4 M/th). CHRG baru dicetak **bertahap** hanya saat titik dibangun & arus kasnya tervalidasi.
+
+Ini **bukan** crowdfunding spekulatif: kedua skema di-anchor ke arus kas riil/terprediksi yang tervalidasi, diperjualbelikan di pasar sekunder layaknya efek beragun aset.
 
 ## Dasar Data (aktual, Maret 2026)
 
@@ -42,7 +47,7 @@ Marjin per kWh (waterfall): Tarif Rp 2.608 − PPJ Rp 142 − beban listrik Rp 1
 5. **Tokenomics & Pricing** — kalkulator valuasi interaktif (atur coupon/kWh, cap rate, beban listrik) + mekanisme tokenisasi 5 langkah.
 6. **Model Bisnis & Potensi PLN** — proposisi nilai, potensi untuk PLN, aliran pendapatan PLN, business model canvas, perbandingan vs crowdfunding.
 7. **Pendapatan Tidak Langsung** — uplift penjualan listrik PLN.
-8. **Development Token (Skema B)** — pendanaan SPKLU baru (greenfield).
+8. **Tokenisasi Wilayah — Latent Demand (Skema 2)** — 324 titik rekomendasi berdemand laten tinggi (data GeoSPKLU): KPI, tiga skenario proyeksi (p20/p50/p80), sebaran per jalur seleksi / tipe lokasi / kabupaten, dan cara suplai CHRG bertambah.
 9. **Kemitraan ⇄ Blockchain** — integrasi skema kemitraan SPKLU PLN dengan settlement on-chain.
 10. **Smart Contract** — simulasi kontrak distribusi bagi hasil on-chain.
 

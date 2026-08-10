@@ -27,6 +27,7 @@ import {
   Keypair,
   PublicKey,
   Transaction,
+  type TransactionInstruction,
   clusterApiUrl,
 } from "@solana/web3.js";
 
@@ -44,6 +45,8 @@ import {
   buildCreateMintInstructions,
   buildMintSupplyInstructions,
   buildTokenMetadata,
+  buildUpdateFieldInstructions,
+  chunk,
   getMintAccountSize,
 } from "./createToken";
 
@@ -145,6 +148,12 @@ async function main() {
     rentLamports: rent,
   });
 
+  const fieldIxs = buildUpdateFieldInstructions(
+    mint.publicKey,
+    payer.publicKey,
+    ADDITIONAL_METADATA,
+  );
+
   const { ata, instructions: supplyIxs } = buildMintSupplyInstructions({
     payer: payer.publicKey,
     mint: mint.publicKey,
@@ -153,37 +162,63 @@ async function main() {
     amountBaseUnits: INITIAL_SUPPLY_BASE_UNITS,
   });
 
-  const tx = new Transaction().add(...createIxs, ...supplyIxs);
-  const { blockhash } = await connection.getLatestBlockhash();
-  tx.recentBlockhash = blockhash;
-  tx.feePayer = payer.publicKey;
-  tx.sign(payer, mint);
+  // Batch into transactions that stay under Solana's 1232-byte limit:
+  //   1. create mint + base metadata (signed by payer + mint keypair)
+  //   2. additional metadata fields, chunked
+  //   3. create treasury ATA + mint the full supply
+  const batches: { label: string; ixs: TransactionInstruction[]; signMint?: boolean }[] = [
+    { label: "create mint + metadata", ixs: createIxs, signMint: true },
+    ...chunk(fieldIxs, 3).map((ixs, i) => ({ label: `metadata fields #${i + 1}`, ixs })),
+    { label: "create treasury ATA + mint supply", ixs: supplyIxs },
+  ];
+
+  async function buildTx(ixs: TransactionInstruction[], signMint: boolean) {
+    const tx = new Transaction().add(...ixs);
+    const { blockhash, lastValidBlockHeight } =
+      await connection.getLatestBlockhash();
+    tx.recentBlockhash = blockhash;
+    tx.feePayer = payer.publicKey;
+    if (signMint) tx.sign(payer, mint);
+    else tx.sign(payer);
+    return { tx, blockhash, lastValidBlockHeight };
+  }
 
   if (dryRun) {
     console.log("Simulating (dry run — nothing will be broadcast)…");
-    const sim = await connection.simulateTransaction(tx);
-    if (sim.value.err) {
-      console.error("Simulation FAILED:", sim.value.err);
-      console.error((sim.value.logs ?? []).join("\n"));
-      process.exit(1);
+    for (const b of batches) {
+      const { tx } = await buildTx(b.ixs, b.signMint ?? false);
+      const sim = await connection.simulateTransaction(tx);
+      if (sim.value.err) {
+        console.error(`Simulation FAILED (${b.label}):`, sim.value.err);
+        console.error((sim.value.logs ?? []).join("\n"));
+        process.exit(1);
+      }
+      console.log(`  ✓ ${b.label} — CU ${sim.value.unitsConsumed ?? "?"}`);
     }
-    console.log("Simulation OK. Compute units:", sim.value.unitsConsumed);
-    console.log((sim.value.logs ?? []).join("\n"));
+    console.log("All batches simulate OK.");
     return;
   }
 
-  console.log("Sending transaction…");
-  const sig = await connection.sendRawTransaction(tx.serialize());
-  await connection.confirmTransaction(
-    { signature: sig, blockhash, lastValidBlockHeight: (await connection.getLatestBlockhash()).lastValidBlockHeight },
-    "confirmed",
-  );
+  const sigs: string[] = [];
+  for (const b of batches) {
+    console.log(`Sending: ${b.label}…`);
+    const { tx, blockhash, lastValidBlockHeight } = await buildTx(
+      b.ixs,
+      b.signMint ?? false,
+    );
+    const sig = await connection.sendRawTransaction(tx.serialize());
+    await connection.confirmTransaction(
+      { signature: sig, blockhash, lastValidBlockHeight },
+      "confirmed",
+    );
+    sigs.push(sig);
+  }
 
   console.log("\n✅ CHRG token created on-chain.");
   console.log(`   Treasury ATA : ${ata.toBase58()}`);
-  console.log(`   Signature    : ${sig}`);
+  console.log(`   Signatures   : ${sigs.length} tx`);
   console.log(`   Mint         : ${explorer("address", mint.publicKey.toBase58(), network)}`);
-  console.log(`   Tx           : ${explorer("tx", sig, network)}`);
+  console.log(`   Last tx      : ${explorer("tx", sigs[sigs.length - 1], network)}`);
 }
 
 main().catch((e) => {

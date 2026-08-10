@@ -84,20 +84,25 @@ interface CreateMintParams {
 }
 
 /**
- * Instructions that allocate and initialize the CHRG mint together with its
- * on-chain metadata. Order is significant:
+ * Core instructions that allocate and initialize the CHRG mint together with
+ * its base metadata (name/symbol/uri). Order is significant:
  *   1. createAccount            — allocate the mint (fixed-extension size)
  *   2. initializeMetadataPointer— point the mint's metadata at itself
  *   3. initializeMint           — decimals + mint/freeze authorities
  *   4. metadata initialize      — write name/symbol/uri (reallocs the account)
- *   5. updateField*             — write each additional metadata pair
+ *
+ * The account is funded up front for the FULL size (including every additional
+ * metadata field via `rentLamports`), so later `updateField` reallocs stay
+ * rent-exempt. The additional fields are applied by
+ * `buildUpdateFieldInstructions` in separate transactions to stay under
+ * Solana's 1232-byte per-transaction limit.
  */
 export function buildCreateMintInstructions(
   p: CreateMintParams,
 ): TransactionInstruction[] {
   const mintLen = getMintLen([ExtensionType.MetadataPointer]);
 
-  const ixs: TransactionInstruction[] = [
+  return [
     SystemProgram.createAccount({
       fromPubkey: p.payer,
       newAccountPubkey: p.mint,
@@ -129,20 +134,34 @@ export function buildCreateMintInstructions(
       uri: p.metadata.uri,
     }),
   ];
+}
 
-  for (const [field, value] of p.metadata.additionalMetadata) {
-    ixs.push(
-      createUpdateFieldInstruction({
-        programId: TOKEN_PROGRAM,
-        metadata: p.mint,
-        updateAuthority: p.metadata.updateAuthority as PublicKey,
-        field,
-        value,
-      }),
-    );
-  }
+/**
+ * One `updateField` instruction per additional metadata pair. Chunk these
+ * across transactions (see `chunk`) so no single transaction exceeds the
+ * 1232-byte limit.
+ */
+export function buildUpdateFieldInstructions(
+  mint: PublicKey,
+  updateAuthority: PublicKey,
+  additionalMetadata: [string, string][],
+): TransactionInstruction[] {
+  return additionalMetadata.map(([field, value]) =>
+    createUpdateFieldInstruction({
+      programId: TOKEN_PROGRAM,
+      metadata: mint,
+      updateAuthority,
+      field,
+      value,
+    }),
+  );
+}
 
-  return ixs;
+/** Split an array into chunks of at most `size`. */
+export function chunk<T>(items: T[], size: number): T[][] {
+  const out: T[][] = [];
+  for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
+  return out;
 }
 
 interface MintSupplyParams {
