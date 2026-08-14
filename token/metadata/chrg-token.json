@@ -1,7 +1,7 @@
 {
   "name": "ChargeChain SPKLU Revenue Token",
   "symbol": "CHRG",
-  "description": "CHRG is the single asset-backed revenue-share token representing a claim on the operating margin of PLN's high-demand SPKLU electric-vehicle charging network in Indonesia. Principle: one token, tokenize only high-utilization / high-demand assets. Issued via two schemes — (1) Existing · High Utilization: 329 revenue-generating stations (actual operational data, March 2026); (2) Regional · Latent Demand: 324 data-validated recommended points (base scenario ~15.48 GWh/yr). Par value Rp 100,000, target yield 13%. Educational/simulation project — not an investment solicitation.",
+  "description": "CHRG is the platform's single asset-backed revenue-share coin — there are no per-SPKLU tokens. One coin represents a claim on the operating margin of a POOL containing only PLN's highest-utilization SPKLU EV-charging stations in Indonesia: the 54 stations (out of 329 in the network) with connector occupancy >= 70% (avg 92%), which alone generate ~69% of network transactions and ~73% of energy (actual operational data, March 2026). Pool energy ~19.79 GWh/yr; capitalization ~Rp 60.9 billion; 608,928 coins at Rp 100,000 par; target yield 13%. Optional future expansion (Regional · Latent Demand, 324 data-validated points) mints the same coin only when new stations are built and validated. Educational/simulation project — not an investment solicitation.",
   "image": "https://chargechain.vercel.app/token/metadata/chrg-logo.svg",
   "external_url": "https://chargechain.vercel.app",
   "decimals": 2,
@@ -10,9 +10,10 @@
     { "trait_type": "Par value (IDR)", "value": "100000" },
     { "trait_type": "Target yield", "value": "13%" },
     { "trait_type": "Coupon (IDR/kWh)", "value": "400" },
-    { "trait_type": "Scheme 1 — Existing (high utilization)", "value": "329 stations" },
-    { "trait_type": "Scheme 2 — Regional latent demand", "value": "324 validated points" },
-    { "trait_type": "Initial supply", "value": "837600" },
+    { "trait_type": "Model", "value": "Single coin — no per-SPKLU tokens" },
+    { "trait_type": "Backing pool", "value": "54 high-utilization SPKLU (occ >= 70%)" },
+    { "trait_type": "Optional expansion", "value": "324 latent-demand points (validated)" },
+    { "trait_type": "Initial supply", "value": "608928" },
     { "trait_type": "Token standard", "value": "Token-2022 (Token Extensions)" },
     { "trait_type": "Issuer", "value": "ChargeChain" }
   ],
