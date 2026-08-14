@@ -4,13 +4,15 @@ Toolkit untuk membuat **CHRG** (*ChargeChain SPKLU Revenue Token*) di Solana
 menggunakan standar **Token-2022 (Token Extensions)** dengan metadata on-chain
 yang menyatu di dalam mint (tanpa program Metaplex terpisah).
 
-**Prinsip: satu token (CHRG), dan hanya SPKLU berdemand tinggi yang ditokenisasi.**
-CHRG mewakili hak atas sebagian marjin pendapatan jaringan SPKLU PLN, diterbitkan
-lewat **2 skema** ke token yang sama:
+**Prinsip: HANYA SATU koin (CHRG) — tidak ada token per-SPKLU.** CHRG di-back oleh
+**satu pool berisi hanya 54 SPKLU utilisasi tinggi** (okupansi ≥ 70%, rata-rata 92%)
+dari 329 SPKLU aktif di jaringan PLN — ke-54 SPKLU ini saja menghasilkan ± 69%
+transaksi & ± 73% energi jaringan (arus kas terbukti):
 
-1. **Eksisting · Utilisasi Tinggi** — SPKLU yang sudah beroperasi (arus kas terbukti).
-2. **Wilayah · Latent Demand** — 324 titik rekomendasi berdemand laten tinggi
-   (data GeoSPKLU); CHRG baru dicetak bertahap saat titik terbangun & tervalidasi.
+1. **Penyangga inti (aktif)** — 54 SPKLU utilisasi tinggi yang sudah beroperasi.
+2. **Ekspansi opsional · Wilayah · Latent Demand** — 324 titik rekomendasi berdemand
+   laten tinggi (data GeoSPKLU); **koin yang sama (CHRG)** dicetak bertahap hanya saat
+   titik terbangun & okupansinya tervalidasi tinggi.
 
 Parameter ekonomi diturunkan langsung dari tokenomics di [`../README.md`](../README.md).
 
@@ -20,8 +22,9 @@ Parameter ekonomi diturunkan langsung dari tokenomics di [`../README.md`](../REA
 | Simbol | `CHRG` |
 | Standar | Token-2022 (Token Extensions) + metadata extension |
 | Desimal | 2 |
-| Suplai awal | 837.600 CHRG (83.760.000 base unit) |
-| Par | Rp 100.000 / token |
+| Suplai | 608.928 CHRG (60.892.800 base unit) |
+| Penyangga | 54 SPKLU utilisasi tinggi (okupansi ≥ 70%) |
+| Par | Rp 100.000 / koin |
 | Target yield | 13% |
 
 > Proyek edukasi/simulasi. Penerbitan efek riil memerlukan struktur hukum
