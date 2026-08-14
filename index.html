@@ -1677,6 +1677,31 @@ function renderProspektus(){
   // ── Sensitivitas coupon/kWh ──
   const cps=[300,350,400,450,500];
   const sensCpk=cps.map(cp=>{const pool=energyY*cp;const f=pool/cap;const nav=Math.round(f/supply);const cc=Math.round(pool/supply);return `<tr${cp===cpk?' style="background:var(--cyan-dim)"':''}><td>Rp ${fmt(cp)}</td><td class="r">${rpShort(pool)}</td><td class="r">${rpShort(f)}</td><td class="r">${rp(nav)}</td><td class="r">${(cc/price*100).toFixed(1).replace('.',',')}%</td></tr>`;}).join('');
+  // ── DETAIL SPKLU PENYANGGA (holdings disclosure) ──
+  const upcase=(x)=>(x||'').toLowerCase().replace(/\b\w/g,c=>c.toUpperCase()); // 'cap' lokal = cap_rate, jadi pakai upcase()
+  const hold=POOL.slice().sort((a,b)=>poolShare(b)-poolShare(a));
+  const holdRows=hold.map((s,i)=>{
+    const marginYr=s.kwh*12*cpk;           // porsi ke pemegang koin / th
+    const nomYr=s.kwh*12*(2608-142-1150-366); // marjin operasi bersih / th (Rp 950/kWh)
+    const capBacked=marginYr/cap;          // modal/kapitalisasi yang di-back SPKLU ini
+    const w=poolShare(s)*100;
+    return `<tr>
+      <td class="r">${i+1}</td>
+      <td><b>${shortName(s.name)}</b><small style="display:block;color:var(--text3)">UP3 ${upcase(s.up3)} · ${s.kota}</small></td>
+      <td class="r">${s.pw}kW ${s.cls==='dc'?'DC':'AC'}</td>
+      <td class="r" style="color:var(--amber);font-weight:700">${s.occ}%</td>
+      <td class="r">${fmt(s.tx)}</td>
+      <td class="r">${fmt(s.kwh)}</td>
+      <td class="r g">${rpShort(s.rev)}</td>
+      <td class="r" style="color:var(--purple)">${rpShort(nomYr)}</td>
+      <td class="r c">${rpShort(marginYr)}</td>
+      <td class="r">${rpShort(capBacked)}</td>
+      <td class="r" style="font-weight:700">${w.toFixed(2).replace('.',',')}%</td>
+    </tr>`;
+  }).join('');
+  const tTx=hold.reduce((a,s)=>a+s.tx,0), tKwh=hold.reduce((a,s)=>a+s.kwh,0), tRev=hold.reduce((a,s)=>a+s.rev,0);
+  const tNom=tKwh*12*(2608-142-1150-366), tMargin=tKwh*12*cpk;
+  const holdTot=`<tr class="total"><td class="r"></td><td>Total ${hold.length} SPKLU penyangga</td><td class="r">—</td><td class="r" style="color:var(--amber)">${COIN.occ}%</td><td class="r">${fmt(tTx)}</td><td class="r">${fmt(tKwh)}</td><td class="r g">${rpShort(tRev)}</td><td class="r" style="color:var(--purple)">${rpShort(tNom)}</td><td class="r c">${rpShort(tMargin)}</td><td class="r">${rpShort(fv)}</td><td class="r">100%</td></tr>`;
 
   b.innerHTML=`
   <div class="hero">
@@ -1761,6 +1786,64 @@ function renderProspektus(){
       <div class="tiny muted" style="margin-top:6px">Alokasi coupon/kWh lebih besar → yield &amp; NAV naik (porsi PLN turun).</div>
     </div>
   </div>
+
+  <div class="section-title">Detail SPKLU penyangga — utilisasi, okupansi &amp; keuntungan <span class="line"></span></div>
+  <div class="card" style="padding:12px">
+    <div class="tiny muted" style="margin-bottom:10px">Rincian ${hold.length} SPKLU yang menopang koin CHRG (seperti daftar aset sebuah reksa dana). <b>Utilisasi</b> = transaksi &amp; energi/bln · <b>Keuntungan</b> = pendapatan kotor, marjin operasi bersih (Rp 950/kWh), dan porsi yang mengalir ke pemegang koin (Rp ${fmt(cpk)}/kWh) · <b>Modal di-back</b> = kapitalisasi (fair value) yang disumbang tiap SPKLU ke AUM. Diurut dari kontribusi terbesar.</div>
+    <div style="overflow-x:auto">
+      <table class="flow-table" style="min-width:920px;font-size:11px">
+        <thead><tr>
+          <th class="r">#</th><th>SPKLU</th><th class="r">Daya</th><th class="r">Okupansi</th>
+          <th class="r">Transaksi/bln</th><th class="r">Energi kWh/bln</th>
+          <th class="r">Pendapatan/bln</th><th class="r">Marjin bersih/th</th><th class="r">Ke token/th</th>
+          <th class="r">Modal di-back</th><th class="r">Bobot</th>
+        </tr></thead>
+        <tbody>${holdRows}${holdTot}</tbody>
+      </table>
+    </div>
+    <div class="tiny muted" style="margin-top:8px">Total "Modal di-back" = ${rpShort(fv)} = <b>AUM</b> koin. Total "Ke token/th" = ${rpShort(tMargin)} = <b>coupon pool</b> yang dibagikan ke seluruh pemegang koin. Anda membeli <b>satu koin</b> atas keseluruhan pool ini — bukan token per SPKLU.</div>
+  </div>
+
+  <div class="section-title">Tokenomics fundamental <span class="line"></span></div>
+  <div class="grid2">
+    <div class="card">
+      <h4>Spesifikasi koin CHRG</h4>
+      <div class="id-schema">
+        <div class="id-row"><span class="k">Nama · simbol</span><span class="v">ChargeChain SPKLU Revenue Coin · CHRG</span></div>
+        <div class="id-row"><span class="k">Standar</span><span class="v">Solana Token-2022 (Token Extensions)</span></div>
+        <div class="id-row"><span class="k">Desimal</span><span class="v">2</span></div>
+        <div class="id-row"><span class="k">Suplai (tetap)</span><span class="v">${fmt(supply)} CHRG</span></div>
+        <div class="id-row"><span class="k">Penyangga</span><span class="v">${COIN.n} SPKLU utilisasi tinggi (okupansi ≥ ${OCC_MIN}%)</span></div>
+        <div class="id-row"><span class="k">Nilai nominal (par)</span><span class="v">${rp(par)}</span></div>
+        <div class="id-row"><span class="k">NAV / koin</span><span class="v c">${rp(navPar)}</span></div>
+        <div class="id-row"><span class="k">Harga pasar</span><span class="v">${rp(price)} <small style="color:var(--green)">(+${premPct.toFixed(0)}%)</small></span></div>
+        <div class="id-row"><span class="k">Distribusi mint</span><span class="v" style="font-size:11px">100% ke treasury saat terbit; float dilepas bertahap</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h4>Fundamental arus kas &amp; imbal hasil</h4>
+      <div class="id-schema">
+        <div class="id-row"><span class="k">Energi pool / th</span><span class="v">${(energyY/1e6).toFixed(2).replace('.',',')} GWh (${fmt(energyY)} kWh)</span></div>
+        <div class="id-row"><span class="k">GMV kotor pool / th</span><span class="v g">${rpShort(COIN.revY)}</span></div>
+        <div class="id-row"><span class="k">Coupon / kWh (ke holder)</span><span class="v">Rp ${fmt(cpk)}</span></div>
+        <div class="id-row"><span class="k">Coupon pool / th</span><span class="v c">${rpShort(couponPool)}</span></div>
+        <div class="id-row"><span class="k">Cap rate (target yield)</span><span class="v">${(cap*100).toFixed(0)}%</span></div>
+        <div class="id-row"><span class="k">AUM (fair value)</span><span class="v" style="color:var(--cyan);font-weight:800">${rpShort(fv)}</span></div>
+        <div class="id-row"><span class="k">Kupon / koin / th</span><span class="v g">${rp(couponPerCoin)}</span></div>
+        <div class="id-row"><span class="k">Yield @ par · @ pasar</span><span class="v">${yieldPar.toFixed(0).replace('.',',')}% · ${yieldMkt.toFixed(1).replace('.',',')}%</span></div>
+        <div class="id-row"><span class="k">Distribusi bagi hasil</span><span class="v" style="font-size:11px">Bulanan, pro-rata, on-chain (Merkle claim)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Berapa modal untuk ikut? <span class="line"></span></div>
+  <div class="grid4">
+    <div class="kpi c"><div class="klabel">Modal minimum</div><div class="kval" style="font-size:18px">${rp(price)}</div><div class="ksub">= 1 koin CHRG</div></div>
+    <div class="kpi g"><div class="klabel">Contoh Rp 1 juta</div><div class="kval" style="font-size:18px">${fmt(Math.floor(1e6/price))} koin</div><div class="ksub">± ${rp(Math.round(Math.floor(1e6/price)*couponPerCoin/12))}/bln bagi hasil</div></div>
+    <div class="kpi a"><div class="klabel">Contoh Rp 10 juta</div><div class="kval" style="font-size:18px">${fmt(Math.floor(1e7/price))} koin</div><div class="ksub">± ${rp(Math.round(Math.floor(1e7/price)*couponPerCoin/12))}/bln bagi hasil</div></div>
+    <div class="kpi p"><div class="klabel">Fee bursa</div><div class="kval" style="font-size:18px">0,5%</div><div class="ksub">per transaksi beli/jual</div></div>
+  </div>
+  <div class="tiny muted" style="margin-top:8px">Bagi hasil = jumlah koin × ${rp(couponPerCoin)}/th ÷ 12, dibayar bulanan. Nilai koin dapat naik/turun mengikuti okupansi pool (lihat skenario di atas).</div>
 
   <div class="grid4" style="margin-top:18px">
     <div class="kpi c"><div class="klabel">AUM</div><div class="kval">${rpShort(fv)}</div><div class="ksub">fair value pool</div></div>
