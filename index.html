@@ -1285,17 +1285,26 @@ function renderStationList(){
         <div class="kpi c"><div class="klabel">SPKLU penyangga</div><div class="kval" style="font-size:16px">${COIN.n}</div><div class="ksub">dari 329 jaringan</div></div>
         <div class="kpi p"><div class="klabel">Okupansi rata-rata</div><div class="kval" style="font-size:16px">${COIN.occ}%</div><div class="ksub">utilisasi tinggi</div></div>
       </div>
-      <div class="tiny muted" style="margin-top:8px">Nilai ditampilkan <b>agregat</b> untuk satu koin CHRG — tidak ada nilai/harga token per SPKLU. Daftar di bawah hanya menunjukkan SPKLU penyangga (profil operasional). <a style="color:var(--cyan);cursor:pointer" onclick="switchTab('prospektus')">Lihat Prospektus &amp; Valuasi →</a></div>
+      <div class="tiny muted" style="margin-top:8px">Token tetap <b>satu koin agregat</b> (CHRG) — tak ada harga token per SPKLU. Daftar di bawah menampilkan ekonomi tiap SPKLU penyangga sebagai transparansi. <a style="color:var(--cyan);cursor:pointer" onclick="switchTab('prospektus')">Lihat Prospektus &amp; Valuasi →</a></div>
     </div>
-    <div class="tiny" style="text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin:2px 4px 8px">SPKLU Penyangga (operasional, tanpa nilai per titik)</div>`;
-  const roster=list.map(s=>`
+    <div class="tiny" style="text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin:2px 4px 4px">SPKLU Penyangga — penjualan · profit · nilai capital</div>
+    <div class="tiny muted" style="margin:0 4px 10px;font-size:9.5px">Penjualan = pendapatan kotor/bln · Profit = marjin operasi bersih (Rp 950/kWh) · Nilai capital = profit tahunan ÷ cap rate 13% (income approach)</div>`;
+  const NOM=950; // marjin operasi bersih per kWh (Rp) dari waterfall
+  const roster=list.map(s=>{
+    const penjualan=s.rev, profit=s.kwh*NOM, capital=s.kwh*12*NOM/PORT.cap_rate;
+    return `
     <div class="station-card" style="cursor:default">
       <div class="sc-top">
         <div class="sc-name">${s.name}</div>
         <div class="sc-power ${s.cls}">${s.pw} kW ${s.cls==='dc'?'DC':'AC'}</div>
       </div>
       <div class="sc-up3">UP3 ${cap(s.up3)} · ${s.kota} · okupansi <b style="color:var(--amber)">${s.occ}%</b></div>
-    </div>`).join('');
+      <div class="sc-metrics" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="sc-metric"><div class="ml">Penjualan/bln</div><div class="mv g">${rpShort(penjualan)}</div></div>
+        <div class="sc-metric"><div class="ml">Profit/bln</div><div class="mv">${rpShort(profit)}</div></div>
+        <div class="sc-metric"><div class="ml">Nilai capital</div><div class="mv c">${rpShort(capital)}</div></div>
+      </div>
+    </div>`;}).join('');
   document.getElementById('station-list').innerHTML=agg+roster;
   document.getElementById('station-list').style.display='block';
   document.getElementById('invest-detail').classList.remove('show');
