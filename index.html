@@ -207,14 +207,15 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .wf-row.eq{border-left:3px solid var(--cyan);background:var(--bg4);font-weight:600}
 .wf-row.token{border-left:3px solid var(--purple);background:var(--purple-dim)}
 .wf-row .wl{color:var(--text2)}
-.wf-row.eq .wl,.wf-row.token .wl{color:var(--text)}
+.wf-row.token .wl{color:var(--text)}
+.wf-row.eq .wl,.wf-row.eq .wv{color:#FFFFFF}
 .wf-row .wv{font-weight:700;font-variant-numeric:tabular-nums}
 .slider-box{margin:14px 0}
 .slider-box label{font-size:11px;color:var(--text2);display:flex;justify-content:space-between;margin-bottom:7px}
 .slider-box label b{color:var(--cyan);font-size:13px}
 input[type=range]{width:100%;-webkit-appearance:none;height:5px;border-radius:3px;background:var(--bg4);outline:none}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--cyan);cursor:pointer;box-shadow:0 0 8px rgba(0,212,255,.5)}
-.formula{background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:13px;font-family:'SF Mono',Menlo,monospace;font-size:11px;color:var(--cyan);line-height:1.7;overflow-x:auto}
+.formula{background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:13px;font-family:'SF Mono',Menlo,monospace;font-size:11px;color:var(--cyan);line-height:1.7;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:pre;tab-size:2}
 .formula .c{color:var(--text3)}
 .formula .n{color:var(--amber)}
 .cg-row{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
@@ -1409,25 +1410,13 @@ html,body{background:var(--bg)}
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></svg>
       <div class="nav-tooltip">Bursa CHRG</div>
     </button>
-    <button class="nav-btn" onclick="switchTab('investor')" data-tab="investor">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5.5 21a7 7 0 0 1 13 0"/><path d="M19 7l2 2 3-4" transform="translate(-2 0)"/></svg>
-      <div class="nav-tooltip">POV Investor Ritel</div>
-    </button>
     <button class="nav-btn" onclick="switchTab('buy')" data-tab="buy">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
       <div class="nav-tooltip">Beli Koin CHRG</div>
     </button>
-    <button class="nav-btn" onclick="switchTab('prospektus')" data-tab="prospektus">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8M8 9h2"/></svg>
-      <div class="nav-tooltip">Prospektus &amp; Valuasi</div>
-    </button>
     <button class="nav-btn" onclick="switchTab('tokenomics')" data-tab="tokenomics">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 3.5M12 17h.01"/></svg>
       <div class="nav-tooltip">Tokenomics & Pricing</div>
-    </button>
-    <button class="nav-btn" onclick="switchTab('business')" data-tab="business">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"/><path d="M9 9v.01M9 12v.01M9 15v.01"/></svg>
-      <div class="nav-tooltip">Model Bisnis & Potensi PLN</div>
     </button>
     <button class="nav-btn" onclick="switchTab('indirect')" data-tab="indirect">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>
@@ -1551,50 +1540,14 @@ html,body{background:var(--bg)}
       </div>
     </div>
 
-    <!-- PROSPEKTUS & VALUASI -->
-    <div class="panel" id="panel-prospektus">
-      <div class="page">
-        <div class="page-head">
-          <div><h2><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8"/></svg> Prospektus &amp; Valuasi Koin CHRG</h2>
-            <div class="ph-sub">Apa yang Anda beli, apa yang menopang nilainya (AUM), dan bagaimana harga koin dihitung — lengkap dengan proyeksi prospek &amp; analisis sensitivitas</div></div>
-          <span class="badge">Value · AUM · Valuasi</span>
-        </div>
-        <div class="page-body" id="prospektus-body"></div>
-      </div>
-    </div>
-
-    <!-- POV INVESTOR RITEL -->
-    <div class="panel" id="panel-investor">
-      <div class="page">
-        <div class="page-head">
-          <div><h2><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5.5 21a7 7 0 0 1 13 0"/></svg> POV Investor Ritel — "Kalau saya invest Rp 100 juta, dapat berapa?"</h2>
-            <div class="ph-sub">Simulasikan sendiri: atur nominal, jenis charger, okupansi & konsumsi ngecas Anda. Lihat pendapatan bulanan, bandingkan dengan deposito/obligasi, dan manfaat ekstra yang tak dimiliki instrumen lain</div></div>
-          <span class="badge">Simulasi Interaktif</span>
-        </div>
-        <div class="page-body" id="investor-body"></div>
-      </div>
-    </div>
-
     <div class="panel" id="panel-tokenomics">
       <div class="page">
         <div class="page-head">
-          <div><h2><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 3.5M12 17h.01"/></svg> Tokenomics &amp; Sistem Pricing</h2>
-            <div class="ph-sub">Nilai rasional per token diturunkan langsung dari arus kas SPKLU yang sudah beroperasi (data Maret 2026)</div></div>
+          <div><h2><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 3.5M12 17h.01"/></svg> Tokenomics — Nilai, Valuasi &amp; Model Bisnis</h2>
+            <div class="ph-sub">Dari mana nilai koin CHRG berasal, bagaimana harganya dihitung, dan apa untungnya bagi PLN — dalam satu halaman (data Maret 2026)</div></div>
           <span class="badge">Asset-Backed · Yield-Bearing</span>
         </div>
         <div class="page-body" id="tokenomics-body"></div>
-      </div>
-    </div>
-
-    <!-- BUSINESS MODEL -->
-    <div class="panel" id="panel-business">
-      <div class="page">
-        <div class="page-head">
-          <div><h2><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"/></svg> Model Bisnis &amp; Potensi untuk PLN</h2>
-            <div class="ph-sub">Bagaimana PLN memonetisasi jaringan SPKLU eksisting tanpa menjual aset dan tanpa menambah utang</div></div>
-          <span class="badge">Strategic Value</span>
-        </div>
-        <div class="page-body" id="business-body"></div>
       </div>
     </div>
 
@@ -1646,8 +1599,8 @@ html,body{background:var(--bg)}
     <button class="mtb" data-mtab="buy" onclick="switchTab('buy')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><span>Beli</span>
     </button>
-    <button class="mtb" data-mtab="prospektus" onclick="switchTab('prospektus')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8"/></svg><span>Prospektus</span>
+    <button class="mtb" data-mtab="tokenomics" onclick="switchTab('tokenomics')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8"/></svg><span>Tokenomics</span>
     </button>
     <button class="mtb" id="mtb-more" onclick="toggleNav()" aria-label="Menu lainnya">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span>Lainnya</span>
@@ -1924,7 +1877,7 @@ function renderStationList(){
         <div class="kpi c"><div class="klabel">SPKLU penyangga</div><div class="kval" style="font-size:16px">${COIN.n}</div><div class="ksub">dari 329 jaringan</div></div>
         <div class="kpi p"><div class="klabel">Okupansi rata-rata</div><div class="kval" style="font-size:16px">${COIN.occ}%</div><div class="ksub">utilisasi tinggi</div></div>
       </div>
-      <div class="tiny muted" style="margin-top:8px">Token tetap <b>satu koin agregat</b> (CHRG) — tak ada harga token per SPKLU. Daftar di bawah menampilkan ekonomi tiap SPKLU penyangga sebagai transparansi. <a style="color:var(--cyan);cursor:pointer" onclick="switchTab('prospektus')">Lihat Prospektus &amp; Valuasi →</a></div>
+      <div class="tiny muted" style="margin-top:8px">Token tetap <b>satu koin agregat</b> (CHRG) — tak ada harga token per SPKLU. Daftar di bawah menampilkan ekonomi tiap SPKLU penyangga sebagai transparansi. <a style="color:var(--cyan);cursor:pointer" onclick="switchTab('tokenomics')">Lihat Tokenomics &amp; Valuasi →</a></div>
     </div>
     <div class="tiny" style="text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin:2px 4px 4px">SPKLU Penyangga — penjualan · profit · nilai capital</div>
     <div class="tiny muted" style="margin:0 4px 10px;font-size:9.5px">Penjualan = pendapatan kotor/bln · Profit = marjin operasi bersih (Rp 950/kWh) · Nilai capital = profit tahunan ÷ cap rate 13% (income approach)</div>`;
@@ -2358,432 +2311,69 @@ function renderBuy(){
   renderPortfolio();
 }
 
-/* ═══════════ POV INVESTOR RITEL ═══════════ */
-const CHARGERS={
-  ac7 :{name:'AC 7 kW',   pw:7,  tarif:2467, base:9,  loc:'Rumah / Apartemen',  ico:'🏠'},
-  ac22:{name:'AC 22 kW',  pw:22, tarif:2475, base:12, loc:'Mall / Perkantoran', ico:'🏬'},
-  dc50:{name:'DC Fast 50 kW', pw:50, tarif:2608, base:16, loc:'SPBU / Rest Area', ico:'⚡'},
-  dc100:{name:'DC Ultra 100 kW', pw:100, tarif:2700, base:22, loc:'Tol / Hub Logistik', ico:'🚀'}
-};
-const INV={amount:100000000, charger:'dc50', occ:16, drive:150};
-const INV_DISC=0.05;   // diskon ngecas untuk pemegang token
-const INV_CAP=0.13;    // target yield @ okupansi baseline
-const INST=[
-  {k:'Deposito Bank',         r:4.25, note:'bruto, dipotong pajak 20%'},
-  {k:'Reksa Dana Pasar Uang', r:4.5,  note:'likuid, risiko rendah'},
-  {k:'SBN Ritel (ORI / SR)',  r:6.4,  note:'dijamin negara'},
-  {k:'Obligasi Korporasi',    r:7.5,  note:'ada risiko gagal bayar'}
-];
-const POOL10=[100,60,40,30,25,20,15,12,8,5]; // nominal (juta) 10 investor di satu titik
-
-function setCharger(k){
-  INV.charger=k; INV.occ=CHARGERS[k].base;
-  const s=document.getElementById('inv-occ'); if(s)s.value=INV.occ;
-  setTxt('lbl-occ',INV.occ+'%');
-  document.querySelectorAll('.cg-btn').forEach(b=>b.classList.toggle('active',b.dataset.k===k));
-  updateInvSim();
-}
-function setInv(k,v){
-  INV[k]=parseFloat(v);
-  if(k==='amount')setTxt('lbl-amount',rp(INV.amount));
-  if(k==='occ')setTxt('lbl-occ',INV.occ+'%');
-  if(k==='drive')setTxt('lbl-drive',fmt(INV.drive)+' kWh/bln');
-  updateInvSim();
-}
-function updateInvSim(){
-  const cg=CHARGERS[INV.charger];
-  const occF=INV.occ/cg.base;
-  const yieldAct=INV_CAP*100*occF;
-  const tokens=INV.amount/PORT.par;
-  const monthly=INV.amount*yieldAct/100/12;
-  const annual=INV.amount*yieldAct/100;
-  const price=Math.round(PORT.par*occF);
-  const capGain=INV.amount*(occF-1);
-  const discMo=INV.drive*cg.tarif*INV_DISC;
-  const discYr=discMo*12;
-  const total1=annual+discYr+(capGain>0?capGain:0);
-  // KPI utama
-  setTxt('iv-monthly',rp(Math.round(monthly)));
-  setTxt('iv-yield',yieldAct.toFixed(1).replace('.',',')+'%');
-  setTxt('iv-tokens',fmt(tokens)+' token');
-  setTxt('iv-price',rp(price));
-  setTxt('iv-price-sub',(price>=PORT.par?'premium +':'diskon ')+( (occF-1)*100 ).toFixed(0)+'% vs par');
-  // breakdown
-  setTxt('iv-annual',rp(Math.round(annual)));
-  setTxt('iv-capgain',(capGain>=0?'+ ':'− ')+rp(Math.round(Math.abs(capGain))));
-  setTxt('iv-disc',rp(Math.round(discMo))+' / bln');
-  setTxt('iv-discyr',rp(Math.round(discYr))+' / th');
-  setTxt('iv-total',rp(Math.round(total1)));
-  setTxt('iv-charger-name',cg.name+' · '+cg.loc);
-  // station context (untuk skenario 10 investor)
-  const kwhM=cg.pw*24*30*INV.occ/100;
-  const grossM=kwhM*cg.tarif;
-  const fvSt=kwhM*400*12/INV_CAP;
-  setTxt('iv-st-kwh',fmt(Math.round(kwhM))+' kWh');
-  setTxt('iv-st-gross',rpShort(grossM));
-  setTxt('iv-st-fv',rpShort(fvSt));
-  setTxt('iv-st-occ',INV.occ+'%');
-  // ── tabel perbandingan instrumen ──
-  const rows=INST.map(i=>({k:i.k,note:i.note,ret:INV.amount*i.r/100,r:i.r,cc:false}));
-  rows.push({k:'ChargeChain CHRG (kupon)',note:'imbal hasil dari arus kas SPKLU',ret:annual,r:yieldAct,cc:true});
-  const maxRet=Math.max.apply(null,rows.map(r=>r.ret));
-  document.getElementById('inv-compare').innerHTML=rows.map(r=>`
-    <div class="cmpbar ${r.cc?'cc':''}">
-      <div class="cb-label">${r.k}<small>${r.note}</small></div>
-      <div class="cb-track"><div class="cb-fill ${r.cc?'cc':''}" style="width:${Math.max(4,r.ret/maxRet*100)}%"></div></div>
-      <div class="cb-val">${rpShort(r.ret)}<small>${r.r.toFixed(1).replace('.',',')}%/th</small></div>
-    </div>`).join('');
-  // ── tabel 10 investor di satu titik ──
-  const sum10=POOL10.reduce((a,b)=>a+b,0);
-  document.getElementById('inv-pool').innerHTML=POOL10.map((jt,idx)=>{
-    const nom=jt*1e6, tk=nom/PORT.par, mo=nom*yieldAct/100/12, share=jt/sum10*100;
-    const me=jt===100;
-    return `<tr${me?' style="background:var(--cyan-dim)"':''}>
-      <td>${me?'<b>Anda</b>':'Investor '+(idx+1)}</td>
-      <td class="r">${rpShort(nom)}</td>
-      <td class="r">${fmt(tk)}</td>
-      <td class="r">${share.toFixed(1).replace('.',',')}%</td>
-      <td class="r" style="color:var(--green)">${rp(Math.round(mo))}</td>
-      <td class="r">${yieldAct.toFixed(1).replace('.',',')}%</td>
-    </tr>`;
-  }).join('')+`<tr class="total"><td>Total 10 investor</td><td class="r">${rpShort(sum10*1e6)}</td><td class="r">${fmt(sum10*1e6/PORT.par)}</td><td class="r">100%</td><td class="r" style="color:var(--green)">${rp(Math.round(sum10*1e6*yieldAct/100/12))}</td><td class="r">${yieldAct.toFixed(1).replace('.',',')}%</td></tr>`;
-}
-
-/* ═══════════ PROSPEKTUS & VALUASI (satu koin, agregat) ═══════════ */
-function renderProspektus(){
-  const b=document.getElementById('prospektus-body'); if(!b) return;
-  const par=PORT.par, cap=PORT.cap_rate, cpk=PORT.coupon_per_kwh;
-  const energyY=COIN.kwhY, couponPool=COIN.couponPool, fv=COIN.fv, supply=COIN.supply;
-  const navPar=Math.round(fv/supply);                 // NAV ≈ par (Rp 100.000)
-  const couponPerCoin=Math.round(couponPool/supply);  // ≈ Rp 13.000/koin/th
-  const price=COIN.price, premPct=((price-navPar)/navPar*100);
-  const yieldPar=(couponPerCoin/par*100), yieldMkt=(couponPerCoin/price*100);
-  // NOM per kWh
-  const nom=2608-142-1150-366; // 950
-  // ── Skenario prospek (mark-to-market, suplai koin tetap) ──
-  const scen=[
-    ['Konservatif','p20',0.85,350,0.15,'var(--amber)'],
-    ['Basis (sekarang)','p50',1.00,cpk,cap,'var(--green)'],
-    ['Optimis','p80',1.25,450,0.11,'var(--cyan)'],
-  ];
-  const scenRows=scen.map(s=>{
-    const eY=energyY*s[2], cPool=eY*s[3], fvS=cPool/s[4], nav=Math.round(fvS/supply);
-    const cPerCoin=Math.round(cPool/supply), yPar=cPerCoin/par*100, yMkt=cPerCoin/price*100;
-    const capGain=(nav-navPar)/navPar*100, tot=yMkt+ (nav-price)/price*100;
-    return {n:s[0],tag:s[1],col:s[5],eY,cPool,fvS,nav,cPerCoin,yPar,yMkt,capGain,tot};
-  });
-  const scenCards=scenRows.map(r=>`
-    <div class="card" style="border-top:3px solid ${r.col}">
-      <div class="klabel">${r.n} <span class="muted">(${r.tag})</span></div>
-      <div style="font-size:22px;font-weight:800;color:${r.col};margin:4px 0">${rp(r.nav)}<span style="font-size:11px;color:var(--text3)"> NAV/koin</span></div>
-      <div style="display:flex;flex-direction:column;gap:3px;font-size:11px;margin-top:6px">
-        <div style="display:flex;justify-content:space-between"><span class="muted">Energi pool/th</span><b>${(r.eY/1e6).toFixed(1).replace('.',',')} GWh</b></div>
-        <div style="display:flex;justify-content:space-between"><span class="muted">AUM (fair value)</span><b>${rpShort(r.fvS)}</b></div>
-        <div style="display:flex;justify-content:space-between"><span class="muted">Kupon/koin/th</span><b>${rp(r.cPerCoin)}</b></div>
-        <div style="display:flex;justify-content:space-between"><span class="muted">Yield @ harga pasar</span><b style="color:${r.col}">${r.yMkt.toFixed(1).replace('.',',')}%</b></div>
-        <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:3px"><span class="muted">Capital gain vs NAV kini</span><b style="color:${r.capGain>=0?'var(--green)':'var(--red)'}">${(r.capGain>=0?'+':'')+r.capGain.toFixed(0)}%</b></div>
-      </div>
-    </div>`).join('');
-  // ── Sensitivitas cap rate ──
-  const caps=[0.11,0.12,0.13,0.14,0.15];
-  const sensCap=caps.map(c=>{const f=couponPool/c;const nav=Math.round(f/supply);return `<tr${c===cap?' style="background:var(--cyan-dim)"':''}><td>${(c*100).toFixed(0)}%</td><td class="r">${rpShort(f)}</td><td class="r">${rp(nav)}</td><td class="r">${(couponPerCoin/nav*100).toFixed(1).replace('.',',')}%</td></tr>`;}).join('');
-  // ── Sensitivitas coupon/kWh ──
-  const cps=[300,350,400,450,500];
-  const sensCpk=cps.map(cp=>{const pool=energyY*cp;const f=pool/cap;const nav=Math.round(f/supply);const cc=Math.round(pool/supply);return `<tr${cp===cpk?' style="background:var(--cyan-dim)"':''}><td>Rp ${fmt(cp)}</td><td class="r">${rpShort(pool)}</td><td class="r">${rpShort(f)}</td><td class="r">${rp(nav)}</td><td class="r">${(cc/price*100).toFixed(1).replace('.',',')}%</td></tr>`;}).join('');
-  // ── DETAIL SPKLU PENYANGGA (holdings disclosure) ──
-  const upcase=(x)=>(x||'').toLowerCase().replace(/\b\w/g,c=>c.toUpperCase()); // 'cap' lokal = cap_rate, jadi pakai upcase()
-  const hold=POOL.slice().sort((a,b)=>poolShare(b)-poolShare(a));
-  const holdRows=hold.map((s,i)=>{
-    const marginYr=s.kwh*12*cpk;           // porsi ke pemegang koin / th
-    const nomYr=s.kwh*12*(2608-142-1150-366); // marjin operasi bersih / th (Rp 950/kWh)
-    const capBacked=marginYr/cap;          // modal/kapitalisasi yang di-back SPKLU ini
-    const w=poolShare(s)*100;
-    return `<tr>
-      <td class="r">${i+1}</td>
-      <td><b>${shortName(s.name)}</b><small style="display:block;color:var(--text3)">UP3 ${upcase(s.up3)} · ${s.kota}</small></td>
-      <td class="r">${s.pw}kW ${s.cls==='dc'?'DC':'AC'}</td>
-      <td class="r" style="color:var(--amber);font-weight:700">${s.occ}%</td>
-      <td class="r">${fmt(s.tx)}</td>
-      <td class="r">${fmt(s.kwh)}</td>
-      <td class="r g">${rpShort(s.rev)}</td>
-      <td class="r" style="color:var(--purple)">${rpShort(nomYr)}</td>
-      <td class="r c">${rpShort(marginYr)}</td>
-      <td class="r">${rpShort(capBacked)}</td>
-      <td class="r" style="font-weight:700">${w.toFixed(2).replace('.',',')}%</td>
-    </tr>`;
-  }).join('');
-  const tTx=hold.reduce((a,s)=>a+s.tx,0), tKwh=hold.reduce((a,s)=>a+s.kwh,0), tRev=hold.reduce((a,s)=>a+s.rev,0);
-  const tNom=tKwh*12*(2608-142-1150-366), tMargin=tKwh*12*cpk;
-  const holdTot=`<tr class="total"><td class="r"></td><td>Total ${hold.length} SPKLU penyangga</td><td class="r">—</td><td class="r" style="color:var(--amber)">${COIN.occ}%</td><td class="r">${fmt(tTx)}</td><td class="r">${fmt(tKwh)}</td><td class="r g">${rpShort(tRev)}</td><td class="r" style="color:var(--purple)">${rpShort(tNom)}</td><td class="r c">${rpShort(tMargin)}</td><td class="r">${rpShort(fv)}</td><td class="r">100%</td></tr>`;
-
-  b.innerHTML=`
-  <div class="hero">
-    <h1>Satu koin <span>CHRG</span> = klaim atas arus kas <span>${COIN.n} SPKLU utilisasi tinggi</span>. Nilainya di-anchor ke uang riil, bukan spekulasi.</h1>
-    <p>Setiap koin CHRG mewakili hak atas bagian marjin (Rp ${fmt(cpk)}/kWh) dari energi yang terjual di pool SPKLU berokupansi tinggi. Karena arus kasnya nyata &amp; berulang, nilai koin dapat dihitung dengan pendekatan kapitalisasi pendapatan (income approach) — bukan sekadar harga pasar spekulatif.</p>
-    <div class="pill-row">
-      <div class="pill">AUM <b>${rpShort(fv)}</b></div>
-      <div class="pill">NAV/koin <b>${rp(navPar)}</b></div>
-      <div class="pill">Harga pasar <b>${rp(price)}</b> <span class="muted">(${(premPct>=0?'+':'')+premPct.toFixed(0)}%)</span></div>
-      <div class="pill">Yield berjalan <b>${yieldMkt.toFixed(1).replace('.',',')}%</b></div>
-    </div>
-  </div>
-
-  <div class="section-title">Apa yang Anda beli — proposisi nilai <span class="line"></span></div>
-  <div class="grid4">
-    <div class="benefit"><div class="bicon" style="background:var(--green-dim);color:var(--green)">🏭</div><h5>Beragun arus kas riil</h5><p>Klaim atas Rp ${fmt(cpk)}/kWh dari energi ${COIN.n} SPKLU berokupansi rata-rata ${COIN.occ}% — bukan proyeksi.</p></div>
-    <div class="benefit"><div class="bicon" style="background:var(--cyan-dim);color:var(--cyan)">🧮</div><h5>Nilai bisa dihitung</h5><p>Fair value = coupon pool ÷ cap rate. NAV/koin ${rp(navPar)} punya dasar, bukan sekadar sentimen.</p></div>
-    <div class="benefit"><div class="bicon" style="background:var(--purple-dim);color:var(--purple)">💸</div><h5>Kupon bulanan</h5><p>± ${rp(couponPerCoin)}/koin/th (${yieldPar.toFixed(0).replace('.',',')}% @ par) dibagikan pro-rata on-chain tiap bulan.</p></div>
-    <div class="benefit"><div class="bicon" style="background:var(--amber-dim);color:var(--amber)">📈</div><h5>Upside terukur</h5><p>Okupansi pool naik → coupon pool naik → NAV naik → potensi capital gain di atas kupon.</p></div>
-  </div>
-
-  <div class="section-title">AUM — aset yang menopang koin <span class="line"></span></div>
-  <div class="grid2">
-    <div class="card">
-      <h4>Assets Under Management (AUM)</h4>
-      <p style="font-size:12px;color:var(--text2);line-height:1.7">AUM CHRG adalah <b>nilai wajar (fair value) hak arus kas</b> pool SPKLU utilisasi tinggi yang dikelola koin — yakni kapitalisasi coupon pool pada cap rate ${(cap*100).toFixed(0)}%.</p>
-      <div class="id-schema" style="margin-top:8px">
-        <div class="id-row"><span class="k">Aset dasar (underlying)</span><span class="v">${COIN.n} SPKLU PLN utilisasi tinggi</span></div>
-        <div class="id-row"><span class="k">GMV kotor pool / th</span><span class="v g">${rpShort(COIN.revY)}</span></div>
-        <div class="id-row"><span class="k">Energi tersalur / th</span><span class="v">${(energyY/1e6).toFixed(2).replace('.',',')} GWh</span></div>
-        <div class="id-row"><span class="k">Hak yang ditokenisasi</span><span class="v">Rp ${fmt(cpk)}/kWh → coupon pool</span></div>
-        <div class="id-row"><span class="k">Coupon pool / th</span><span class="v c">${rpShort(couponPool)}</span></div>
-        <div class="id-row" style="border-top:1px solid var(--border);padding-top:6px"><span class="k"><b>AUM (fair value @ ${(cap*100).toFixed(0)}%)</b></span><span class="v" style="color:var(--cyan);font-weight:800">${rpShort(fv)}</span></div>
-      </div>
-    </div>
-    <div class="card">
-      <h4>Waterfall marjin per kWh (Rp 2.608)</h4>
-      <div class="waterfall">
-        <div class="wf-row"><span class="wl">Tarif jual (aktual)</span><span class="wv">Rp 2.608</span></div>
-        <div class="wf-row sub"><span class="wl">− PPJ (Pemda)</span><span class="wv">Rp 142</span></div>
-        <div class="wf-row sub"><span class="wl">− Beban pokok listrik</span><span class="wv">Rp 1.150</span></div>
-        <div class="wf-row sub"><span class="wl">− O&amp;M, IoT, payment</span><span class="wv">Rp 366</span></div>
-        <div class="wf-row eq"><span class="wl">= Marjin Operasi Bersih</span><span class="wv">Rp ${fmt(nom)}</span></div>
-        <div class="wf-row token"><span class="wl">→ Coupon ke pemegang CHRG</span><span class="wv">Rp ${fmt(cpk)}</span></div>
-        <div class="wf-row add"><span class="wl">→ Ditahan PLN (+ aset)</span><span class="wv">Rp ${fmt(nom-cpk)}</span></div>
-      </div>
-      <div class="tiny muted" style="margin-top:6px">Hanya Rp ${fmt(cpk)}/kWh (dari marjin Rp ${fmt(nom)}) yang menjadi hak pemegang koin — sisanya tetap milik PLN. Konservatif secara desain.</div>
-    </div>
-  </div>
-
-  <div class="section-title">Perhitungan valuasi — langkah demi langkah <span class="line"></span></div>
-  <div class="card">
-    <table class="flow-table">
-      <thead><tr><th>#</th><th>Langkah</th><th style="text-align:left">Rumus</th><th class="r">Hasil</th></tr></thead>
-      <tbody>
-        <tr><td>1</td><td>Energi pool / tahun</td><td style="text-align:left">Σ energi ${COIN.n} SPKLU × 12</td><td class="r">${fmt(energyY)} kWh</td></tr>
-        <tr><td>2</td><td>Coupon pool / tahun</td><td style="text-align:left">energi × Rp ${fmt(cpk)}/kWh</td><td class="r">${rp(couponPool)}</td></tr>
-        <tr><td>3</td><td>Fair value (AUM)</td><td style="text-align:left">coupon pool ÷ cap rate ${(cap*100).toFixed(0)}%</td><td class="r">${rp(Math.round(fv))}</td></tr>
-        <tr><td>4</td><td>Suplai koin</td><td style="text-align:left">fair value ÷ par Rp ${fmt(par)}</td><td class="r">${fmt(supply)} CHRG</td></tr>
-        <tr><td>5</td><td>NAV / koin</td><td style="text-align:left">fair value ÷ suplai</td><td class="r">${rp(navPar)}</td></tr>
-        <tr><td>6</td><td>Kupon / koin / tahun</td><td style="text-align:left">coupon pool ÷ suplai</td><td class="r">${rp(couponPerCoin)}</td></tr>
-        <tr class="total"><td>7</td><td>Yield @ par / @ harga pasar</td><td style="text-align:left">kupon ÷ par · kupon ÷ ${rp(price)}</td><td class="r">${yieldPar.toFixed(0).replace('.',',')}% · ${yieldMkt.toFixed(1).replace('.',',')}%</td></tr>
-      </tbody>
-    </table>
-    <div class="tiny muted" style="margin-top:8px">Harga pasar ${rp(price)} = premium ${(premPct).toFixed(0)}% di atas NAV par karena okupansi pool tinggi (${COIN.occ}%). Di pasar sekunder harga bergerak via price discovery.</div>
-  </div>
-
-  <div class="section-title">Proyeksi prospek — tiga skenario <span class="line"></span></div>
-  <div class="grid3">${scenCards}</div>
-  <div class="disclaimer" style="margin-top:10px">Skenario adalah mark-to-market pada suplai koin tetap (${fmt(supply)} CHRG): energi pool digeser (okupansi/ekspansi), coupon/kWh &amp; cap rate disesuaikan. NAV/koin = fair value skenario ÷ suplai. Bukan jaminan imbal hasil.</div>
-
-  <div class="section-title">Analisis sensitivitas <span class="line"></span></div>
-  <div class="grid2">
-    <div class="card">
-      <h4>Terhadap cap rate (coupon Rp ${fmt(cpk)}/kWh)</h4>
-      <table class="flow-table"><thead><tr><th>Cap rate</th><th class="r">AUM</th><th class="r">NAV/koin</th><th class="r">Yield/NAV</th></tr></thead><tbody>${sensCap}</tbody></table>
-      <div class="tiny muted" style="margin-top:6px">Cap rate rendah (risiko dianggap kecil) → valuasi lebih tinggi.</div>
-    </div>
-    <div class="card">
-      <h4>Terhadap coupon/kWh (cap ${(cap*100).toFixed(0)}%)</h4>
-      <table class="flow-table"><thead><tr><th>Coupon/kWh</th><th class="r">Coupon pool</th><th class="r">AUM</th><th class="r">NAV/koin</th><th class="r">Yield@pasar</th></tr></thead><tbody>${sensCpk}</tbody></table>
-      <div class="tiny muted" style="margin-top:6px">Alokasi coupon/kWh lebih besar → yield &amp; NAV naik (porsi PLN turun).</div>
-    </div>
-  </div>
-
-  <div class="section-title">Detail SPKLU penyangga — utilisasi, okupansi &amp; keuntungan <span class="line"></span></div>
-  <div class="card" style="padding:12px">
-    <div class="tiny muted" style="margin-bottom:10px">Rincian ${hold.length} SPKLU yang menopang koin CHRG (seperti daftar aset sebuah reksa dana). <b>Utilisasi</b> = transaksi &amp; energi/bln · <b>Keuntungan</b> = pendapatan kotor, marjin operasi bersih (Rp 950/kWh), dan porsi yang mengalir ke pemegang koin (Rp ${fmt(cpk)}/kWh) · <b>Modal di-back</b> = kapitalisasi (fair value) yang disumbang tiap SPKLU ke AUM. Diurut dari kontribusi terbesar.</div>
-    <div style="overflow-x:auto">
-      <table class="flow-table" style="min-width:920px;font-size:11px">
-        <thead><tr>
-          <th class="r">#</th><th>SPKLU</th><th class="r">Daya</th><th class="r">Okupansi</th>
-          <th class="r">Transaksi/bln</th><th class="r">Energi kWh/bln</th>
-          <th class="r">Pendapatan/bln</th><th class="r">Marjin bersih/th</th><th class="r">Ke token/th</th>
-          <th class="r">Modal di-back</th><th class="r">Bobot</th>
-        </tr></thead>
-        <tbody>${holdRows}${holdTot}</tbody>
-      </table>
-    </div>
-    <div class="tiny muted" style="margin-top:8px">Total "Modal di-back" = ${rpShort(fv)} = <b>AUM</b> koin. Total "Ke token/th" = ${rpShort(tMargin)} = <b>coupon pool</b> yang dibagikan ke seluruh pemegang koin. Anda membeli <b>satu koin</b> atas keseluruhan pool ini — bukan token per SPKLU.</div>
-  </div>
-
-  <div class="section-title">Tokenomics fundamental <span class="line"></span></div>
-  <div class="grid2">
-    <div class="card">
-      <h4>Spesifikasi koin CHRG</h4>
-      <div class="id-schema">
-        <div class="id-row"><span class="k">Nama · simbol</span><span class="v">ChargeChain SPKLU Revenue Coin · CHRG</span></div>
-        <div class="id-row"><span class="k">Standar</span><span class="v">Solana Token-2022 (Token Extensions)</span></div>
-        <div class="id-row"><span class="k">Desimal</span><span class="v">2</span></div>
-        <div class="id-row"><span class="k">Suplai (tetap)</span><span class="v">${fmt(supply)} CHRG</span></div>
-        <div class="id-row"><span class="k">Penyangga</span><span class="v">${COIN.n} SPKLU utilisasi tinggi (okupansi ≥ ${OCC_MIN}%)</span></div>
-        <div class="id-row"><span class="k">Nilai nominal (par)</span><span class="v">${rp(par)}</span></div>
-        <div class="id-row"><span class="k">NAV / koin</span><span class="v c">${rp(navPar)}</span></div>
-        <div class="id-row"><span class="k">Harga pasar</span><span class="v">${rp(price)} <small style="color:var(--green)">(+${premPct.toFixed(0)}%)</small></span></div>
-        <div class="id-row"><span class="k">Distribusi mint</span><span class="v" style="font-size:11px">100% ke treasury saat terbit; float dilepas bertahap</span></div>
-      </div>
-    </div>
-    <div class="card">
-      <h4>Fundamental arus kas &amp; imbal hasil</h4>
-      <div class="id-schema">
-        <div class="id-row"><span class="k">Energi pool / th</span><span class="v">${(energyY/1e6).toFixed(2).replace('.',',')} GWh (${fmt(energyY)} kWh)</span></div>
-        <div class="id-row"><span class="k">GMV kotor pool / th</span><span class="v g">${rpShort(COIN.revY)}</span></div>
-        <div class="id-row"><span class="k">Coupon / kWh (ke holder)</span><span class="v">Rp ${fmt(cpk)}</span></div>
-        <div class="id-row"><span class="k">Coupon pool / th</span><span class="v c">${rpShort(couponPool)}</span></div>
-        <div class="id-row"><span class="k">Cap rate (target yield)</span><span class="v">${(cap*100).toFixed(0)}%</span></div>
-        <div class="id-row"><span class="k">AUM (fair value)</span><span class="v" style="color:var(--cyan);font-weight:800">${rpShort(fv)}</span></div>
-        <div class="id-row"><span class="k">Kupon / koin / th</span><span class="v g">${rp(couponPerCoin)}</span></div>
-        <div class="id-row"><span class="k">Yield @ par · @ pasar</span><span class="v">${yieldPar.toFixed(0).replace('.',',')}% · ${yieldMkt.toFixed(1).replace('.',',')}%</span></div>
-        <div class="id-row"><span class="k">Distribusi bagi hasil</span><span class="v" style="font-size:11px">Bulanan, pro-rata, on-chain (Merkle claim)</span></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section-title">Berapa modal untuk ikut? <span class="line"></span></div>
-  <div class="grid4">
-    <div class="kpi c"><div class="klabel">Modal minimum</div><div class="kval" style="font-size:18px">${rp(price)}</div><div class="ksub">= 1 koin CHRG</div></div>
-    <div class="kpi g"><div class="klabel">Contoh Rp 1 juta</div><div class="kval" style="font-size:18px">${fmt(Math.floor(1e6/price))} koin</div><div class="ksub">± ${rp(Math.round(Math.floor(1e6/price)*couponPerCoin/12))}/bln bagi hasil</div></div>
-    <div class="kpi a"><div class="klabel">Contoh Rp 10 juta</div><div class="kval" style="font-size:18px">${fmt(Math.floor(1e7/price))} koin</div><div class="ksub">± ${rp(Math.round(Math.floor(1e7/price)*couponPerCoin/12))}/bln bagi hasil</div></div>
-    <div class="kpi p"><div class="klabel">Fee bursa</div><div class="kval" style="font-size:18px">0,5%</div><div class="ksub">per transaksi beli/jual</div></div>
-  </div>
-  <div class="tiny muted" style="margin-top:8px">Bagi hasil = jumlah koin × ${rp(couponPerCoin)}/th ÷ 12, dibayar bulanan. Nilai koin dapat naik/turun mengikuti okupansi pool (lihat skenario di atas).</div>
-
-  <div class="grid4" style="margin-top:18px">
-    <div class="kpi c"><div class="klabel">AUM</div><div class="kval">${rpShort(fv)}</div><div class="ksub">fair value pool</div></div>
-    <div class="kpi a"><div class="klabel">NAV / koin</div><div class="kval">${rp(navPar)}</div><div class="ksub">par</div></div>
-    <div class="kpi g"><div class="klabel">Kupon / koin / th</div><div class="kval">${rp(couponPerCoin)}</div><div class="ksub">${yieldPar.toFixed(0).replace('.',',')}% @ par</div></div>
-    <div class="kpi p"><div class="klabel">Harga · yield pasar</div><div class="kval" style="font-size:18px">${rp(price)}</div><div class="ksub">${yieldMkt.toFixed(1).replace('.',',')}% berjalan</div></div>
-  </div>
-  <div style="display:flex;gap:8px;margin-top:16px">
-    <div class="sc-btn primary" style="flex:1;padding:12px" onclick="switchTab('buy')">Beli Koin CHRG →</div>
-    <div class="sc-btn secondary" style="flex:1;padding:12px" onclick="switchTab('tokenomics')">Kalkulator Tokenomics</div>
-  </div>
-  <div class="disclaimer" style="margin-top:14px">Prospektus ini bersifat edukasi/simulasi &amp; bukan dokumen penawaran resmi. Nilai koin dapat naik ATAU turun mengikuti okupansi aktual. Instrumen riil memerlukan struktur efek beragun aset/sukuk (KIK-EBA), izin OJK, dan audit independen. Bukan ajakan investasi.</div>
-  `;
-}
-function renderInvestor(){
-  const b=document.getElementById('investor-body');
-  if(!b)return;
-  const cg=CHARGERS[INV.charger];
-  b.innerHTML=`
-  <div class="grid4" style="margin-bottom:20px">
-    <div class="kpi g"><div class="klabel">Pendapatan / bulan</div><div class="kval" id="iv-monthly">—</div><div class="ksub">kupon bagi-hasil masuk tiap bulan</div></div>
-    <div class="kpi c"><div class="klabel">Yield / tahun</div><div class="kval" id="iv-yield">—</div><div class="ksub">imbal hasil berjalan</div></div>
-    <div class="kpi p"><div class="klabel">Token Dimiliki</div><div class="kval" id="iv-tokens">—</div><div class="ksub">@ ${rp(PORT.par)} / token</div></div>
-    <div class="kpi a"><div class="klabel">Harga Token (sekunder)</div><div class="kval" id="iv-price">—</div><div class="ksub" id="iv-price-sub">—</div></div>
-  </div>
-
-  <div class="grid2">
-    <div class="card">
-      <h4>① Atur simulasi investasi Anda</h4>
-      <div class="slider-box">
-        <label>Nominal investasi <b id="lbl-amount">${rp(INV.amount)}</b></label>
-        <input type="range" min="1000000" max="1000000000" step="1000000" value="${INV.amount}" oninput="setInv('amount',this.value)">
-      </div>
-      <label style="font-size:11px;color:var(--text2);display:block;margin:14px 0 7px">Jenis charger SPKLU (lokasi token)</label>
-      <div class="cg-row">
-        ${Object.keys(CHARGERS).map(k=>`<button class="cg-btn ${k===INV.charger?'active':''}" data-k="${k}" onclick="setCharger('${k}')"><span class="cg-ico">${CHARGERS[k].ico}</span><b>${CHARGERS[k].name}</b><small>${CHARGERS[k].loc}</small></button>`).join('')}
-      </div>
-      <div class="slider-box" style="margin-top:16px">
-        <label>Okupansi / utilisasi stasiun <b id="lbl-occ">${INV.occ}%</b></label>
-        <input type="range" id="inv-occ" min="4" max="35" step="1" value="${INV.occ}" oninput="setInv('occ',this.value)">
-      </div>
-      <div class="slider-box">
-        <label>Konsumsi ngecas Anda (jika punya EV) <b id="lbl-drive">${fmt(INV.drive)} kWh/bln</b></label>
-        <input type="range" min="0" max="600" step="10" value="${INV.drive}" oninput="setInv('drive',this.value)">
-      </div>
-      <div class="disclaimer">Okupansi = seberapa sibuk charger dipakai. Makin tinggi → kupon &amp; nilai token naik. Baseline tiap jenis charger berbeda; geser untuk melihat skenario sepi vs ramai.</div>
-    </div>
-
-    <div class="card">
-      <h4>② Rincian hasil — <span id="iv-charger-name" style="color:var(--cyan);font-weight:600">—</span></h4>
-      <table class="flow-table"><tbody>
-        <tr><td>Kupon bagi-hasil / tahun</td><td class="r" style="color:var(--green)" id="iv-annual">—</td></tr>
-        <tr><td>Potensi nilai token pasar sekunder<small style="display:block;color:var(--text3)">jika okupansi bertahan di level ini (mark-to-market)</small></td><td class="r" id="iv-capgain">—</td></tr>
-        <tr><td>Hemat biaya ngecas (diskon ${INV_DISC*100}% utk holder)</td><td class="r" style="color:var(--cyan)" id="iv-disc">—</td></tr>
-        <tr><td>→ ekuivalen setahun</td><td class="r" style="color:var(--cyan)" id="iv-discyr">—</td></tr>
-        <tr class="total"><td>Total manfaat tahun-1 (kupon + capital gain + hemat)</td><td class="r" id="iv-total">—</td></tr>
-      </tbody></table>
-      <div class="disclaimer">Kupon bersifat berulang tiap tahun; capital gain hanya terealisasi bila token dijual saat premium. Hemat ngecas hanya berlaku bila Anda pengguna EV. Angka simulasi, bukan jaminan.</div>
-    </div>
-  </div>
-
-  <div class="section-title">Rp ${fmt(INV.amount/1e6)} juta di sini vs instrumen lain (imbal hasil / tahun) <span class="line"></span></div>
-  <div class="card"><div class="cmp-bars" id="inv-compare"></div>
-    <div class="disclaimer" style="margin-top:6px">Pembanding memakai kisaran yield bruto 2026. ChargeChain CHRG beragun arus kas riil 329 SPKLU operasional — bukan proyeksi. Belum termasuk potensi capital gain &amp; hemat ngecas yang tak dimiliki deposito/obligasi.</div>
-  </div>
-
-  <div class="section-title">Kejadian nyata: 1 titik SPKLU, 10 investor patungan <span class="line"></span></div>
-  <div class="grid4" style="margin-bottom:14px">
-    <div class="kpi c"><div class="klabel">Okupansi disimulasikan</div><div class="kval" id="iv-st-occ">—</div><div class="ksub">geser slider okupansi di atas</div></div>
-    <div class="kpi g"><div class="klabel">Energi tersalur / bln</div><div class="kval" style="font-size:20px" id="iv-st-kwh">—</div><div class="ksub">pada charger terpilih</div></div>
-    <div class="kpi a"><div class="klabel">Omzet kotor / bln</div><div class="kval" style="font-size:20px" id="iv-st-gross">—</div><div class="ksub">total transaksi stasiun</div></div>
-    <div class="kpi p"><div class="klabel">Nilai wajar stasiun</div><div class="kval" style="font-size:20px" id="iv-st-fv">—</div><div class="ksub">kapitalisasi token stasiun</div></div>
-  </div>
-  <div class="card" style="padding:0;overflow:hidden">
-    <table class="flow-table">
-      <thead><tr><th>Pemodal</th><th class="r">Nominal</th><th class="r">Token</th><th class="r">Porsi grup</th><th class="r">Kupon / bln</th><th class="r">Yield / th</th></tr></thead>
-      <tbody id="inv-pool"></tbody>
-    </table>
-  </div>
-  <div class="disclaimer" style="margin-top:8px">Semua pemegang koin CHRG mendapat <b>yield yang sama</b>; yang membedakan hanya besar nominal → makin besar setor, makin besar kupon. Bila okupansi pool naik, kupon semua pemegang ikut naik. Nominal bersifat ilustratif. PLN tetap pemilik &amp; operator aset; koin hanya mewakili hak bagi-hasil dari pool SPKLU utilisasi tinggi.</div>
-
-  <div class="section-title">Kenapa cara ini lebih baik dari metode lama <span class="line"></span></div>
-  <div class="grid4">
-    <div class="benefit"><div class="bicon" style="background:var(--green-dim);color:var(--green)">🎟️</div><h5>Tiket terjangkau</h5><p>Mulai dari Rp 100 ribu/token. Bangun SPKLU sendiri butuh miliaran &amp; izin teknis; di sini cukup beli token.</p><div class="bnum">Rp 100 rb</div><div class="tiny muted">vs miliaran modal sendiri</div></div>
-    <div class="benefit"><div class="bicon" style="background:var(--cyan-dim);color:var(--cyan)">💧</div><h5>Likuid</h5><p>Jual token kapan saja di bursa sekunder. Deposito terkunci tenor; kemitraan SPKLU terkunci masa PKS bertahun.</p><div class="bnum">Exit 24/7</div><div class="tiny muted">vs modal terkunci</div></div>
-    <div class="benefit"><div class="bicon" style="background:var(--purple-dim);color:var(--purple)">🏭</div><h5>Beragun aset riil</h5><p>Didukung arus kas 54 SPKLU utilisasi tinggi yang sudah beroperasi &amp; menghasilkan — bukan janji proyek crowdfunding.</p><div class="bnum">54 SPKLU</div><div class="tiny muted">utilisasi tinggi · cash flow aktual</div></div>
-    <div class="benefit"><div class="bicon" style="background:var(--amber-dim);color:var(--amber)">🔍</div><h5>Transparan on-chain</h5><p>Tiap kWh &amp; bagi-hasil tercatat di blockchain, dapat diaudit sendiri. Tak perlu percaya laporan pihak lain.</p><div class="bnum">100%</div><div class="tiny muted">auditable</div></div>
-    <div class="benefit"><div class="bicon" style="background:var(--green-dim);color:var(--green)">📈</div><h5>Imbal hasil lebih tinggi</h5><p>Yield berbasis marjin SPKLU (≈13% @ baseline) di atas deposito &amp; SBN ritel — dengan kupon bulanan.</p><div class="bnum">~13%+</div><div class="tiny muted">vs 4–7,5%</div></div>
-    <div class="benefit"><div class="bicon" style="background:var(--blue-dim);color:var(--blue)">🔌</div><h5>Diskon ngecas</h5><p>Pemegang token dapat potongan tarif ${INV_DISC*100}% saat mengisi EV — instrumen finansial lain tak punya utilitas ini.</p><div class="bnum">−${INV_DISC*100}%</div><div class="tiny muted">tarif pengisian</div></div>
-    <div class="benefit" style="cursor:pointer" onclick="switchTab('market')"><div class="bicon" style="background:var(--purple-dim);color:var(--purple)">🚀</div><h5>Upside pasar sekunder</h5><p>Bila okupansi SPKLU naik, harga token bisa premium — capital gain di atas kupon. <b>Lihat Bursa →</b></p><div class="bnum">Capital gain</div><div class="tiny muted">price discovery</div></div>
-    <div class="benefit"><div class="bicon" style="background:var(--cyan-dim);color:var(--cyan)">🌱</div><h5>Dampak nyata</h5><p>Modal Anda mempercepat infrastruktur EV nasional — return finansial sekaligus kontribusi transisi energi.</p><div class="bnum">ESG</div><div class="tiny muted">ikut memiliki transisi</div></div>
-  </div>
-  <div class="disclaimer" style="margin-top:14px">Halaman ini simulasi/edukasi. Imbal hasil bukan jaminan &amp; bergantung okupansi aktual. Instrumen riil memerlukan struktur efek beragun aset/sukuk, izin OJK, dan audit independen. Bukan ajakan investasi.</div>
-  `;
-  document.querySelectorAll('.cg-btn').forEach(bt=>bt.classList.toggle('active',bt.dataset.k===INV.charger));
-  updateInvSim();
-}
-
+/* ═══════════ TOKENOMICS — gabungan: nilai koin, valuasi, & model bisnis ═══════════
+   Menggantikan tiga halaman lama (Prospektus, Tokenomics, Model Bisnis) dengan
+   satu halaman ringkas: apa yang dibeli → dari mana nilainya → berapa nilainya
+   → prospek → apa untungnya bagi PLN. */
 function renderTokenomics(){
-  const b=document.getElementById('tokenomics-body');
+  const b=document.getElementById('tokenomics-body'); if(!b) return;
+  const par=PORT.par, cap=PORT.cap_rate, cpk=PORT.coupon_per_kwh;
+  const navPar=Math.round(COIN.fv/COIN.supply);
+  const perCoin=Math.round(COIN.couponPool/COIN.supply);
+  const yieldPar=(perCoin/par*100).toFixed(1).replace('.',',');
+  const nomKwh=nom();
+
+  /* tiga skenario: energi & coupon berubah, suplai koin tetap */
+  const scen=[
+    ['Konservatif', 0.85, 350, 0.15, 'a'],
+    ['Basis (sekarang)', 1.00, cpk, cap, 'g'],
+    ['Optimis', 1.25, 450, 0.11, 'c'],
+  ].map(s=>{
+    const pool=COIN.kwhY*s[1]*s[2], fv=pool/s[3], nav=Math.round(fv/COIN.supply);
+    return {nm:s[0], kwh:COIN.kwhY*s[1], cpk:s[2], cap:s[3], pool, fv, nav,
+            yld:(Math.round(pool/COIN.supply)/par*100).toFixed(1).replace('.',','),
+            gain:Math.round((nav-COIN.price)/COIN.price*100), c:s[4]};
+  });
+
+  /* aliran Rp 2.608 per kWh yang dibayar pengguna */
+  const flow=[
+    ['Beban pokok listrik','PLN — bisnis inti energi',TK.energy,'var(--blue)'],
+    ['O&M, IoT, payment, asuransi','operasional SPKLU',TK.opex,'var(--amber)'],
+    ['PPJ','pass-through ke Pemda',TK.ppj,'var(--text3)'],
+    ['Coupon pemegang koin','bagi-hasil CHRG',cpk,'var(--purple)'],
+    ['Marjin ditahan PLN','laba + penyusutan aset',nomKwh-cpk,'var(--green)'],
+  ];
+
   b.innerHTML=`
-  <div class="grid4" style="margin-bottom:22px">
-    <div class="kpi c"><div class="klabel">Koin Tunggal</div><div class="kval" style="font-size:18px">CHRG</div><div class="ksub">Solana Token-2022 · satu koin, satu pool</div></div>
-    <div class="kpi g"><div class="klabel">Backing</div><div class="kval" style="font-size:18px">Arus Kas Riil</div><div class="ksub">${COIN.n} SPKLU utilisasi tinggi · bukan proyeksi</div></div>
-    <div class="kpi a"><div class="klabel">Nominal / Par</div><div class="kval">${rp(PORT.par)}</div><div class="ksub">tiket ritel terjangkau</div></div>
-    <div class="kpi p"><div class="klabel">Total Beredar</div><div class="kval">${fmt(COIN.supply)}</div><div class="ksub">≈ ${rpShort(COIN.fv)} kapitalisasi</div></div>
+  <!-- ① APA YANG ANDA BELI -->
+  <div class="grid4" style="margin-bottom:20px">
+    <div class="kpi c"><div class="klabel">Koin</div><div class="kval" style="font-size:19px">CHRG</div><div class="ksub">Solana Token-2022 · satu koin untuk seluruh pool</div></div>
+    <div class="kpi g"><div class="klabel">Penyangga</div><div class="kval" style="font-size:19px">${COIN.n} SPKLU</div><div class="ksub">okupansi rata-rata ${COIN.occ}% · arus kas berjalan</div></div>
+    <div class="kpi a"><div class="klabel">AUM · Kapitalisasi</div><div class="kval">${rpShort(COIN.fv)}</div><div class="ksub">${fmt(COIN.supply)} koin @ ${rp(par)} par</div></div>
+    <div class="kpi p"><div class="klabel">Bagi-hasil / koin</div><div class="kval">${rp(perCoin)}</div><div class="ksub">per tahun · yield ${yieldPar}% @ par</div></div>
   </div>
 
+  <!-- ② DARI MANA NILAINYA + KALKULATOR -->
+  <div class="section-title">Dari mana nilai koin berasal <span class="line"></span></div>
   <div class="grid2">
     <div class="card">
-      <h4>① Marjin per kWh — dari mana nilai token berasal</h4>
+      <h4>Marjin per kWh</h4>
       <div class="waterfall">
-        <div class="wf-row"><span class="wl">Tarif jual SPKLU (rata-rata aktual)</span><span class="wv">Rp ${fmt(TK.tariff)}</span></div>
-        <div class="wf-row sub"><span class="wl">− PPJ (pass-through ke Pemda)</span><span class="wv">Rp ${fmt(TK.ppj)}</span></div>
-        <div class="wf-row sub"><span class="wl">− Beban pokok listrik (curah + susut)</span><span class="wv" id="wf-energy">Rp ${fmt(TK.energy)}</span></div>
-        <div class="wf-row sub"><span class="wl">− O&amp;M, IoT, payment, asuransi</span><span class="wv">Rp ${fmt(TK.opex)}</span></div>
-        <div class="wf-row eq"><span class="wl">= Marjin Operasi Bersih (NOM)</span><span class="wv" id="wf-nom">Rp ${fmt(nom())}</span></div>
-        <div class="wf-row token"><span class="wl">→ Alokasi coupon ke pemegang token</span><span class="wv" id="tk-coupon-v">Rp ${fmt(TK.coupon)}</span></div>
-        <div class="wf-row add"><span class="wl">→ Sisa marjin ditahan PLN (+ aset)</span><span class="wv" id="tk-pln-share">Rp ${fmt(nom()-TK.coupon)}</span></div>
+        <div class="wf-row"><span class="wl">Tarif jual SPKLU (aktual)</span><span class="wv">Rp ${fmt(TK.tariff)}</span></div>
+        <div class="wf-row sub"><span class="wl">− PPJ (ke Pemda)</span><span class="wv">Rp ${fmt(TK.ppj)}</span></div>
+        <div class="wf-row sub"><span class="wl">− Beban pokok listrik</span><span class="wv" id="wf-energy">Rp ${fmt(TK.energy)}</span></div>
+        <div class="wf-row sub"><span class="wl">− O&amp;M, IoT, payment</span><span class="wv">Rp ${fmt(TK.opex)}</span></div>
+        <div class="wf-row eq"><span class="wl">= Marjin operasi bersih</span><span class="wv" id="wf-nom">Rp ${fmt(nomKwh)}</span></div>
+        <div class="wf-row token"><span class="wl">→ Coupon ke pemegang koin</span><span class="wv" id="tk-coupon-v">Rp ${fmt(TK.coupon)}</span></div>
+        <div class="wf-row add"><span class="wl">→ Sisa ditahan PLN</span><span class="wv" id="tk-pln-share">Rp ${fmt(nomKwh-TK.coupon)}</span></div>
       </div>
-      <div class="disclaimer">Tarif &amp; PPJ adalah angka <b>aktual</b> dari 101.020 transaksi Maret 2026. Beban pokok &amp; O&amp;M adalah asumsi operasional yang dapat disesuaikan di kalkulator.</div>
+      <p class="tiny muted" style="margin-top:10px">Tarif &amp; PPJ dari 101.020 transaksi Maret 2026. Beban pokok &amp; O&amp;M adalah asumsi yang bisa diubah di kalkulator.</p>
     </div>
 
     <div class="card">
-      <h4>② Kalkulator Valuasi — atur parameter, lihat nilai rasional</h4>
+      <h4>Kalkulator valuasi</h4>
       <div class="slider-box">
-        <label>Coupon ke token (Rp/kWh) <b id="lbl-coupon">Rp ${fmt(TK.coupon)}</b></label>
+        <label>Coupon ke koin (Rp/kWh) <b id="lbl-coupon">Rp ${fmt(TK.coupon)}</b></label>
         <input type="range" min="200" max="600" step="25" value="${TK.coupon}" oninput="setTK('coupon',this.value)">
       </div>
       <div class="slider-box">
@@ -2794,209 +2384,113 @@ function renderTokenomics(){
         <label>Beban pokok listrik (Rp/kWh) <b id="lbl-energy">Rp ${fmt(TK.energy)}</b></label>
         <input type="range" min="900" max="1600" step="25" value="${TK.energy}" oninput="setTK('energy',this.value)">
       </div>
-      <div class="formula" style="margin-top:8px">
-<span class="c">// Valuasi pendapatan (income approach)</span>
-Coupon Pool/th = Energi/th <span class="n">${fmt(COIN.kwhY)}</span> kWh × coupon
+      <div class="formula" style="margin-top:6px">
+<span class="c">// income approach</span>
+Coupon Pool/th = <span class="n">${fmt(COIN.kwhY)}</span> kWh × coupon
 Fair Value     = Coupon Pool ÷ cap_rate
-Supply         = Fair Value ÷ par <span class="n">${fmt(PORT.par)}</span>
-Yield@par      = cap_rate</div>
+Supply         = Fair Value ÷ par <span class="n">${fmt(par)}</span></div>
+      <div class="grid2" style="gap:9px;margin-top:12px">
+        <div class="kpi c"><div class="klabel">Fair value</div><div class="kval" style="font-size:17px" id="out-fv">—</div></div>
+        <div class="kpi p"><div class="klabel">Koin beredar</div><div class="kval" style="font-size:17px" id="out-supply">—</div></div>
+        <div class="kpi g"><div class="klabel">Coupon pool / th</div><div class="kval" style="font-size:17px" id="out-coupon">—</div></div>
+        <div class="kpi a"><div class="klabel">Yield @ par</div><div class="kval" style="font-size:17px" id="out-yield">—</div></div>
+      </div>
     </div>
   </div>
 
-  <div class="grid4" style="margin-top:18px">
-    <div class="kpi c"><div class="klabel">Fair Value Portofolio</div><div class="kval" id="out-fv">—</div><div class="ksub">kapitalisasi seluruh token</div></div>
-    <div class="kpi p"><div class="klabel">Token Beredar</div><div class="kval" id="out-supply">—</div><div class="ksub">@ ${rp(PORT.par)} / unit</div></div>
-    <div class="kpi g"><div class="klabel">Coupon Pool / th</div><div class="kval" id="out-coupon">—</div><div class="ksub">dibagikan ke holder</div></div>
-    <div class="kpi a"><div class="klabel">Yield @ Par</div><div class="kval" id="out-yield">—</div><div class="ksub">imbal hasil awal</div></div>
+  <!-- ③ HARGA & PROSPEK -->
+  <div class="section-title">Harga sekarang &amp; prospek <span class="line"></span></div>
+  <div class="grid4" style="margin-bottom:14px">
+    <div class="kpi c"><div class="klabel">NAV / koin</div><div class="kval">${rp(navPar)}</div><div class="ksub">nilai wajar dari arus kas</div></div>
+    <div class="kpi a"><div class="klabel">Harga pasar</div><div class="kval">${rp(COIN.price)}</div><div class="ksub">premium +${COIN.prem}% · okupansi ${COIN.occ}%</div></div>
+    <div class="kpi g"><div class="klabel">Yield @ par</div><div class="kval">${yieldPar}%</div><div class="ksub">${rp(perCoin)} / koin / th</div></div>
+    <div class="kpi p"><div class="klabel">Yield @ pasar</div><div class="kval">${COIN.cyld}%</div><div class="ksub">yield berjalan pembeli baru</div></div>
   </div>
-
-  <div class="section-title">Bagaimana harga token bergerak di pasar sekunder <span class="line"></span></div>
-  <div class="grid3">
-    <div class="card"><div class="step"><div class="step-num">P</div><div class="step-body"><h5>Price discovery</h5><p>Harga ditentukan order book bursa — penawaran &amp; permintaan riil antar investor, bukan harga administratif.</p></div></div></div>
-    <div class="card"><div class="step"><div class="step-num">▲</div><div class="step-body"><h5>Naik saat utilisasi naik</h5><p>SPKLU yang okupansinya tinggi → coupon/kWh × volume naik → fair value naik → token diperdagangkan <b>premium</b> (yield turun).</p></div></div></div>
-    <div class="card"><div class="step"><div class="step-num">▼</div><div class="step-body"><h5>Diskon = peluang yield</h5><p>SPKLU sepi diperdagangkan <b>diskon</b> terhadap par → yield berjalan lebih tinggi, menarik investor value.</p></div></div></div>
-  </div>
-
-  <div class="section-title">Mekanisme Tokenisasi — 5 langkah <span class="line"></span></div>
   <div class="card">
-    <div class="grid3">
-      <div class="step"><div class="step-num">1</div><div class="step-body"><h5>Sertifikasi aset</h5><p>SPKLU eksisting milik PLN diverifikasi: kepemilikan, daya, riwayat arus kas on-chain dari oracle meter.</p></div></div>
-      <div class="step"><div class="step-num">2</div><div class="step-body"><h5>Cetak CHRG</h5><p>Smart contract mencetak token CHRG sebanyak Fair Value ÷ par, mewakili hak bagi hasil — <b>bukan</b> ekuitas/utang.</p></div></div>
-      <div class="step"><div class="step-num">3</div><div class="step-body"><h5>Listing di bursa</h5><p>Token dilepas bertahap (mis. 40% float) ke pasar sekunder. PLN tetap pemilik &amp; operator aset.</p></div></div>
-      <div class="step"><div class="step-num">4</div><div class="step-body"><h5>Settlement otomatis</h5><p>Tiap kWh terjual, oracle catat revenue; coupon dialokasikan &amp; dibagikan bulanan ke holder pro-rata.</p></div></div>
-      <div class="step"><div class="step-num">5</div><div class="step-body"><h5>Likuiditas sekunder</h5><p>Investor bebas jual/beli kapan saja di bursa. Harga mencerminkan kinerja aktual SPKLU.</p></div></div>
+    <h4>Tiga skenario okupansi pool</h4>
+    <div class="tbl-scroll">
+      <table class="flow-table">
+        <thead><tr><th>Skenario</th><th class="r" style="text-align:right">Energi / th</th><th class="r" style="text-align:right">Coupon</th><th class="r" style="text-align:right">Cap rate</th><th class="r" style="text-align:right">NAV / koin</th><th class="r" style="text-align:right">Yield @ par</th><th class="r" style="text-align:right">NAV vs harga pasar</th></tr></thead>
+        <tbody>
+          ${scen.map(s=>`<tr${s.c==='g'?' class="total"':''}>
+            <td>${s.nm}</td>
+            <td class="r">${(s.kwh/1e6).toFixed(1).replace('.',',')} GWh</td>
+            <td class="r">Rp ${fmt(s.cpk)}</td>
+            <td class="r">${(s.cap*100).toFixed(0)}%</td>
+            <td class="r">${rp(s.nav)}</td>
+            <td class="r">${s.yld}%</td>
+            <td class="r" style="color:${s.gain>=0?'var(--green)':'var(--red)'}">${s.gain>=0?'+':''}${s.gain}%</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <p class="tiny muted" style="margin-top:9px">Suplai koin tetap ${fmt(COIN.supply)}; yang berubah hanya energi tersalur, coupon per kWh, dan cap rate yang diminta pasar. Harga di bursa bergerak mengikuti okupansi <b>gabungan</b> seluruh pool.</p>
+  </div>
+
+  <!-- ④ MODEL BISNIS -->
+  <div class="section-title">Model bisnis — ke mana Rp ${fmt(TK.tariff)} per kWh mengalir <span class="line"></span></div>
+  <div class="grid2">
+    <div class="card">
+      <h4>Alur pendapatan per kWh</h4>
+      <div class="rf-dest">
+        ${flow.map(f=>`<div class="rf-item">
+          <span class="dot" style="background:${f[3]}"></span>
+          <span class="nm">${f[0]}<br><small>${f[1]}</small></span>
+          <span class="amt">Rp ${fmt(Math.round(f[2]))}</span>
+          <span class="pctv">${Math.round(f[2]/TK.tariff*100)}%</span>
+        </div>`).join('')}
+      </div>
+      <p class="tiny muted" style="margin-top:10px">Hanya <b>Rp ${fmt(cpk)}</b> dari Rp ${fmt(TK.tariff)} (${Math.round(cpk/TK.tariff*100)}%) yang mengalir ke pemegang koin. PLN tetap memegang aset, operasi, dan mayoritas marjin.</p>
+    </div>
+
+    <div class="card">
+      <h4>Apa untungnya buat PLN</h4>
+      <div class="grid2" style="gap:10px">
+        <div class="kpi g"><div class="klabel">Dana masuk</div><div class="kval" style="font-size:18px">${rpShort(COIN.fv)}</div><div class="ksub">tanpa jual aset, tanpa tambah utang</div></div>
+        <div class="kpi b"><div class="klabel">Marjin tetap di PLN</div><div class="kval" style="font-size:18px">${Math.round((nomKwh-cpk)/nomKwh*100)}%</div><div class="ksub">dari marjin operasi bersih</div></div>
+      </div>
+      <div class="cmp" style="margin-top:14px">
+        <div class="cmp-col old">
+          <h5>✕ Bukan crowdfunding</h5>
+          <ul>
+            <li>Menggalang dana untuk aset yang belum ada</li>
+            <li>Imbal hasil dari proyeksi</li>
+            <li>Dana terkunci sampai proyek jadi</li>
+          </ul>
+        </div>
+        <div class="cmp-col new">
+          <h5>✓ ChargeChain</h5>
+          <ul>
+            <li>Aset sudah beroperasi &amp; menghasilkan</li>
+            <li>Imbal hasil dari arus kas terukur</li>
+            <li>Likuid — jual kapan saja di bursa</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="disclaimer">Simulasi/edukasi. Nilai diturunkan dari data operasional Maret 2026; instrumen riil memerlukan kajian hukum (OJK), struktur EBA/efek beragun aset atau sukuk, serta audit independen. Bukan ajakan investasi.</div>
+
+  <!-- ⑤ CARA KERJANYA -->
+  <div class="section-title">Mekanisme tokenisasi <span class="line"></span></div>
+  <div class="card">
+    <div class="grid4">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><h5>Sertifikasi aset</h5><p>SPKLU eksisting PLN diverifikasi: kepemilikan, daya, dan riwayat arus kas dari oracle meter.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><h5>Cetak CHRG</h5><p>Smart contract mencetak koin sebanyak fair value ÷ par — hak bagi-hasil, bukan kepemilikan aset.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><h5>Settlement otomatis</h5><p>Tiap kWh terjual, oracle mencatat pendapatan; coupon dibagikan bulanan ke pemegang koin.</p></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><h5>Pasar sekunder</h5><p>Koin bebas diperjualbelikan; harga mengikuti kinerja aktual pool.</p></div></div>
+    </div>
+  </div>
+
+  <div class="dl-foot" style="margin-top:16px">
+    <a class="dl-btn" onclick="buyNow()">Beli Koin CHRG →</a>
+    <a class="dl-btn alt" onclick="switchTab('indirect')">⚡ Pendapatan Tidak Langsung</a>
+    <a class="dl-btn alt" onclick="switchTab('contract')">Settlement On-Chain →</a>
+  </div>
+  <div class="disclaimer">Simulasi/edukasi berbasis data operasional Maret 2026. Bukan ajakan investasi. Instrumen riil memerlukan struktur efek beragun aset, persetujuan OJK, dan audit independen. Imbal hasil mengikuti okupansi aktual dan tidak dijamin.</div>
   `;
   recompute();
 }
 
-/* ═══════════ BUSINESS MODEL ═══════════ */
-function renderBusiness(){
-  const annKwh=COIN.kwhY;   /* energi tahunan pool SPKLU utilisasi tinggi (penyangga CHRG) */
-  const plnRetained=annKwh*(950-PORT.coupon_per_kwh); // Rp550/kWh
-  const float40=COIN.fv*0.4;
-  const tradingFee=COIN.fv*0.3*0.005;
-  // TAM / SAM / SOM (kapitalisasi koin yang di-back SPKLU utilisasi tinggi)
-  const avgCapUnit=PORT.fv_total/PORT.n_station;           // ~Rp 253 jt/unit (blended jaringan, konservatif utk skala nasional)
-  const samUnits=3000, samFactor=0.70;                     // ±3.000 SPKLU PLN nasional, 70% utilisasi vs portofolio inti
-  const samCap=samUnits*avgCapUnit*samFactor;
-  const samRev=(PORT.tot_rev_y/PORT.n_station)*samUnits*samFactor;
-  const tamUnits=30000, tamAvgCap=400e6;                   // ±30.000 titik publik 2030, utilisasi matang
-  const tamCap=tamUnits*tamAvgCap;
-  const tamRev=10e12;
-  const b=document.getElementById('business-body');
-  b.innerHTML=`
-  <div class="dl-banner">
-    <div class="dl-info">
-      <div class="dl-ico">📑</div>
-      <div>
-        <h3>Proposal Lengkap untuk Investor — Innovation Gateway 2026</h3>
-        <p>Deck 21 halaman format proposal PLN: Problem &amp; Opportunity · Solusi &amp; cara kerja · Validasi &amp; traction · Target market &amp; TAM/SAM/SOM · Kompetitor · Model bisnis &amp; tokenomics · Go-to-market &amp; roadmap · Proyeksi finansial 5 tahun · Dampak strategis &amp; ESG · Risiko &amp; mitigasi.</p>
-        <div class="dl-tags"><span class="dl-tag">.pptx · siap edit</span><span class="dl-tag">data riil Maret 2026</span><span class="dl-tag">6 section · 21 slide</span></div>
-      </div>
-    </div>
-    <a class="dl-btn" href="ChargeChain-Proposal-IG2026.pptx" download>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
-      <span>Download Proposal<small>PowerPoint · ±90 KB</small></span>
-    </a>
-  </div>
-  <div class="hero">
-    <h1>Ubah <span>arus kas masa depan</span> ${COIN.n} SPKLU utilisasi tinggi menjadi <span>modal hari ini</span> — lewat satu koin, tanpa menjual aset, tanpa menambah utang.</h1>
-    <p>ChargeChain bukan crowdfunding. Ini <b>pasar modal sekunder</b>: PLN menerbitkan <b>satu koin</b> bagi-hasil (CHRG) atas <b>pool ${COIN.n} SPKLU utilisasi tinggi</b> — bukan token per-SPKLU — lalu publik &amp; institusi memperjualbelikannya layaknya efek beragun aset. PLN memonetisasi sebagian arus kas, tetap memegang kendali &amp; kepemilikan, dan mendapat valuasi berbasis pasar atas jaringannya.</p>
-    <div class="pill-row">
-      <div class="pill">Pendapatan pool <b>${rpShort(COIN.revY)}/th</b></div>
-      <div class="pill">Energi <b>${fmt(Math.round(annKwh/1e6*10)/10).replace('.',',')} GWh/th</b></div>
-      <div class="pill">Kapitalisasi CHRG <b>${rpShort(COIN.fv)}</b></div>
-      <div class="pill">Potensi modal (40% float) <b>${rpShort(float40)}</b></div>
-    </div>
-  </div>
-
-  <div class="section-title">Potensi nyata untuk PLN <span class="line"></span></div>
-  <div class="grid4">
-    <div class="benefit"><div class="bicon" style="background:var(--cyan-dim);color:var(--cyan)">💧</div><h5>Capital recycling</h5><p>Cairkan nilai arus kas SPKLU eksisting menjadi dana segar untuk ekspansi, tanpa lego aset.</p><div class="bnum">${rpShort(float40)}</div><div class="tiny muted">jika lepas 40% revenue-share</div></div>
-    <div class="benefit"><div class="bicon" style="background:var(--green-dim);color:var(--green)">🏦</div><h5>Tanpa utang baru</h5><p>Off-balance-sheet: bukan pinjaman, tidak menambah DER. Tidak ada bunga, hanya bagi hasil bila SPKLU menghasilkan.</p><div class="bnum">0% DER</div><div class="tiny muted">dampak ke rasio utang</div></div>
-    <div class="benefit"><div class="bicon" style="background:var(--purple-dim);color:var(--purple)">🔑</div><h5>Kendali tetap di PLN</h5><p>PLN tetap pemilik &amp; operator. Yang dijual hanya sebagian hak arus kas, bukan saham/aset fisik.</p><div class="bnum">100%</div><div class="tiny muted">kepemilikan aset dipertahankan</div></div>
-    <div class="benefit"><div class="bicon" style="background:var(--amber-dim);color:var(--amber)">📈</div><h5>Marjin ditahan</h5><p>PLN tetap menikmati ~58% marjin operasi (Rp 550/kWh) + upside pertumbuhan volume EV.</p><div class="bnum">${rpShort(plnRetained)}/th</div><div class="tiny muted">marjin ditahan PLN</div></div>
-    <div class="benefit"><div class="bicon" style="background:var(--blue-dim);color:var(--blue)">⚡</div><h5>Akselerasi ekspansi</h5><p>Dana tokenisasi mendanai SPKLU baru → volume naik → nilai token &amp; pendapatan PLN ikut naik (efek bola salju).</p><div class="bnum">+250</div><div class="tiny muted">target SPKLU baru</div></div>
-    <div class="benefit"><div class="bicon" style="background:var(--green-dim);color:var(--green)">🏷️</div><h5>Valuasi berbasis pasar</h5><p>Price discovery memberi PLN benchmark nilai jaringan SPKLU yang transparan &amp; dapat diaudit.</p><div class="bnum">${PORT.cap_rate*100}%</div><div class="tiny muted">implied cap rate</div></div>
-    <div class="benefit"><div class="bicon" style="background:var(--cyan-dim);color:var(--cyan)">🔁</div><h5>Fee bursa berkelanjutan</h5><p>PLN/operator memungut fee 0,5% tiap transaksi sekunder — pendapatan baru yang berulang.</p><div class="bnum">${rpShort(tradingFee)}/th</div><div class="tiny muted">est. turnover 30%/th</div></div>
-    <div class="benefit"><div class="bicon" style="background:var(--purple-dim);color:var(--purple)">🤝</div><h5>Partisipasi publik</h5><p>Ritel ikut memiliki transisi energi → loyalitas pelanggan PLN Mobile &amp; dukungan sosial-politik.</p><div class="bnum">Inklusi</div><div class="tiny muted">ESG &amp; brand</div></div>
-    <div class="benefit" style="border-color:var(--border2);cursor:pointer" onclick="switchTab('indirect')"><div class="bicon" style="background:var(--blue-dim);color:var(--blue)">⚡</div><h5>Penjualan listrik tidak langsung</h5><p>Tiap kWh pengisian = energi yang dijual PLN (Rp 1.150/kWh ke bisnis inti). Uplift utilisasi dari skema menaikkan pendapatan ini. <b>Lihat detail →</b></p><div class="bnum">${rpShort(PORT.tot_kwh_y*1150)}/th</div><div class="tiny muted">baseline energi terjual @329 SPKLU</div></div>
-  </div>
-
-  <div class="section-title">Bukan crowdfunding — perbedaan model <span class="line"></span></div>
-  <div class="cmp">
-    <div class="cmp-col old"><h5>✕ Crowdfunding / Fundraising</h5><ul>
-      <li>Galang dana untuk aset yang <b>belum ada</b> → risiko pembangunan &amp; eksekusi</li>
-      <li>Investor menunggu proyek jadi sebelum ada arus kas</li>
-      <li>Likuiditas rendah, dana terkunci sampai proyek selesai</li>
-      <li>Valuasi berbasis janji/proyeksi</li>
-    </ul></div>
-    <div class="cmp-col new"><h5>✓ Pasar Modal Token SPKLU (model ini)</h5><ul>
-      <li>Token beragun SPKLU yang <b>sudah beroperasi &amp; menghasilkan</b></li>
-      <li>Arus kas &amp; yield langsung dari hari pertama (data riil)</li>
-      <li>Likuid: jual/beli kapan saja di bursa sekunder</li>
-      <li>Valuasi berbasis kinerja aktual &amp; price discovery pasar</li>
-    </ul></div>
-  </div>
-
-  <div class="section-title">Aliran pendapatan PLN dari sistem <span class="line"></span></div>
-  <div class="card" style="padding:0;overflow:hidden">
-    <table class="flow-table">
-      <thead><tr><th>Aliran Pendapatan</th><th>Mekanisme</th><th style="text-align:right">Estimasi / tahun</th></tr></thead>
-      <tbody>
-        <tr><td>Marjin operasi ditahan</td><td>~58% NOM (Rp 550/kWh) tetap milik PLN</td><td class="r">${rpShort(plnRetained)}</td></tr>
-        <tr><td>Modal hasil tokenisasi</td><td>One-time, 40% float revenue-share (untuk reinvestasi)</td><td class="r">${rpShort(float40)}</td></tr>
-        <tr><td>Fee bursa sekunder</td><td>0,5% × turnover token (est. 30%/th)</td><td class="r">${rpShort(tradingFee)}</td></tr>
-        <tr><td>Listing &amp; tokenisasi fee</td><td>Biaya sertifikasi aset baru yang masuk bursa</td><td class="r">${rpShort(COIN.fv*0.01)}</td></tr>
-        <tr class="total"><td>Total dampak finansial (th-1)</td><td>arus kas berulang + modal sekali cair</td><td class="r">${rpShort(plnRetained+float40+tradingFee+COIN.fv*0.01)}</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="disclaimer" style="margin-top:10px">Marjin ditahan bersifat berulang/tahunan; modal hasil tokenisasi bersifat sekali cair (dipakai membangun SPKLU baru yang kemudian menambah marjin &amp; pendapatan fee). Angka berbasis run-rate Maret 2026.</div>
-
-  <div class="section-title">Flowchart Bisnis — dari aset ke pasar <span class="line"></span></div>
-  <div class="card">
-    <div class="flowchart">
-      <div class="fc-node"><div class="fc-tag">ASET</div><div class="fc-ico">⚡</div><h6>SPKLU Utilisasi Tinggi</h6><p>54 unit terpilih (dari 329), okupansi tertinggi &amp; arus kas terbukti</p></div>
-      <div class="fc-arrow">→</div>
-      <div class="fc-node"><div class="fc-tag">VERIFIKASI</div><div class="fc-ico">📡</div><h6>Oracle Meter</h6><p>Tiap kWh tercatat on-chain, real-time &amp; auditable</p></div>
-      <div class="fc-arrow">→</div>
-      <div class="fc-node"><div class="fc-tag">MINT</div><div class="fc-ico">🪙</div><h6>Cetak Token CHRG</h6><p>Smart contract: Fair Value ÷ par = supply token</p></div>
-      <div class="fc-arrow">→</div>
-      <div class="fc-node"><div class="fc-tag">LISTING</div><div class="fc-ico">🏛️</div><h6>Bursa Sekunder</h6><p>Float 40% dilepas; PLN tetap pemilik &amp; operator</p></div>
-      <div class="fc-arrow">→</div>
-      <div class="fc-node"><div class="fc-tag">TRADING</div><div class="fc-ico">📈</div><h6>Investor</h6><p>Jual-beli token bebas; harga via price discovery</p></div>
-      <div class="fc-arrow">→</div>
-      <div class="fc-node"><div class="fc-tag">YIELD</div><div class="fc-ico">💸</div><h6>Distribusi Bulanan</h6><p>Coupon dibagikan pro-rata ke holder, on-chain</p></div>
-    </div>
-    <div style="text-align:center;font-size:10px;color:var(--text3);margin-top:10px">↺ Modal hasil listing → bangun SPKLU baru → volume naik → nilai token &amp; pendapatan PLN ikut naik (efek bola salju)</div>
-  </div>
-
-  <div class="section-title">Alur Pendapatan per kWh (Rp 2.608) <span class="line"></span></div>
-  <div class="card">
-    <div class="rev-flow">
-      <div class="rf-source"><div class="big">Rp 2.608</div><div class="lbl">dibayar pengguna EV<br>per kWh (rata-rata aktual)</div></div>
-      <div class="rf-arrow">⟶</div>
-      <div class="rf-dest">
-        <div class="rf-item"><span class="dot" style="background:var(--red)"></span><span class="nm">PPJ → Pemda <small>pajak pass-through</small></span><span class="amt">Rp 142</span><span class="pctv">5,4%</span></div>
-        <div class="rf-item"><span class="dot" style="background:var(--amber)"></span><span class="nm">Beban pokok listrik <small>= penjualan energi ke bisnis inti PLN (indirect)</small></span><span class="amt">Rp 1.150</span><span class="pctv">44%</span></div>
-        <div class="rf-item"><span class="dot" style="background:var(--blue)"></span><span class="nm">O&amp;M, IoT, payment, asuransi <small>biaya operasi</small></span><span class="amt">Rp 366</span><span class="pctv">14%</span></div>
-        <div class="rf-item" style="border-color:var(--purple)"><span class="dot" style="background:var(--purple)"></span><span class="nm">Coupon pemegang token <small>bagi hasil investor</small></span><span class="amt" style="color:var(--purple)">Rp 400</span><span class="pctv">15%</span></div>
-        <div class="rf-item" style="border-color:var(--green)"><span class="dot" style="background:var(--green)"></span><span class="nm">Marjin ditahan PLN <small>+ kepemilikan aset 100%</small></span><span class="amt" style="color:var(--green)">Rp 550</span><span class="pctv">21%</span></div>
-      </div>
-    </div>
-    <div style="display:flex;gap:14px;margin-top:14px;flex-wrap:wrap">
-      <div class="pill">PLN total/kWh: <b>Rp 1.700</b> (energi Rp 1.150 + marjin Rp 550)</div>
-      <div class="pill">Investor: <b>Rp 400/kWh × volume pool</b></div>
-      <div class="pill">× ${fmt(Math.round(COIN.kwhY/1e6))} jt kWh/th (pool)</div>
-      <div class="pill" style="cursor:pointer;border-color:var(--blue)" onclick="switchTab('indirect')"><b>⚡ Pendapatan tidak langsung →</b></div>
-    </div>
-  </div>
-
-  <div class="section-title">Analisa Pasar — TAM / SAM / SOM <span class="line"></span></div>
-  <div class="card">
-    <div class="tss">
-      <div class="funnel">
-        <div class="fbar tam"><div class="ft">TAM · Total Addressable Market</div><div class="fv">${rpShort(tamCap)}</div><div class="fd">Tokenisasi hak pendapatan seluruh charging point publik Indonesia (PLN + swasta), proyeksi 2030</div></div>
-        <div class="fbar sam"><div class="ft">SAM · Serviceable Available Market</div><div class="fv">${rpShort(samCap)}</div><div class="fd">Seluruh jaringan SPKLU PLN nasional (jangka menengah)</div></div>
-        <div class="fbar som"><div class="ft">SOM · Serviceable Obtainable Market</div><div class="fv">${rpShort(COIN.fv)}</div><div class="fd">${COIN.n} SPKLU utilisasi tinggi — yang ditokenisasi jadi CHRG sekarang (data riil)</div></div>
-      </div>
-      <div class="tss-detail">
-        <div class="tss-row tam"><h6>TAM — ${rpShort(tamCap)} kapitalisasi · ±${rpShort(tamRev)}/th GMV</h6><p>Seluruh ekosistem pengisian EV publik Indonesia saat transisi energi matang (target ±30.000 titik, 2030).</p><div class="meth">Asumsi: 30.000 titik × avg kapitalisasi Rp 400 jt/unit (utilisasi matang).</div></div>
-        <div class="tss-row sam"><h6>SAM — ${rpShort(samCap)} kapitalisasi · ±${rpShort(samRev)}/th GMV</h6><p>Jaringan SPKLU PLN di seluruh Indonesia yang dapat dilayani model tokenisasi ini.</p><div class="meth">Asumsi: ±3.000 SPKLU PLN × ${rpShort(avgCapUnit)}/unit (skala unit-ekonomi portofolio inti) × 70% faktor utilisasi luar wilayah inti.</div></div>
-        <div class="tss-row som"><h6>SOM — ${rpShort(COIN.fv)} kapitalisasi · ${rpShort(COIN.revY)}/th GMV</h6><p>Yang realistis ditangkap sekarang: ${COIN.n} SPKLU PLN utilisasi tinggi (dari 329 jaringan) yang sudah beroperasi &amp; menghasilkan — 69% dari 101.020 transaksi aktual berasal dari sini.</p><div class="meth">Bukan asumsi — angka aktual Maret 2026 (${COIN.n} SPKLU penyangga, ${fmt(COIN.supply)} koin CHRG).</div></div>
-      </div>
-    </div>
-    <div class="disclaimer" style="margin-top:14px">Funnel digambar pada skala logaritmik (visual). SOM berbasis data riil; SAM &amp; TAM adalah estimasi top-down yang diturunkan dari unit-ekonomi portofolio inti dengan asumsi jumlah unit &amp; utilisasi yang dinyatakan eksplisit — bukan angka final, melainkan kerangka ukuran pasar.</div>
-  </div>
-
-  <div class="section-title">Business Model Canvas <span class="line"></span></div>
-  <div class="canvas">
-    <div class="cblock"><h6>Mitra Kunci</h6><ul><li>PLN (pemilik aset)</li><li>OJK / regulator</li><li>Kustodian &amp; wali amanat</li><li>Operator jaringan SPKLU</li><li>Penyedia oracle/meter</li></ul></div>
-    <div class="cblock"><h6>Aktivitas Kunci</h6><ul><li>Sertifikasi &amp; tokenisasi aset</li><li>Operasi bursa sekunder</li><li>Settlement bagi hasil on-chain</li><li>Audit &amp; transparansi data</li></ul></div>
-    <div class="cblock" style="grid-row:span 2"><h6>Proposisi Nilai</h6><ul><li><b>Untuk PLN:</b> modal cair tanpa utang, kendali tetap, valuasi pasar</li><li><b>Untuk investor:</b> yield ${PORT.cap_rate*100}% beragun aset riil, likuid, transparan</li><li><b>Untuk negara:</b> percepatan infrastruktur EV &amp; transisi energi</li></ul></div>
-    <div class="cblock"><h6>Hubungan Pelanggan</h6><ul><li>Self-service via dApp</li><li>Dashboard transparan</li><li>Dividen otomatis</li></ul></div>
-    <div class="cblock" style="grid-row:span 2"><h6>Segmen Pelanggan</h6><ul><li>Investor ritel (PLN Mobile)</li><li>Investor institusi/ESG fund</li><li>Komunitas pemilik EV</li><li>Pemda &amp; BUMD</li></ul></div>
-    <div class="cblock"><h6>Sumber Daya Kunci</h6><ul><li>329 SPKLU beroperasi</li><li>Data transaksi real-time</li><li>Smart contract &amp; bursa</li><li>Lisensi/izin</li></ul></div>
-    <div class="cblock"><h6>Saluran</h6><ul><li>Web dApp ChargeChain</li><li>Integrasi PLN Mobile</li><li>Bursa aset digital berlisensi</li></ul></div>
-    <div class="cblock" style="grid-column:span 2"><h6>Struktur Biaya</h6><ul><li>Beban pokok listrik &amp; O&amp;M SPKLU</li><li>Biaya operasi bursa, oracle, audit &amp; kepatuhan</li><li>Insentif likuiditas awal</li></ul></div>
-    <div class="cblock" style="grid-column:span 3"><h6>Aliran Pendapatan</h6><ul><li>Marjin operasi ditahan PLN (Rp 550/kWh) · Fee bursa 0,5% · Listing fee · Upside pertumbuhan volume EV &amp; ekspansi SPKLU baru</li></ul></div>
-  </div>
-  <div class="disclaimer">Edukasi/simulasi. Implementasi riil memerlukan struktur hukum efek beragun aset (KIK-EBA) atau sekuritisasi/sukuk, persetujuan OJK, serta tata kelola sesuai regulasi PLN &amp; pasar modal Indonesia.</div>
-
-  <div class="dl-foot">
-    <span>📑 Ingin pahami konsep, alur bisnis, &amp; potensinya secara menyeluruh?</span>
-    <a class="dl-btn" href="ChargeChain-Proposal-IG2026.pptx" download>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
-      Download Proposal Lengkap (.pptx)
-    </a>
-    <a class="dl-btn alt" onclick="switchTab('tokenomics')">Lihat Tokenomics &amp; Pricing →</a>
-  </div>
-  `;
-}
 
 /* ═══════════ SMART CONTRACT ═══════════ */
 function renderContract(){
@@ -3146,8 +2640,8 @@ function renderIndirect(){
   <div class="disclaimer" style="margin-top:10px">Skenario ekspansi terpisah dari tabel di atas. Asumsi: ${newSPKLU} SPKLU baru (selaras target di roadmap) dengan unit-ekonomi setara rata-rata portofolio inti (${fmt(Math.round(perStationKwh/1e3))} ribu kWh/SPKLU/th @ ~40% utilisasi). Ini upside, bukan dijumlahkan ke skenario dasar untuk menghindari <i>double-counting</i>.</div>
 
   <div class="dl-foot">
-    <span>⚡ Pendapatan tidak langsung ini melengkapi marjin &amp; fee di halaman Model Bisnis.</span>
-    <a class="dl-btn alt" onclick="switchTab('business')">← Model Bisnis &amp; Potensi PLN</a>
+    <span>⚡ Pendapatan tidak langsung ini melengkapi marjin &amp; fee di halaman Tokenomics.</span>
+    <a class="dl-btn alt" onclick="switchTab('tokenomics')">← Tokenomics &amp; Model Bisnis</a>
     <a class="dl-btn alt" onclick="switchTab('tokenomics')">Tokenomics &amp; Pricing →</a>
   </div>
   `;
@@ -3290,7 +2784,7 @@ function renderFAQ(){
 
   <div class="dl-foot">
     <span>📑 Ingin lihat bagaimana mitigasi ini tercermin di model bisnis &amp; tokenomics?</span>
-    <a class="dl-btn alt" onclick="switchTab('business')">Model Bisnis &amp; Potensi PLN →</a>
+    <a class="dl-btn alt" onclick="switchTab('tokenomics')">Tokenomics &amp; Model Bisnis →</a>
     <a class="dl-btn alt" onclick="switchTab('tokenomics')">Tokenomics &amp; Pricing →</a>
   </div>
   `;
@@ -3360,7 +2854,7 @@ function boot(){
   document.getElementById('mo-kwh').textContent=(COIN.kwh/1e6).toFixed(2).replace('.',',')+' GWh';
   document.getElementById('mo-cap').textContent=rpShort(COIN.fv);
   document.getElementById('mo-yield').textContent=(PORT.cap_rate*100).toString().replace('.',',')+'%';
-  renderStationList();renderMarket();renderBuy();renderProspektus();renderInvestor();renderTokenomics();renderBusiness();renderIndirect();renderContract();renderFAQ();
+  renderStationList();renderMarket();renderBuy();renderTokenomics();renderIndirect();renderContract();renderFAQ();
   if(tradeable().length)selectToken(tradeable()[0].id);
   var lc=document.getElementById('lp-charger'); if(lc) lc.innerHTML=chargerSVG('lp',154);
   wrapTables();
