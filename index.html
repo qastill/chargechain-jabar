@@ -1,7 +1,12 @@
 <!DOCTYPE html>
-<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>ChargeChain — Satu Koin CHRG · Pool SPKLU Utilisasi Tinggi</title>
 <meta name="description" content="Bursa sekunder token bagi-hasil dari SPKLU PLN yang sudah beroperasi di Indonesia.">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ChargeChain">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -356,9 +361,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 .sc-page{width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr;overflow:hidden}
 .sc-head2{grid-column:1/-1;padding:13px 22px;border-bottom:1px solid var(--border);background:var(--bg2);display:flex;align-items:center;justify-content:space-between}
 .sc-head2 h3{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.sc-head2 .badge{font-size:9px;padding:3px 9px;border-radius:10px;background:var(--green-dim);color:var(--green);font-weight:600;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
 .sc-col{overflow-y:auto;padding:18px}
 .sc-col.left{border-right:1px solid var(--border)}
-.code-block{background:#0a0e13;border:1px solid var(--border2);border-radius:8px;padding:14px;font-family:'SF Mono',Menlo,monospace;font-size:11px;line-height:1.7;overflow-x:auto}
+.code-block{background:#0a0e13;border:1px solid var(--border2);border-radius:8px;padding:14px;font-family:'SF Mono',Menlo,monospace;font-size:11px;line-height:1.7;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:pre;tab-size:2}
 .code-block .kw{color:var(--purple)}.code-block .fn{color:var(--cyan)}.code-block .st{color:var(--green)}
 .code-block .nm{color:var(--amber)}.code-block .cm{color:var(--text3)}.code-block .ty{color:var(--blue)}
 .tx-feed{display:flex;flex-direction:column;gap:7px}
@@ -619,6 +625,317 @@ html,body{background:var(--bg)}
 @keyframes vizbolt{0%,100%{opacity:.55}50%{opacity:1}}
 .lp-charger{position:absolute;top:-34px;right:2px;width:154px;z-index:6;filter:drop-shadow(0 16px 22px rgba(91,91,245,.22))}
 @media(max-width:880px){.lp-charger{position:static;width:140px;margin:0 auto 8px;filter:none}}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MOBILE / RESPONSIVE — UI-UX untuk ponsel (drawer, tab bar, layout tumpuk)
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* elemen khusus mobile: disembunyikan di desktop */
+.mob-menu-btn,.nav-drawer-head,.nav-backdrop,.mob-tabbar,.lp-burger,.lp-mobmenu{display:none}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;min-width:0;max-width:100%}
+/* cegah track grid melebar mengikuti konten min-content (tabel/kode/teks panjang) */
+.grid2,.grid3,.grid4,.cmp,.canvas,.dash,.market,.sc-page,.tss,.rev-flow{min-width:0}
+.grid2>*,.grid3>*,.grid4>*,.cmp>*,.canvas>*,.card>*,.tss>*,.rev-flow>*{min-width:0}
+
+/* ── tablet / layar sedang ── */
+@media(max-width:1100px){
+  .tss{grid-template-columns:1fr;gap:18px}
+  .rev-flow{grid-template-columns:1fr;gap:12px}
+  .rev-flow .rf-arrow{transform:rotate(90deg);padding:4px 0}
+  .lp-callout{padding:22px}
+}
+
+/* ── PONSEL & TABLET KECIL: kerangka aplikasi ── */
+@media(max-width:900px){
+  html,body{font-size:13px}
+  .app{grid-template-columns:1fr;grid-template-rows:54px minmax(0,1fr) auto;height:100vh}
+
+  /* topbar ringkas */
+  .topbar{grid-column:1/-1;padding:0 10px;gap:8px}
+  .topbar .top-stats{display:none}
+  .mob-menu-btn{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;
+    flex:none;border:none;background:transparent;color:var(--text2);border-radius:11px;cursor:pointer;
+    -webkit-tap-highlight-color:transparent}
+  .mob-menu-btn:active{background:var(--bg3);color:var(--cyan)}
+  .topbar .logo{font-size:14px;min-width:0;flex:1;gap:7px}
+  .topbar .logo small{display:none}
+  .wallet-bal{display:none}
+  .wallet-btn{padding:0 14px;height:38px;font-size:12px;flex:none}
+
+  /* sidebar → drawer geser dengan label */
+  .sidebar{position:fixed;top:0;left:0;bottom:0;width:270px;max-width:84vw;z-index:1200;
+    align-items:stretch;padding:0 0 calc(20px + env(safe-area-inset-bottom));gap:2px;
+    overflow-y:auto;overscroll-behavior:contain;border-right:1px solid var(--border);
+    transform:translateX(-104%);transition:transform .26s cubic-bezier(.32,.72,.3,1);
+    padding-left:env(safe-area-inset-left)}
+  .sidebar.open{transform:none;box-shadow:22px 0 60px rgba(23,32,64,.26)}
+  .nav-drawer-head{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:14px 14px 13px;border-bottom:1px solid var(--border);position:sticky;top:0;background:#fff;z-index:3}
+  .nav-drawer-head .ndh-t{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text2)}
+  .nav-drawer-head .ndh-x{width:34px;height:34px;border:none;background:var(--bg3);color:var(--text2);
+    border-radius:10px;font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .sidebar .nav-btn{width:auto;height:auto;min-height:50px;justify-content:flex-start;gap:13px;
+    padding:0 16px;border-radius:0;font-size:15px;flex:none}
+  .sidebar .nav-btn svg{flex:none}
+  .sidebar .nav-tooltip{display:block;position:static;background:transparent;color:inherit;
+    padding:0;font-size:13.5px;font-weight:600;box-shadow:none;white-space:normal;text-align:left;line-height:1.35}
+  .sidebar .nav-btn.active .nav-tooltip{color:var(--cyan)}
+  .sidebar .nav-btn.admin-nav .nav-tooltip{color:var(--amber)}
+  .sidebar .nav-spacer{flex:0 0 12px}
+  .sidebar .admin-nav{margin-top:10px;padding-top:10px;opacity:1}
+  .nav-backdrop{display:block;position:fixed;inset:0;background:rgba(15,20,40,.42);
+    backdrop-filter:blur(2px);z-index:1150;opacity:0;pointer-events:none;transition:opacity .24s}
+  .nav-backdrop.show{opacity:1;pointer-events:auto}
+
+  /* tab bar bawah */
+  .mob-tabbar{display:flex;grid-column:1/-1;grid-row:3;background:rgba(255,255,255,.97);
+    backdrop-filter:blur(14px);border-top:1px solid var(--border);z-index:900;
+    box-shadow:0 -2px 14px rgba(23,32,64,.06);padding-bottom:env(safe-area-inset-bottom)}
+  .mtb{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:3px;min-height:56px;padding:8px 2px 7px;border:none;background:transparent;color:var(--text3);
+    font-family:inherit;font-size:10px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;
+    transition:color .15s}
+  .mtb svg{width:20px;height:20px}
+  .mtb span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mtb.active{color:var(--cyan)}
+  .mtb:active{background:var(--bg3)}
+
+  /* ── DASHBOARD ── */
+  .dash{display:block;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+  .dash-map{height:44vh;min-height:230px;max-height:330px}
+  .map-overlay-stats{top:8px;left:8px;right:8px;max-width:none;flex-wrap:nowrap;gap:6px;
+    overflow-x:auto;padding-bottom:3px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .map-overlay-stats::-webkit-scrollbar{display:none}
+  .mo-card{flex:0 0 auto;min-width:116px;padding:7px 10px}
+  .mo-card .value{font-size:15px}
+  .mo-card .sub{display:none}
+  .map-legend-box{left:8px;right:8px;bottom:8px;padding:8px 10px;gap:10px;font-size:9.5px;flex-wrap:wrap}
+  .map-legend-box .ml-item:last-child{display:none}
+  .dash-detail{border-left:none;border-top:1px solid var(--border);box-shadow:none;overflow:visible}
+  .dd-header{padding:13px 14px}
+  .dd-tabs{padding:0 8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .dd-tabs::-webkit-scrollbar{display:none}
+  .dd-tab{white-space:nowrap;padding:12px 11px;font-size:12px}
+  .dd-body{flex:none;overflow:visible;padding:14px 12px 22px}
+  .station-card{padding:14px}
+  .sc-btn{padding:11px 8px;font-size:12px}
+
+  /* ── BURSA / MARKETPLACE ── */
+  .market{display:block;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+  .market-header{padding:12px 14px;gap:9px}
+  .market-header h3{font-size:13.5px}
+  .mh-stats{gap:12px;flex-wrap:wrap}
+  .market-list{overflow:visible;padding:12px 12px 4px}
+  .mkt-table-head{display:none}
+  .token-row{grid-template-columns:1fr auto;gap:7px 10px;padding:14px 13px;margin-bottom:10px;
+    background:#fff;border:1px solid var(--border);box-shadow:var(--shadow-sm);border-radius:12px;
+    grid-template-areas:"nm px" "chg yld" "spk spk"}
+  .token-row>*:nth-child(1){grid-area:nm;min-width:0}
+  .token-row>*:nth-child(2){grid-area:px;font-size:14px}
+  .token-row>*:nth-child(3){grid-area:chg;text-align:left}
+  .token-row>*:nth-child(4){grid-area:spk;text-align:left!important}
+  .token-row>*:nth-child(5){grid-area:yld}
+  .token-row .spark{width:100%;height:26px}
+  .trade-panel{border-left:none;border-top:1px solid var(--border);box-shadow:none;overflow:visible}
+  .tp-tabs{padding:12px 14px 0}
+  .tp-tab{padding:12px}
+  .tp-body{padding:14px 14px 24px}
+  .tp-input{font-size:16px;padding:12px}
+  .tp-exec{padding:15px;font-size:15px}
+
+  /* ── SMART CONTRACT ── */
+  .sc-page{display:block;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .sc-head2{padding:12px 14px;flex-wrap:wrap;gap:8px}
+  .sc-head2 h3{font-size:13px}
+  .sc-col{padding:14px;overflow:visible}
+  .sc-col.left{border-right:none;border-bottom:1px solid var(--border)}
+  .sc-col.right{padding-bottom:26px}
+  .code-block{font-size:10px;padding:12px}
+
+  /* ── HALAMAN UMUM ── */
+  .page-head{flex-direction:column;align-items:flex-start;gap:9px;padding:13px 14px}
+  .page-head h2{font-size:14.5px;align-items:flex-start;line-height:1.35}
+  .page-head h2 svg{flex:none;margin-top:2px}
+  .page-head .ph-sub{font-size:11px;line-height:1.5}
+  .page-body{padding:14px 14px 26px}
+  .grid2,.grid3,.grid4,.cmp{grid-template-columns:minmax(0,1fr);gap:12px}
+  .canvas{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .grid2>*,.grid3>*,.grid4>*,.cmp>*,.canvas>*{min-width:0;grid-column:auto!important;grid-row:auto!important}
+  /* deretan KPI tetap 2 kolom agar ringkas dibaca sambil di-scroll */
+  @supports selector(:has(*)){
+    .grid3:has(>.kpi),.grid4:has(>.kpi){grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .grid3:has(>.kpi) .kpi,.grid4:has(>.kpi) .kpi{padding:12px}
+    .grid3:has(>.kpi) .kval,.grid4:has(>.kpi) .kval{font-size:16.5px;overflow-wrap:anywhere}
+    .grid3:has(>.kpi) .klabel,.grid4:has(>.kpi) .klabel,
+    .grid3:has(>.kpi) .ksub,.grid4:has(>.kpi) .ksub{font-size:9px}
+  }
+  .card{padding:15px;border-radius:13px}
+  .kpi{padding:14px}
+  .kpi .kval{font-size:21px}
+  .hero{padding:18px}
+  .hero h1{font-size:19px}
+  .hero p{font-size:12.5px}
+  .section-title{margin:20px 0 11px}
+  .benefit{padding:15px}
+  .cmpbar{grid-template-columns:1fr;gap:6px}
+  .cmpbar .cb-val{text-align:left}
+  .cmpbar .cb-val small{display:inline;margin-left:6px}
+  .cg-row{grid-template-columns:1fr}
+  .funnel .fbar.sam{width:88%}
+  .funnel .fbar.som{width:70%}
+  .fbar .fv{font-size:19px}
+  .flowchart{padding:14px 0 8px;gap:0}
+  .fc-node{flex:0 0 152px}
+  .dl-banner{flex-direction:column;align-items:stretch;padding:16px;gap:14px}
+  .dl-banner .dl-info{min-width:0;flex-direction:column;align-items:flex-start;gap:11px}
+  .dl-btn{width:100%;justify-content:center;text-align:center;padding:14px 18px}
+  .dl-foot{flex-direction:column;padding:16px;gap:10px}
+  .dl-foot .dl-btn{width:100%}
+  .faq-item summary{padding:13px 13px;font-size:12.5px}
+  .faq-ans{padding:0 13px 14px 13px}
+  .wk-card{padding:14px}
+  .tbl-scroll>table,.flow-table{min-width:560px}
+  .formula{font-size:10.5px;padding:12px}
+  input[type=range]{height:6px}
+  input[type=range]::-webkit-slider-thumb{width:22px;height:22px}
+  .chip{padding:9px 15px;font-size:12px}
+  .pick-card{padding:14px}
+  .buy-cta{padding:16px;font-size:15px}
+
+  /* ── OVERLAY: toast & modal jadi bottom sheet ── */
+  .toast{left:12px;right:12px;bottom:calc(72px + env(safe-area-inset-bottom));
+    transform:translateY(140px);justify-content:center;text-align:center}
+  .toast.show{transform:translateY(0)}
+  .modal-overlay{align-items:flex-end}
+  .modal{width:100%;max-width:none;border-radius:20px 20px 0 0;max-height:88vh;
+    padding:20px 18px calc(22px + env(safe-area-inset-bottom))}
+}
+@supports(height:100dvh){@media(max-width:900px){.app{height:100dvh}}}
+
+/* ── ponsel mode lanskap (tinggi layar sempit): rampingkan chrome ── */
+@media(max-width:900px) and (max-height:540px){
+  .app{grid-template-rows:46px minmax(0,1fr) auto}
+  .topbar{padding:0 8px}
+  .dash-map{height:58vh;min-height:150px;max-height:210px}
+  .map-overlay-stats{top:6px;left:6px;right:6px}
+  .mo-card{padding:5px 9px;min-width:104px}
+  .mo-card .value{font-size:13px}
+  .map-legend-box{bottom:6px;left:6px;right:6px;padding:6px 9px}
+  .mtb{min-height:44px;padding:5px 2px;gap:1px;font-size:9px}
+  .mtb svg{width:17px;height:17px}
+  .nav-drawer-head{padding:10px 14px}
+  .sidebar .nav-btn{min-height:42px}
+  .modal{max-height:94vh}
+}
+
+/* ── PONSEL KECIL ── */
+@media(max-width:900px){
+  .agg-art{width:118px!important}
+  .sc-metrics{gap:5px}
+  .sc-metric{padding:6px 7px;min-width:0}
+  .sc-metric .mv{font-size:12px;overflow-wrap:anywhere}
+  .sc-metric .ml{font-size:8.5px}
+}
+@media(max-width:420px){
+  .agg-art{display:none}
+  .topbar .logo{font-size:13px}
+  .wallet-btn span{display:none}
+  .wallet-btn{width:38px;padding:0;justify-content:center}
+  .mtb{font-size:9.5px}
+  .dash-map{height:40vh;min-height:210px}
+  .mo-card{min-width:106px}
+  .page-head h2{font-size:13.5px}
+  .kpi .kval{font-size:19px}
+}
+
+/* ── LANDING PAGE: ponsel ── */
+@media(max-width:880px){
+  .lp{font-size:15px}
+  .lp-wrap{padding:0 18px}
+  .lp-nav-in{padding:11px 18px;gap:10px}
+  .lp-brand{font-size:18px;gap:9px}
+  .lp-hex{width:26px;height:29px}
+  .lp-navcta{padding:10px 16px;font-size:13.5px}
+  .lp-hero-in{padding:38px 18px 50px;gap:30px}
+  .lp-eyebrow{font-size:11px;padding:6px 12px;margin-bottom:16px}
+  .lp-hero h1{font-size:clamp(27px,7.4vw,38px);margin-bottom:14px}
+  .lp-lead{font-size:15.5px;margin-bottom:24px}
+  .lp-btn{padding:14px 22px;font-size:15px;justify-content:center}
+  .lp-chips{gap:18px}
+  .lp-chip b{font-size:20px}
+  .lp-head{margin-bottom:36px}
+  .lp-head p{font-size:15.5px}
+  .lp-feat{padding:24px}
+  .lp-feat h3{font-size:18px}
+  .lp-feat p{font-size:14.5px}
+  .lp-callout{padding:22px;gap:14px}
+  .lp-callout .big{font-size:19px;min-width:0}
+  .lp-callout p{min-width:0;font-size:14px}
+  .lp-step{padding:22px 20px}
+  .lp-why-it{padding:18px}
+  .lp-foot{padding:32px 0 calc(38px + env(safe-area-inset-bottom))}
+  .lp-foot-in{flex-direction:column;gap:18px}
+}
+@media(max-width:780px){
+  .lp-nav{position:sticky}
+  .lp-burger{display:inline-flex;align-items:center;justify-content:center;margin-left:auto;
+    width:42px;height:42px;flex:none;border:1px solid #E6EEF0;background:#fff;border-radius:12px;
+    color:#171B2E;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .lp-burger:active{background:#F2F7F7}
+  .lp-burger .bl{display:block;width:17px;height:2px;border-radius:2px;background:currentColor;
+    position:relative;transition:transform .22s,background .22s}
+  .lp-burger .bl::before,.lp-burger .bl::after{content:'';position:absolute;left:0;width:17px;height:2px;
+    border-radius:2px;background:currentColor;transition:transform .22s,top .22s}
+  .lp-burger .bl::before{top:-6px}.lp-burger .bl::after{top:6px}
+  .lp-burger.open .bl{background:transparent}
+  .lp-burger.open .bl::before{top:0;transform:rotate(45deg)}
+  .lp-burger.open .bl::after{top:0;transform:rotate(-45deg)}
+  .lp-mobmenu{display:block;position:absolute;top:100%;left:0;right:0;background:#fff;
+    border-bottom:1px solid #E6EEF0;box-shadow:0 22px 34px -24px rgba(23,32,64,.4);
+    max-height:0;overflow:hidden;transition:max-height .28s ease;z-index:19}
+  .lp-mobmenu.open{max-height:320px}
+  .lp-mobmenu a{display:block;padding:15px 20px;font-size:16px;font-weight:600;color:#43616B;
+    border-bottom:1px solid #F1F6F6;cursor:pointer}
+  .lp-mobmenu a:active{background:#F5FAFA;color:#5B5BF5}
+  .lp-mobmenu .lp-navcta{display:block;width:calc(100% - 32px);margin:14px 16px 18px;text-align:center}
+}
+@media(max-width:560px){
+  .lp-nav-in>.lp-navcta{display:none}
+  .lp-hero-in{padding:30px 18px 44px;gap:26px}
+  .lp-eyebrow{font-size:10.5px;letter-spacing:.03em;padding:6px 11px;margin-bottom:14px}
+  .lp-hero h1{font-size:clamp(25px,6.8vw,32px);margin-bottom:13px}
+  .lp-lead{font-size:15px;line-height:1.55;margin-bottom:22px}
+  .lp-cta-row{flex-direction:column;align-items:stretch;gap:11px}
+  .lp-cta-row .lp-btn{width:100%}
+  .lp-chips{gap:0;display:grid;grid-template-columns:repeat(3,1fr);text-align:left}
+  .lp-chip b{font-size:18px}
+  .lp-chip span{font-size:11.5px}
+  #lp-map{height:250px}
+  .lp-mapcard{border-radius:18px}
+  .lp-maplegend{gap:11px;font-size:11px;padding:11px 13px}
+  .lp-band-in{padding:30px 18px}
+  .lp-band b{font-size:25px}
+  .lp-band span{font-size:12px}
+  .lp-final-box{padding:40px 20px;border-radius:20px}
+  .lp-final-box p{font-size:15.5px}
+}
+
+/* ── perangkat sentuh: matikan efek hover yang "nyangkut" setelah ketukan ── */
+@media(hover:none){
+  .station-card:hover,.benefit:hover,.lp-feat:hover,.fbar:hover{transform:none}
+  .lp-btn:hover,.lp-navcta:hover,.dl-btn:hover,.sc-btn.primary:hover{transform:none}
+  .wallet-btn:hover{background:var(--cyan-dim);color:var(--cyan)}
+  .nav-btn:hover{background:transparent;color:var(--text3)}
+  .nav-btn.active:hover{background:var(--cyan-dim);color:var(--cyan)}
+  .nav-btn:hover .nav-tooltip{display:none}
+  .sidebar .nav-btn:hover .nav-tooltip{display:block}
+  .sidebar .nav-btn.admin-nav:hover{background:transparent;color:var(--amber)}
+  .mf-btn:hover,.chip:hover,.dd-tab:hover{border-color:var(--border);color:var(--text2)}
+  .mf-btn.active:hover{border-color:var(--cyan);color:var(--cyan)}
+  .token-row:hover{background:inherit;border-color:var(--border)}
+  .token-row.selected:hover{background:var(--cyan-dim);border-color:var(--cyan)}
+  .flow-table tr:hover td{background:transparent}
+}
 </style></head><body>
 
 <!-- ═══════════════════════ LANDING PAGE (tampil pertama, tema cerah) ═══════════════════════ -->
@@ -633,7 +950,14 @@ html,body{background:var(--bg)}
         <a onclick="lpScroll('lp-how')">Cara Kerja</a>
         <a onclick="lpScroll('lp-why')">Keunggulan</a>
       </div>
+      <button class="lp-burger" id="lp-burger" onclick="lpToggleMenu()" aria-label="Buka menu" aria-expanded="false" aria-controls="lp-mobmenu"><span class="bl"></span></button>
       <button class="lp-navcta" onclick="enterApp()">Masuk Platform →</button>
+    </div>
+    <div class="lp-mobmenu" id="lp-mobmenu">
+      <a onclick="lpGo('lp-what')">Apa Itu</a>
+      <a onclick="lpGo('lp-how')">Cara Kerja</a>
+      <a onclick="lpGo('lp-why')">Keunggulan</a>
+      <button class="lp-navcta" onclick="lpCloseMenu();enterApp()">Masuk Platform →</button>
     </div>
   </nav>
 
@@ -786,6 +1110,9 @@ html,body{background:var(--bg)}
 <div class="app">
   <!-- TOPBAR -->
   <div class="topbar">
+    <button class="mob-menu-btn" id="mob-menu-btn" onclick="toggleNav()" aria-label="Buka menu navigasi" aria-expanded="false" aria-controls="app-sidebar">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
     <div class="logo" style="cursor:pointer" onclick="showLanding()" title="Kembali ke halaman utama"><div class="logo-icon"></div>Charge<span>Chain</span>
       <small>Satu Koin CHRG · Pool SPKLU Utilisasi Tinggi</small></div>
     <div class="top-stats">
@@ -797,15 +1124,20 @@ html,body{background:var(--bg)}
     </div>
     <div style="display:flex;align-items:center;gap:10px">
       <div class="wallet-bal">Saldo: <b id="user-balance">Rp 25.000.000</b></div>
-      <button class="wallet-btn" onclick="connectWallet()">
+      <button class="wallet-btn" onclick="connectWallet()" title="Connect Wallet" aria-label="Connect Wallet">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M16 12h.01"/></svg>
         <span id="wallet-label">Connect Wallet</span>
       </button>
     </div>
   </div>
 
-  <!-- SIDEBAR -->
-  <div class="sidebar">
+  <!-- SIDEBAR (desktop: rail ikon · mobile: drawer geser berlabel) -->
+  <div class="nav-backdrop" id="nav-backdrop" onclick="closeNav()"></div>
+  <div class="sidebar" id="app-sidebar">
+    <div class="nav-drawer-head">
+      <span class="ndh-t">Navigasi</span>
+      <button class="ndh-x" onclick="closeNav()" aria-label="Tutup menu">✕</button>
+    </div>
     <button class="nav-btn active" onclick="switchTab('dashboard')" data-tab="dashboard">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
       <div class="nav-tooltip">Dashboard Aset</div>
@@ -1071,6 +1403,25 @@ html,body{background:var(--bg)}
       </div>
     </div>
   </div>
+
+  <!-- TAB BAR BAWAH (mobile) -->
+  <nav class="mob-tabbar" id="mob-tabbar" aria-label="Navigasi utama">
+    <button class="mtb active" data-mtab="dashboard" onclick="switchTab('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 20 3 17V4l6 3 6-3 6 3v13l-6 3-6-3Z"/><path d="M9 7v13M15 4v13"/></svg><span>Peta</span>
+    </button>
+    <button class="mtb" data-mtab="market" onclick="switchTab('market')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></svg><span>Bursa</span>
+    </button>
+    <button class="mtb" data-mtab="buy" onclick="switchTab('buy')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><span>Beli</span>
+    </button>
+    <button class="mtb" data-mtab="prospektus" onclick="switchTab('prospektus')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8"/></svg><span>Prospektus</span>
+    </button>
+    <button class="mtb" id="mtb-more" onclick="toggleNav()" aria-label="Menu lainnya">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span>Lainnya</span>
+    </button>
+  </nav>
 </div>
 
 <div class="toast" id="toast"><span class="ico"></span><span id="toast-msg"></span></div>
@@ -1184,17 +1535,34 @@ function enterApp(){
   const lp=document.getElementById('landing');
   if(lp) lp.style.display='none';
   document.body.style.overflow='hidden';
+  lpCloseMenu();
   if(typeof map!=='undefined' && map){ setTimeout(()=>map.invalidateSize(),80); }
 }
 function showLanding(){
   const lp=document.getElementById('landing');
   if(lp){ lp.style.display='block'; lp.scrollTop=0; }
+  if(typeof closeNav==='function') closeNav();
   if(lpMap) setTimeout(()=>lpMap.invalidateSize(),120);
 }
 function lpScroll(id){
   const el=document.getElementById(id);
   if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
 }
+/* menu hamburger landing page (mobile) */
+function lpToggleMenu(){
+  const m=document.getElementById('lp-mobmenu'), b=document.getElementById('lp-burger');
+  if(!m||!b) return;
+  const open=m.classList.toggle('open');
+  b.classList.toggle('open',open);
+  b.setAttribute('aria-expanded',open?'true':'false');
+}
+function lpCloseMenu(){
+  const m=document.getElementById('lp-mobmenu'), b=document.getElementById('lp-burger');
+  if(m) m.classList.remove('open');
+  if(b){ b.classList.remove('open'); b.setAttribute('aria-expanded','false'); }
+}
+/* item menu mobile: tutup menu lalu gulir ke seksi */
+function lpGo(id){ lpCloseMenu(); setTimeout(()=>lpScroll(id),120); }
 
 /* peta SPKLU langsung di halaman utama (sumber data sama dgn dashboard) */
 let lpMap=null;
@@ -1213,14 +1581,59 @@ function lpInitMap(){
   setTimeout(()=>lpMap.invalidateSize(),200);
 }
 
+/* ═══════════ NAVIGASI MOBILE (drawer + tab bar bawah) ═══════════ */
+const MOBILE_MQ='(max-width:900px)';
+const isMobileView=()=>window.matchMedia(MOBILE_MQ).matches;
+function openNav(){
+  const sb=document.getElementById('app-sidebar');
+  if(!sb) return;
+  sb.classList.add('open');
+  document.getElementById('nav-backdrop').classList.add('show');
+  const b=document.getElementById('mob-menu-btn'); if(b) b.setAttribute('aria-expanded','true');
+}
+function closeNav(){
+  const sb=document.getElementById('app-sidebar');
+  if(!sb) return;
+  sb.classList.remove('open');
+  document.getElementById('nav-backdrop').classList.remove('show');
+  const b=document.getElementById('mob-menu-btn'); if(b) b.setAttribute('aria-expanded','false');
+}
+function toggleNav(){
+  const sb=document.getElementById('app-sidebar');
+  if(sb && sb.classList.contains('open')) closeNav(); else openNav();
+}
+/* tandai tab aktif di tab bar bawah; tab di luar 4 utama → tombol "Lainnya" */
+function syncMobTabbar(tab){
+  const btns=document.querySelectorAll('.mtb');
+  let matched=false;
+  btns.forEach(b=>{
+    const on=b.dataset.mtab===tab;
+    b.classList.toggle('active',on);
+    if(on) matched=true;
+  });
+  const more=document.getElementById('mtb-more');
+  if(more) more.classList.toggle('active',!matched);
+}
+/* balikkan scroll panel ke atas saat berpindah tab (penting di layar kecil) */
+function resetPanelScroll(panel){
+  if(!panel) return;
+  panel.scrollTop=0;
+  panel.querySelectorAll('.page-body,.dash,.market,.market-list,.sc-page,.sc-col,.dd-body,.trade-panel')
+       .forEach(el=>{el.scrollTop=0;});
+}
+
 function switchTab(tab){
   // 'faq' kini adalah Area Internal Tim (admin) — wajib lewat gerbang kata sandi
   if(tab==='faq' && !adminUnlocked){ openAdmin(); return; }
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('panel-'+tab).classList.add('active');
+  const panel=document.getElementById('panel-'+tab);
+  panel.classList.add('active');
   const navBtn=document.querySelector(`.nav-btn[data-tab="${tab}"]`);
   if(navBtn) navBtn.classList.add('active');
+  syncMobTabbar(tab);
+  closeNav();
+  resetPanelScroll(panel);
   if(tab==='dashboard' && !mapInited){setTimeout(initMap,60);}
   if(tab==='dashboard' && map){setTimeout(()=>map.invalidateSize(),60);}
 }
@@ -1270,14 +1683,14 @@ function renderStationList(){
   // ── KARTU AGREGAT: satu koin, satu nilai (tidak ada value per SPKLU) ──
   const agg=`
     <div class="card" style="margin-bottom:12px;overflow:hidden">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px">
-        <div>
+      <div class="agg-head" style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px">
+        <div style="min-width:0">
           <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em">AUM · Kapitalisasi Koin CHRG</div>
           <div style="font-size:27px;font-weight:800;color:var(--cyan);line-height:1.05">${rpShort(COIN.fv)}</div>
           <div class="tiny muted" style="margin-bottom:11px">${fmt(COIN.supply)} koin @ ${rp(COIN.price)} · yield ${COIN.cyld}%</div>
           <div class="sc-btn primary" style="padding:9px 18px;display:inline-block" onclick="goTrade('CHRG')">Beli CHRG →</div>
         </div>
-        <div style="flex:0 0 auto;width:148px">${chargerSVG('dash',148)}</div>
+        <div class="agg-art" style="flex:0 0 auto;width:148px">${chargerSVG('dash',148)}</div>
       </div>
       <div class="grid2" style="gap:8px">
         <div class="kpi g"><div class="klabel">Pendapatan pool / bln</div><div class="kval" style="font-size:16px">${rpShort(COIN.rev)}</div><div class="ksub">${rpShort(COIN.revY)}/th</div></div>
@@ -1356,7 +1769,7 @@ function sparkSVG(s){
   const a=s.spark,mn=Math.min(...a),mx=Math.max(...a),w=60,h=22;
   const pts=a.map((v,i)=>`${(i/(a.length-1)*w).toFixed(1)},${(h-((v-mn)/((mx-mn)||1))*h).toFixed(1)}`).join(' ');
   const col=s.chg>=0?'#3FB950':'#F85149';
-  return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><polyline points="${pts}" fill="none" stroke="${col}" stroke-width="1.5"/></svg>`;
+  return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="${col}" stroke-width="1.5" vector-effect="non-scaling-stroke"/></svg>`;
 }
 function renderMarket(){
   let list=tradeable();
@@ -2801,6 +3214,59 @@ function renderFAQ(){
   `;
 }
 
+/* ═══════════ MOBILE UX — util & pemasangan listener ═══════════ */
+/* Tabel lebar dibungkus container yang bisa digeser horizontal agar tidak
+   memaksa seluruh halaman melebar di layar ponsel. */
+function wrapTables(){
+  document.querySelectorAll('.page-body table,.sc-col table,.dd-body table').forEach(t=>{
+    const p=t.parentElement;
+    if(!p) return;
+    if(p.classList.contains('tbl-scroll')) return;
+    if(p.children.length===1 && (p.style.overflowX==='auto'||p.style.overflow==='auto')) return;
+    const w=document.createElement('div');
+    w.className='tbl-scroll';
+    p.insertBefore(w,t);
+    w.appendChild(t);
+  });
+}
+function initMobileUX(){
+  // tutup drawer / menu landing dengan tombol Escape
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Escape') return;
+    closeNav(); lpCloseMenu();
+  });
+  // geser (swipe) ke kiri untuk menutup drawer
+  const sb=document.getElementById('app-sidebar');
+  if(sb){
+    let x0=null;
+    sb.addEventListener('touchstart',e=>{x0=e.touches[0].clientX;},{passive:true});
+    sb.addEventListener('touchend',e=>{
+      if(x0===null) return;
+      const dx=e.changedTouches[0].clientX-x0;
+      if(dx<-55) closeNav();
+      x0=null;
+    },{passive:true});
+  }
+  // rotasi layar / perubahan ukuran: rapikan drawer & hitung ulang ukuran peta
+  let rt=null;
+  const onResize=()=>{
+    if(!isMobileView()) closeNav();
+    clearTimeout(rt);
+    rt=setTimeout(()=>{
+      if(map) map.invalidateSize();
+      if(lpMap) lpMap.invalidateSize();
+    },180);
+  };
+  window.addEventListener('resize',onResize);
+  window.addEventListener('orientationchange',onResize);
+  // tutup menu landing saat mengetuk di luar area nav
+  document.addEventListener('click',e=>{
+    const menu=document.getElementById('lp-mobmenu');
+    if(!menu||!menu.classList.contains('open')) return;
+    if(!e.target.closest('.lp-nav')) lpCloseMenu();
+  });
+}
+
 /* ═══════════ INIT ═══════════ */
 function boot(){
   // topbar
@@ -2815,6 +3281,8 @@ function boot(){
   renderStationList();renderMarket();renderBuy();renderProspektus();renderInvestor();renderTokenomics();renderBusiness();renderIndirect();renderDevtoken();renderKemitraan();renderContract();renderFAQ();
   if(tradeable().length)selectToken(tradeable()[0].id);
   var lc=document.getElementById('lp-charger'); if(lc) lc.innerHTML=chargerSVG('lp',154);
+  wrapTables();
+  initMobileUX();
   initMap();
   lpInitMap();
   // Lewati landing & buka aplikasi langsung via URL #app atau #admin
