@@ -567,6 +567,59 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
   .bx-art svg{width:auto;height:auto;max-width:100%;max-height:186px;margin:0 auto}
 }
 
+/* ═══════════ CHECKOUT — proses pembayaran langsung dari halaman depan ═══════════ */
+.ck-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px}
+.ck-head h3{font-size:18px;font-weight:700;letter-spacing:-.01em}
+.ck-head .sub{font-size:11.5px;color:var(--text2);margin-top:3px}
+.ck-x{flex:none;width:32px;height:32px;border:none;background:var(--bg3);color:var(--text2);
+  border-radius:10px;font-size:14px;line-height:1;cursor:pointer}
+.ck-sec{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);margin:16px 0 9px}
+.ck-sec:first-of-type{margin-top:0}
+.ck-amt{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:9px}
+.ck-amt b{font-size:24px;font-weight:800;color:var(--cyan);letter-spacing:-.02em}
+.ck-amt span{font-size:11px;color:var(--text2)}
+.ck-sum{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:13px 15px;margin-top:14px}
+.ck-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:12.5px;padding:5px 0;color:var(--text2)}
+.ck-row b{color:var(--text);font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+.ck-row.tot{border-top:1px solid var(--border2);margin-top:6px;padding-top:9px;font-size:13.5px;color:var(--text)}
+.ck-row.tot b{color:var(--cyan);font-size:16px}
+.ck-row.gain b{color:var(--green)}
+.ck-pays{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ck-pay{display:flex;align-items:center;gap:10px;text-align:left;padding:11px 12px;background:var(--bg2);
+  border:1px solid var(--border2);border-radius:11px;cursor:pointer;color:var(--text);font-family:inherit;
+  transition:border-color .15s,background .15s}
+.ck-pay:hover{border-color:var(--cyan)}
+.ck-pay.active{border-color:var(--cyan);background:var(--cyan-dim);box-shadow:0 0 0 1px var(--cyan) inset}
+.ck-pay .ico{font-size:17px;flex:none}
+.ck-pay b{display:block;font-size:12.5px;font-weight:700;line-height:1.25}
+.ck-pay small{display:block;font-size:10px;color:var(--text2);margin-top:1px}
+.ck-perks{display:grid;gap:7px;margin-top:14px}
+.ck-perk{display:flex;gap:9px;align-items:flex-start;font-size:12px;color:var(--text2);line-height:1.5}
+.ck-perk i{flex:none;width:18px;height:18px;border-radius:6px;background:var(--green-dim);color:var(--green);
+  font-style:normal;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.ck-perk b{color:var(--text)}
+/* tombol bayar menempel di dasar modal agar selalu terlihat tanpa harus scroll */
+.ck-foot{position:sticky;bottom:0;z-index:2;margin-top:18px;padding-top:14px;
+  background:var(--bg2);border-top:1px solid var(--border)}
+.ck-foot::after{content:'';position:absolute;left:-30px;right:-30px;top:100%;height:44px;background:var(--bg2)}
+.ck-pay-btn{width:100%;padding:15px;border:none;border-radius:12px;cursor:pointer;
+  font-family:inherit;font-size:15px;font-weight:800;color:#fff;
+  background:linear-gradient(135deg,#4F46E5,#5B5BF5 60%,#7C83FF);
+  box-shadow:0 10px 24px -8px rgba(79,70,229,.6);transition:filter .15s,transform .15s}
+.ck-pay-btn:hover{filter:brightness(1.06);transform:translateY(-1px)}
+.ck-pay-btn:disabled{background:var(--bg4);opacity:.5;cursor:not-allowed;box-shadow:none;transform:none}
+.ck-note{font-size:10.5px;color:var(--text3);line-height:1.55;text-align:center;margin-top:10px}
+.ck-ok{text-align:center;padding:6px 0 2px}
+.ck-ok .tick{width:62px;height:62px;margin:0 auto 14px;border-radius:50%;background:var(--green-dim);
+  color:var(--green);font-size:30px;display:flex;align-items:center;justify-content:center}
+.ck-ok h3{font-size:19px;margin-bottom:5px}
+.ck-ok p{font-size:12.5px;color:var(--text2);margin-bottom:16px}
+@media(max-width:520px){
+  .ck-pays{grid-template-columns:1fr}
+  .ck-head h3{font-size:16.5px}
+  .ck-amt b{font-size:21px}
+}
+
 /* deretan langkah ikonik (ganti kartu teks panjang) */
 .icrow{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
 .icell{background:#fff;border:1px solid #E7EAF6;border-radius:20px;padding:26px 22px;text-align:center;
@@ -596,6 +649,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 .lp-final-box p{font-size:17.5px;opacity:.94;max-width:620px;margin:0 auto 30px}
 .lp-final-box .lp-btn.primary{background:#fff;color:#4338CA;box-shadow:0 16px 34px rgba(0,0,0,.18)}
 .lp-final-box .lp-btn.primary:hover{box-shadow:0 22px 44px rgba(0,0,0,.26)}
+.lp-final-alt{margin-top:16px}
+.lp-final-alt a{font-size:14.5px;font-weight:600;color:rgba(255,255,255,.85);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.lp-final-alt a:hover{color:#fff}
+/* tautan sekunder di nav (Masuk Platform) — CTA utama kini "Beli Koin CHRG" */
+.lp-navlink{background:none;border:none;font-family:inherit;font-size:14.5px;font-weight:500;
+  color:#43616B;cursor:pointer;padding:10px 4px;white-space:nowrap}
+.lp-navlink:hover{color:#5B5BF5}
 @media(max-width:680px){.lp-final-box h2{font-size:27px}.lp-final-box{padding:48px 22px}}
 
 /* footer */
@@ -917,9 +977,11 @@ html,body{background:var(--bg)}
     border-bottom:1px solid #F1F6F6;cursor:pointer}
   .lp-mobmenu a:active{background:#F5FAFA;color:#5B5BF5}
   .lp-mobmenu .lp-navcta{display:block;width:calc(100% - 32px);margin:14px 16px 18px;text-align:center}
+  .lp-navlink{display:none}
 }
 @media(max-width:560px){
-  .lp-nav-in>.lp-navcta{display:none}
+  .lp-nav-in>.lp-navcta{padding:9px 13px;font-size:12.5px}
+  .lp-nav-in>.lp-navcta .wide{display:none}
   .lp-hero-in{padding:30px 18px 44px;gap:26px}
   .lp-eyebrow{font-size:10.5px;letter-spacing:.03em;padding:6px 11px;margin-bottom:14px}
   .lp-hero h1{font-size:clamp(25px,6.8vw,32px);margin-bottom:13px}
@@ -970,13 +1032,15 @@ html,body{background:var(--bg)}
         <a onclick="lpScroll('lp-why')">Keunggulan</a>
       </div>
       <button class="lp-burger" id="lp-burger" onclick="lpToggleMenu()" aria-label="Buka menu" aria-expanded="false" aria-controls="lp-mobmenu"><span class="bl"></span></button>
-      <button class="lp-navcta" onclick="enterApp()">Masuk Platform →</button>
+      <button class="lp-navlink" onclick="enterApp()">Masuk Platform</button>
+      <button class="lp-navcta" onclick="buyNow()">Beli <span class="wide">Koin </span>CHRG →</button>
     </div>
     <div class="lp-mobmenu" id="lp-mobmenu">
       <a onclick="lpGo('lp-what')">Apa Itu</a>
       <a onclick="lpGo('lp-how')">Cara Kerja</a>
       <a onclick="lpGo('lp-why')">Keunggulan</a>
-      <button class="lp-navcta" onclick="lpCloseMenu();enterApp()">Masuk Platform →</button>
+      <a onclick="lpCloseMenu();enterApp()">Masuk Platform</a>
+      <button class="lp-navcta" onclick="buyNow()">Beli Koin CHRG →</button>
     </div>
   </nav>
 
@@ -988,8 +1052,8 @@ html,body{background:var(--bg)}
         <h1>Miliki Bagian dari Pendapatan <em>Stasiun Pengisian Mobil Listrik</em> PLN</h1>
         <p class="lp-lead">Arus kas <b>54 SPKLU PLN</b> tersibuk jadi <b>satu koin: CHRG</b>. Miliki mulai <b>Rp 100.000</b>, jual kapan saja.</p>
         <div class="lp-cta-row">
-          <button class="lp-btn primary" onclick="enterApp()">Jelajahi Platform <span>→</span></button>
-          <button class="lp-btn ghost" onclick="lpScroll('lp-how')">Pelajari Cara Kerja</button>
+          <button class="lp-btn primary" onclick="buyNow()">Beli Koin CHRG <span>→</span></button>
+          <button class="lp-btn ghost" onclick="enterApp()">Jelajahi Platform</button>
         </div>
         <div class="lp-chips">
           <div class="lp-chip"><b>54</b><span>SPKLU penyangga</span></div>
@@ -1285,8 +1349,9 @@ html,body{background:var(--bg)}
     <div class="lp-wrap">
       <div class="lp-final-box">
         <h2>Siap memiliki bagian dari masa depan energi?</h2>
-        <p>Masuk ke platform untuk menjelajahi peta SPKLU, bursa token, dan simulasi imbal hasil secara interaktif.</p>
-        <button class="lp-btn primary" onclick="enterApp()">Masuk ke Platform <span>→</span></button>
+        <p>Mulai dari Rp 100.000. Pilih nominal, bayar, koin langsung tercatat.</p>
+        <button class="lp-btn primary" onclick="buyNow()">Beli Koin CHRG <span>→</span></button>
+        <div class="lp-final-alt"><a onclick="enterApp()">atau jelajahi platform dulu →</a></div>
       </div>
     </div>
   </section>
@@ -1479,8 +1544,8 @@ html,body{background:var(--bg)}
       <div class="page">
         <div class="page-head">
           <div><h2><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Beli Koin CHRG — mulai dari Rp 100 ribu</h2>
-            <div class="ph-sub">Tiga langkah mudah: pilih nominal, beli koin CHRG, terima bagi-hasil. Satu koin mewakili seluruh pool SPKLU utilisasi tinggi — bukan token per-SPKLU</div></div>
-          <span class="badge">Mudah · 3 Langkah</span>
+            <div class="ph-sub">Pilih nominal, bayar, koin langsung tercatat — bagi-hasil masuk tiap bulan. Satu koin mewakili seluruh pool SPKLU utilisasi tinggi, bukan token per-SPKLU</div></div>
+          <span class="badge">Beli Langsung</span>
         </div>
         <div class="page-body" id="buy-body"></div>
       </div>
@@ -2043,40 +2108,153 @@ function updateBuyPreview(){
   const btn=document.getElementById('buy-cta');
   if(btn)btn.textContent=tokens<1?'Nominal terlalu kecil':'Beli '+fmt(tokens)+' Koin CHRG';
 }
-function confirmBuy(){
-  const s=COIN;
-  const tokens=Math.floor(BUY.amount/s.price);
-  if(tokens<1){toast('Nominal terlalu kecil untuk 1 koin');return;}
-  const cost=tokens*s.price, fee=Math.round(cost*0.005), monthly=tokens*s.div/12;
-  showModal(`
-    <h3 style="margin-bottom:4px">Konfirmasi Pembelian</h3>
-    <div style="font-size:12px;color:var(--text2);margin-bottom:14px">CHRG · ${s.n} SPKLU utilisasi tinggi</div>
-    <table class="flow-table" style="margin-bottom:14px"><tbody>
-      <tr><td>Jumlah koin</td><td class="r">${fmt(tokens)} CHRG</td></tr>
-      <tr><td>Harga / koin</td><td class="r">${rp(s.price)}</td></tr>
-      <tr><td>Subtotal</td><td class="r">${rp(cost)}</td></tr>
-      <tr><td>Biaya layanan (0,5%)</td><td class="r">${rp(fee)}</td></tr>
-      <tr class="total"><td>Total bayar</td><td class="r">${rp(cost+fee)}</td></tr>
-      <tr><td>Estimasi bagi-hasil</td><td class="r" style="color:var(--green)">${rp(Math.round(monthly))}/bln · ${s.cyld}%/th</td></tr>
-    </tbody></table>
-    <div style="display:flex;gap:10px">
-      <button class="sc-btn secondary" style="flex:1" onclick="closeModal()">Batal</button>
-      <button class="sc-btn primary" style="flex:1.4" onclick="doBuy('CHRG',${tokens})">Konfirmasi & Bayar</button>
-    </div>
-    <div class="tiny muted" style="margin-top:10px">Satu koin CHRG mewakili seluruh pool — bukan token per-SPKLU. Settlement on-chain otomatis. Simulasi — bukan transaksi riil.</div>
-  `);
+/* ═══════════ CHECKOUT — satu layar: nominal → bayar → koin diterima ═══════════
+   Dipakai tombol "Beli Koin CHRG" di halaman depan maupun di dalam aplikasi,
+   sehingga pembeli langsung masuk proses pembayaran tanpa halaman perantara. */
+const PAYMENTS=[
+  {id:'saldo', nm:'Saldo Simulasi',  sub:'Instan',              ico:'👛'},
+  {id:'va',    nm:'Virtual Account', sub:'BCA · BNI · Mandiri', ico:'🏦'},
+  {id:'qris',  nm:'QRIS',            sub:'Semua e-wallet',      ico:'📱'},
+  {id:'card',  nm:'Kartu Debit/Kredit', sub:'Visa · Mastercard', ico:'💳'}
+];
+let payMethod='saldo';
+const CK_CHIPS=[100000,500000,1000000,5000000,10000000,25000000];
+
+/* Dipanggil dari tombol beli di landing page: buka aplikasi lalu langsung checkout. */
+function buyNow(preset){
+  if(preset) BUY.amount=preset;
+  const lp=document.getElementById('landing');
+  if(lp && lp.style.display!=='none') enterApp();
+  lpCloseMenu();
+  switchTab('buy');
+  openCheckout();
 }
-function doBuy(id,tokens){
-  const s=findAsset(id);if(!s)return;
-  const cost=tokens*s.price, fee=Math.round(cost*0.005), total=cost+fee;
-  if(total>balance){closeModal();toast('Saldo tidak cukup — isi saldo simulasi dulu');return;}
-  balance-=total;updBalance();
-  const h=HOLDINGS.find(x=>x.id===id);
-  if(h){h.qty+=tokens;}else{HOLDINGS.push({id:id,qty:tokens});}
+function openCheckout(){
+  const s=COIN;
+  showModal(`
+    <div class="ck-head">
+      <div>
+        <h3>Beli Koin CHRG</h3>
+        <div class="sub">${s.n} SPKLU utilisasi tinggi · okupansi rata-rata ${s.occ}% · yield ${s.cyld}%</div>
+      </div>
+      <button class="ck-x" onclick="closeModal()" aria-label="Tutup">✕</button>
+    </div>
+
+    <div class="ck-sec">Nominal pembelian</div>
+    <div class="ck-amt"><b id="ck-amt-lbl">${rp(BUY.amount)}</b><span>min. ${rp(100000)}</span></div>
+    <input type="range" id="ck-range" min="100000" max="50000000" step="100000" value="${BUY.amount}"
+           oninput="setCkAmount(this.value,false)" aria-label="Nominal pembelian">
+    <div class="chip-row" style="margin-top:10px">
+      ${CK_CHIPS.map(c=>`<button class="chip" onclick="setCkAmount(${c},true)">${rpShort(c)}</button>`).join('')}
+    </div>
+
+    <div class="ck-sum">
+      <div class="ck-row"><span>Koin didapat</span><b id="ck-tokens">—</b></div>
+      <div class="ck-row"><span>Harga / koin</span><b>${rp(s.price)}</b></div>
+      <div class="ck-row"><span>Biaya layanan (0,5%)</span><b id="ck-fee">—</b></div>
+      <div class="ck-row tot"><span>Total bayar</span><b id="ck-total">—</b></div>
+      <div class="ck-row gain"><span>Estimasi bagi-hasil</span><b id="ck-monthly">—</b></div>
+    </div>
+
+    <div class="ck-sec">Metode pembayaran</div>
+    <div class="ck-pays">
+      ${PAYMENTS.map(p=>`
+        <button class="ck-pay${p.id===payMethod?' active':''}" data-pay="${p.id}" onclick="setPay('${p.id}')">
+          <span class="ico">${p.ico}</span><span><b>${p.nm}</b><small>${p.sub}</small></span>
+        </button>`).join('')}
+    </div>
+    <div class="tiny muted" id="ck-pay-hint" style="margin-top:8px"></div>
+
+    <div class="ck-sec">Yang Anda dapat</div>
+    <div class="ck-perks">
+      <div class="ck-perk"><i>✓</i><div><b>Bagi-hasil tiap bulan</b> dari tiap kWh yang terjual di pool — masuk otomatis lewat smart contract.</div></div>
+      <div class="ck-perk"><i>✓</i><div><b>Diskon ngecas ${BUY_DISC*100}%</b> di SPKLU penyangga — hemat ± <span id="ck-disc">—</span>.</div></div>
+      <div class="ck-perk"><i>✓</i><div><b>Bisa dijual kapan saja</b> di bursa sekunder — tidak terkunci tenor seperti deposito.</div></div>
+      <div class="ck-perk"><i>✓</i><div><b>Tercatat on-chain</b> — kepemilikan &amp; distribusi bagi-hasil transparan dan dapat diaudit.</div></div>
+    </div>
+
+    <div class="ck-foot">
+      <button class="ck-pay-btn" id="ck-pay-btn" onclick="payNow()">Bayar</button>
+      <div class="ck-note">Simulasi/edukasi — bukan transaksi riil dan bukan ajakan investasi.
+        Imbal hasil mengikuti okupansi aktual dan tidak dijamin.</div>
+    </div>
+  `);
+  ckUpdate();
+}
+function setCkAmount(v,syncRange){
+  BUY.amount=parseInt(v)||0;
+  const r=document.getElementById('ck-range');
+  if(r && syncRange) r.value=Math.min(BUY.amount,+r.max);
+  ckUpdate();
+}
+function setPay(id){
+  payMethod=id;
+  document.querySelectorAll('.ck-pay').forEach(b=>b.classList.toggle('active',b.dataset.pay===id));
+  ckUpdate();
+}
+function ckCalc(){
+  const s=COIN, tokens=Math.floor(BUY.amount/s.price), cost=tokens*s.price;
+  const fee=Math.round(cost*0.005);
+  return {s,tokens,cost,fee,total:cost+fee,monthly:Math.round(tokens*s.div/12)};
+}
+function ckUpdate(){
+  const {s,tokens,fee,total,monthly}=ckCalc();
+  setTxt('ck-amt-lbl',rp(BUY.amount));
+  setTxt('ck-tokens',fmt(tokens)+' CHRG');
+  setTxt('ck-fee',rp(fee));
+  setTxt('ck-total',rp(total));
+  setTxt('ck-monthly',rp(monthly)+'/bln · '+s.cyld+'%/th');
+  setTxt('ck-disc',rp(Math.round(150*PORT.blended_tariff*BUY_DISC))+'/bln');
+  const short = payMethod==='saldo' && total>balance;
+  setTxt('ck-pay-hint', payMethod==='saldo'
+    ? 'Saldo simulasi: '+rp(balance)+(short?' — belum cukup untuk nominal ini.':'')
+    : 'Instruksi pembayaran '+PAYMENTS.find(p=>p.id===payMethod).nm+' akan ditampilkan setelah dikonfirmasi.');
+  const btn=document.getElementById('ck-pay-btn');
+  if(btn){
+    btn.disabled = tokens<1 || short;
+    btn.textContent = tokens<1 ? 'Nominal minimal '+rp(s.price)
+                    : short    ? 'Saldo simulasi tidak cukup'
+                               : 'Bayar '+rp(total);
+  }
+}
+function payNow(){
+  const {s,tokens,total,monthly}=ckCalc();
+  if(tokens<1) return;
+  if(payMethod==='saldo'){
+    if(total>balance){toast('Saldo simulasi tidak cukup');return;}
+    balance-=total;updBalance();
+  }
+  const h=HOLDINGS.find(x=>x.id==='CHRG');
+  if(h){h.qty+=tokens;}else{HOLDINGS.push({id:'CHRG',qty:tokens});}
   saveHoldings();
-  closeModal();
-  toast('Berhasil beli '+fmt(tokens)+' koin CHRG — bagi-hasil mulai bulan depan');
+  const via=PAYMENTS.find(p=>p.id===payMethod).nm;
+  showModal(`
+    <div class="ck-ok">
+      <div class="tick">✓</div>
+      <h3>Pembayaran berhasil</h3>
+      <p>${fmt(tokens)} koin CHRG sudah tercatat atas nama Anda.</p>
+    </div>
+    <div class="ck-sum" style="margin-top:0">
+      <div class="ck-row"><span>Koin diterima</span><b>${fmt(tokens)} CHRG</b></div>
+      <div class="ck-row"><span>Total dibayar</span><b>${rp(total)}</b></div>
+      <div class="ck-row"><span>Metode</span><b>${via}</b></div>
+      <div class="ck-row gain"><span>Bagi-hasil / bulan</span><b>${rp(monthly)}</b></div>
+      <div class="ck-row"><span>Yield berjalan</span><b>${s.cyld}% / tahun</b></div>
+    </div>
+    <div class="ck-perks">
+      <div class="ck-perk"><i>1</i><div>Bagi-hasil pertama masuk <b>bulan depan</b>, lalu berulang tiap bulan selama koin dipegang.</div></div>
+      <div class="ck-perk"><i>2</i><div>Diskon ngecas <b>${BUY_DISC*100}%</b> aktif di ${s.n} SPKLU penyangga.</div></div>
+      <div class="ck-perk"><i>3</i><div>Ingin mencairkan? Jual koin kapan saja di <b>Bursa CHRG</b>.</div></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="sc-btn secondary" style="flex:1;padding:13px" onclick="closeModal();switchTab('market')">Lihat Bursa</button>
+      <button class="sc-btn primary" style="flex:1.2;padding:13px" onclick="closeModal();switchTab('buy')">Portofolio Saya</button>
+    </div>
+    <div class="ck-note">Simulasi — tidak ada dana riil yang berpindah.</div>
+  `);
   renderPortfolio();
+  setTxt('buy-bal-mirror',rp(balance));
+  updateBuyPreview();
 }
 function sellHolding(id){
   const i=HOLDINGS.findIndex(x=>x.id===id);if(i<0)return;
@@ -2123,22 +2301,16 @@ function renderBuy(){
   const b=document.getElementById('buy-body');if(!b)return;
   const chips=[100000,500000,1000000,5000000,10000000,25000000];
   b.innerHTML=`
-  <div class="grid3" style="margin-bottom:20px">
-    <div class="card" style="text-align:center"><div style="font-size:24px">①</div><h5 style="margin:6px 0 3px">Pilih nominal</h5><p style="font-size:11px;color:var(--text2)">Mulai Rp 100 ribu, sesuai kemampuan Anda</p></div>
-    <div class="card" style="text-align:center"><div style="font-size:24px">②</div><h5 style="margin:6px 0 3px">Beli koin CHRG</h5><p style="font-size:11px;color:var(--text2)">Satu koin untuk seluruh pool SPKLU utilisasi tinggi</p></div>
-    <div class="card" style="text-align:center"><div style="font-size:24px">③</div><h5 style="margin:6px 0 3px">Terima bagi-hasil</h5><p style="font-size:11px;color:var(--text2)">Koin langsung tercatat, bagi-hasil tiap bulan</p></div>
-  </div>
-
   <div class="grid2">
     <div class="card">
-      <h4>① Berapa mau diinvestasikan?</h4>
+      <h4>Berapa mau diinvestasikan?</h4>
       <div class="slider-box">
         <label>Nominal <b id="buy-amount-lbl">${rp(BUY.amount)}</b></label>
         <input type="range" id="buy-amount-range" min="100000" max="50000000" step="100000" value="${BUY.amount}" oninput="setBuyAmount(this.value)">
       </div>
       <div class="chip-row">${chips.map(c=>`<button class="chip" onclick="setBuyAmount(${c})">${rpShort(c)}</button>`).join('')}</div>
 
-      <h4 style="margin-top:20px">② Koin yang Anda beli</h4>
+      <h4 style="margin-top:20px">Koin yang Anda beli</h4>
       <div class="pick-card active" style="cursor:default">
         <div class="pk-tag">🪙 Satu koin · CHRG</div>
         <div class="pk-name">CHRG — ChargeChain SPKLU Revenue Coin</div>
@@ -2156,7 +2328,7 @@ function renderBuy(){
         <div class="kpi g"><div class="klabel">Bagi-hasil / bln</div><div class="kval" style="font-size:20px" id="buy-pv-monthly">—</div><div class="ksub">yield <span id="buy-pv-yield">—</span></div></div>
       </div>
       <div class="perk-box">⚡ Bonus pemegang token: diskon ngecas ${BUY_DISC*100}% — hemat ± <b id="buy-pv-disc">—</b> (asumsi 150 kWh/bln)</div>
-      <button class="buy-cta" id="buy-cta" onclick="confirmBuy()">Beli Sekarang</button>
+      <button class="buy-cta" id="buy-cta" onclick="openCheckout()">Beli Sekarang</button>
       <div class="tiny muted" style="text-align:center;margin-top:8px">Saldo simulasi: <b id="buy-bal-mirror">—</b> · <a style="color:var(--cyan);cursor:pointer" onclick="topUpDemo();setTxt('buy-bal-mirror',rp(balance))">+ isi saldo</a></div>
     </div>
   </div>
